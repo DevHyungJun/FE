@@ -1,7 +1,10 @@
 'use client';
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Navbar, NavbarBrand, NavbarMenuToggle, NavbarMenuItem, NavbarMenu, NavbarContent, NavbarItem, Button } from "@nextui-org/react";
+import { useState } from "react";
+import { AcmeLogo } from "../../../public/AcmeLogo";
+import Link from "next/link";
 
 const Header = () => {
   const pathname = usePathname();
@@ -9,36 +12,87 @@ const Header = () => {
   const isProductOpen = pathname.startsWith("/products");
   const isLoginOpen = pathname.startsWith("/login");
   const isSignupOpen = pathname.startsWith("/signup");
-  const secondNavItemsStyle = "hidden flex-shrink-0 p-2 text-center sm:block  hover:bg-gray-100 rounded-md";
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navbarItems = [
+    { label: "제품", href: "/products", isActive: isProductOpen },
+    { label: "장바구니", href: "#" },
+    { label: "마이페이지", href: "#" },
+    { label: "관리자", href: "/admin", isActive: isAdminOpen },
+  ];
+
+  const menuItems = [
+    { label: "제품", href: "/products", isOpen: isProductOpen },
+    { label: "장바구니", href: "#" },
+    { label: "마이페이지", href: "#" },
+    { label: "관리자", href: "/admin", isOpen: isAdminOpen },
+    { label: "로그인", href: "/login", isOpen: isLoginOpen },
+    { label: "회원가입", href: "/signup", isOpen: isSignupOpen },
+  ];
 
   return (
-    <header className={`grid grid-cols-2 w-full px-1 py-3 ${isAdminOpen || isProductOpen || isLoginOpen || isSignupOpen ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} border`}>
-      <div className={`flex gap-3 items-center ${isAdminOpen ? 'justify-between' : 'justify-normal'}`}>
-        <Link href="/" className="p-1">
-          로고
-        </Link>
-        <Link href='/company' className={`${isLoginOpen ? 'block' : 'hidden'}`}>회사소개</Link>
-        <Link href="/products" className="hidden p-2 sm:block hover:bg-gray-100 rounded-md">
-          {isAdminOpen || isLoginOpen ? '제품구매' : '제품'}
-        </Link>
-        <Link href='/service-center' className={`${isLoginOpen ? 'block' : 'hidden'}`}>고객센터</Link>
-      </div>
-      <div className={`flex justify-end gap-3 ${isAdminOpen || isProductOpen || isLoginOpen || isSignupOpen ? 'sm:justify-self-end' : 'sm:justify-self-center'}`}>
-        <Link href="/cart" className={secondNavItemsStyle}>
-          장바구니
-        </Link>
-        <Link href="/mypage" className={secondNavItemsStyle}>
-          마이페이지
-        </Link>
-        <Link href="/login" className={secondNavItemsStyle}>
-          로그인
-        </Link>
-        <Link href="/admin" className={secondNavItemsStyle}>
-          관리자
-        </Link>
-        <Link className="p-1 sm:hidden" href="/menu">메뉴</Link>
-      </div>
-    </header>
+    <Navbar
+      isBordered
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
+      className={`${isMenuOpen ? "bg-gray-50" : ""}text-gray-800`}
+    >
+      <NavbarContent className="sm:hidden" justify="start">
+        <NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
+      </NavbarContent>
+
+      <NavbarContent className="sm:hidden pr-3" justify="center">
+        <NavbarBrand>
+          <Link href="/" className="flex items-center">
+            <AcmeLogo />
+            <p className="font-bold text-inherit">SHOP</p>
+          </Link>
+        </NavbarBrand>
+      </NavbarContent>
+
+      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+        <NavbarBrand>
+          <Link href={'/'} className="flex items-center">
+            <AcmeLogo />
+            <p className="font-bold text-inherit">SHOP</p>
+          </Link>
+        </NavbarBrand>
+        {navbarItems.map((item, index) => (
+          <NavbarItem key={`${item}-${index}`} isActive={item.isActive} className="hover:text-blue-500">
+            <Link href={item.href}>{item.label}</Link>
+          </NavbarItem>
+        ))}
+      </NavbarContent>
+
+      <NavbarContent justify="end">
+        <NavbarItem className="hidden sm:flex">
+          <Button as={Link} color="default" href="/login" variant="flat"
+          className="hidden sm:flex">
+            로그인
+          </Button>
+        </NavbarItem>
+        <NavbarItem>
+          <Button as={Link} color="warning" href="/signup" variant="flat" className="hidden sm:flex">
+            회원가입
+          </Button>
+        </NavbarItem>
+      </NavbarContent>
+
+      <NavbarMenu className="bg-gray-50">
+        {menuItems.map((item, index) => (
+          <NavbarMenuItem key={`${item}-${index}`} className="hover:text-blue-500"
+          isActive={item.isOpen}>
+            <Link
+              className="w-full"
+              href={item.href}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {item.label}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+      </NavbarMenu>
+    </Navbar>
   );
 };
 
