@@ -18,6 +18,10 @@ export const emailV = {
   },
 };
 
+export const emailConfirmV = {
+  required: '이메일 인증번호를 입력하세요'
+}
+
 export const passwordV = {
   required: '비밀번호를 입력하세요',
   minLength: {

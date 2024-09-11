@@ -1,7 +1,7 @@
 export type SignupForm = {
   email: string;
   emailConfirm: string;
-  userName: string;
+  username: string;
   password: string;
   passwordConfirm: string;
 };
