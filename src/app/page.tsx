@@ -1,5 +1,5 @@
 import ImgCarousel from "./components/ImgCarousel";
-import MostPopular from "./components/mostPopular";
+import MostPopular from "./components/MostPopular";
 
 export default function Home() {
 
