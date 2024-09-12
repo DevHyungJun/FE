@@ -1,15 +1,19 @@
 'use client'
-
+// 이미지 캐러셀 React slick으로 바꿔서 구현하기 현재 브랜치:feature-#4
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { MdKeyboardArrowLeft } from "react-icons/md";
-import { MdKeyboardArrowRight } from "react-icons/md";
-import { GoDot } from "react-icons/go";
-import { GoDotFill } from "react-icons/go";
+import Slider from "react-slick";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 export default function ImgCarousel() {
-  const [iNum, setINum] = useState(0);
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(()=> {
+    const checkMobile = () => setIsMobile(window.innerWidth < 800);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const image = [
     {
@@ -32,77 +36,39 @@ export default function ImgCarousel() {
     }
   ];
 
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Initialize the width on mount
-
-    const interval = setInterval(() => {
-      setINum((prev) => (prev + 1) % image.length);
-    }, 5000);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      clearInterval(interval);
-    };
-  }, []);
-
-  const currentImage = image[iNum];
-
-  const handlePrevOrNext = (state: string) => {
-    if (state === 'next') {
-      setINum((prev) => (prev + 1) % image.length);
-      return;
-    };
-    setINum((prev) => (prev - 1 + image.length) % image.length);
+  const settings = {
+    arrows: true,
+    dots: true,
+    infinite: true,
+    speed: 200,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    fade: true,
+    prevArrow: <IoIosArrowBack />,
+    nextArrow: <IoIosArrowForward />
   };
-  
+
   return (
-    <div className="relative w-full h-[300px] xl:h-[480px]">
-      <button
-        className="absolute top-1/2 left-4 transform -translate-y-1/2 z-10 text-6xl"
-        onClick={() => handlePrevOrNext('prev')}
-      >
-        <MdKeyboardArrowLeft className="hidden sm:block" />
-      </button>
-
-      <div className='relative w-full h-full'
-        style={{ background: currentImage.bg }}
-      >
-        <Image src={windowWidth < 800 ? image[iNum].miniSrc : image[iNum].src}
-          key={currentImage.src}
-          alt={image[iNum].alt}
-          objectFit="contain"
-          objectPosition="top"
-          fill
-          loading="eager"
-          className="transition-opacity duration-500 cursor-pointer" />
-      </div>
-
-      <button
-        className="absolute top-1/2 right-4 transform -translate-y-1/2 z-10 text-6xl"
-        onClick={() => handlePrevOrNext('next')}
-      >
-        <MdKeyboardArrowRight className="hidden sm:block" />
-      </button>
-      <div>
-        <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {image.map((_, index) => (
-            index === iNum ? (
-              <GoDotFill
-                className="cursor-pointer"
-                key={index}
-              />
-            ) : (
-              <GoDot
-                key={index}
-                className="cursor-pointer"
-                onClick={() => setINum(index)}
-              />
-            )
-          ))}
+    <Slider {...settings}>
+      {image.map((img) => (
+        <div 
+          key={img.src} 
+          className={`relative w-full ${isMobile ? 'h-[300px]' : 'h-[380px]'}`}
+        >
+          <Image 
+            src={isMobile ? img.miniSrc : img.src}
+            alt={img.alt}
+            objectFit="contain"
+            fill
+            sizes="100vw"
+            loading="lazy"
+            className="cursor-pointer" 
+            style={{background: img.bg}}
+          />
         </div>
-      </div>
-    </div>
-  );
+      ))}
+    </Slider>
+  )
 }

@@ -1,12 +1,12 @@
 import ImgCarousel from "./components/ImgCarousel";
-import Products from "./components/Products";
+import MostPopular from "./components/mostPopular";
 
 export default function Home() {
 
   return (
     <div>
       <ImgCarousel />
-      <Products />
+      <MostPopular />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function Products() {
+export default function MostPopular() {
   const mostPopularProducts = [
     {
       src: '/mostPopular_img1.webp',
@@ -45,7 +45,7 @@ export default function Products() {
   ];
 
   return (
-    <div className="flex flex-col gap-3 max-w-[50vw] mx-auto mt-5">
+    <div className="flex flex-col gap-3 max-w-[50vw] mx-auto mt-10">
       <div className="flex flex-col pl-1">
         <h2 className="font-semibold">Most Popular</h2>
         <p className="text-sm text-gray-500">인기 상품</p>
@@ -53,7 +53,7 @@ export default function Products() {
       <div className="flex justify-center">
         {mostPopularProducts.map(product => (
           <div key={product.price}
-            className="flex flex-col justify-between gap-1 w-[300px] min-h-[350px] text-sm text-gray-800 p-1 cursor-pointer">
+            className="flex flex-col justify-between gap-1 w-[300px] h-[350px] text-sm text-gray-800 p-1 cursor-pointer">
             <Image src={product.src} alt={product.alt} width={300} height={300}
               className="bg-gray-100 rounded-md" />
             <div className="flex flex-col gap-1 p-1">
