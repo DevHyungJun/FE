@@ -5,8 +5,11 @@ import { Navbar, NavbarBrand, NavbarMenuToggle, NavbarMenuItem, NavbarMenu, Navb
 import { useState } from "react";
 import { AcmeLogo } from "../../../public/AcmeLogo";
 import Link from "next/link";
+import useAuthCheck from "@/hooks/useAuthCheck";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
+  // 현재 경로 확인
   const pathname = usePathname();
   const isAdminOpen = pathname.startsWith("/admin");
   const isProductOpen = pathname.startsWith("/products");
@@ -14,13 +17,18 @@ const Header = () => {
   const isSignupOpen = pathname.startsWith("/signup");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // 인증 상태 확인
+  const { data: authCheckData, isSuccess: authCheckIsSuccess } = useAuthCheck();
+  const router = useRouter();
+
+  // 데스크탑 메뉴 항목
   const navbarItems = [
     { label: "제품", href: "/products", isActive: isProductOpen },
     { label: "장바구니", href: "#" },
     { label: "마이페이지", href: "#" },
     { label: "관리자", href: "/admin", isActive: isAdminOpen },
   ];
-
+  // 모바일 메뉴 항목
   const menuItems = [
     { label: "제품", href: "/products", isOpen: isProductOpen },
     { label: "장바구니", href: "#" },
@@ -30,6 +38,14 @@ const Header = () => {
     { label: "회원가입", href: "/signup", isOpen: isSignupOpen },
   ];
 
+  const handleLoginLogout = () => {
+    if(authCheckIsSuccess) {
+      alert('로그아웃 되었습니다.');
+      return;
+    } 
+    router.push('/login');
+  };
+
   return (
     <Navbar
       isBordered
@@ -37,51 +53,90 @@ const Header = () => {
       onMenuOpenChange={setIsMenuOpen}
       className={`${isMenuOpen ? "bg-gray-50" : ""}text-gray-800`}
     >
-      <NavbarContent className="sm:hidden" justify="start">
-        <NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
+      <NavbarContent 
+        className="sm:hidden" justify="start"
+      >
+        <NavbarMenuToggle 
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"} 
+        />
       </NavbarContent>
 
-      <NavbarContent className="sm:hidden pr-3" justify="center">
+      <NavbarContent 
+        className="sm:hidden pr-3" 
+        justify="center"
+      >
         <NavbarBrand>
-          <Link href="/" className="flex items-center">
+          <Link 
+            href="/" 
+            className="flex items-center"
+          >
             <AcmeLogo />
-            <p className="font-bold text-inherit">SHOP</p>
+            <p className="font-bold text-inherit">
+              SHOP
+            </p>
           </Link>
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+      <NavbarContent 
+        className="hidden sm:flex gap-4" 
+        justify="center"
+      >
         <NavbarBrand>
-          <Link href={'/'} className="flex items-center">
+          <Link 
+            href={'/'} 
+            className="flex items-center"
+          >
             <AcmeLogo />
-            <p className="font-bold text-inherit">SHOP</p>
+            <p className="font-bold text-inherit">
+              SHOP
+            </p>
           </Link>
         </NavbarBrand>
         {navbarItems.map((item, index) => (
-          <NavbarItem key={`${item}-${index}`} isActive={item.isActive} className="hover:text-blue-500">
-            <Link href={item.href}>{item.label}</Link>
+          <NavbarItem 
+            key={`${item}-${index}`} 
+            isActive={item.isActive} 
+            className="hover:text-blue-500"
+          >
+            <Link href={item.href}>
+              {item.label}
+            </Link>
           </NavbarItem>
         ))}
       </NavbarContent>
 
       <NavbarContent justify="end">
         <NavbarItem className="hidden sm:flex">
-          <Button as={Link} color="default" href="/login" variant="flat"
-          className="hidden sm:flex">
-            로그인
+          <Button  
+            color="default"
+            onClick={handleLoginLogout}
+            variant="flat"
+            className="hidden sm:flex"
+          >
+            {authCheckIsSuccess ? '로그아웃' : '로그인'}
           </Button>
         </NavbarItem>
         <NavbarItem>
-          <Button as={Link} color="warning" href="/signup" variant="flat" className="hidden sm:flex">
-            회원가입
+          <Button 
+            as={Link} 
+            color="warning" 
+            href="/signup" 
+            variant="flat" 
+            className="hidden sm:flex"
+          >
+            {authCheckIsSuccess ? '마이페이지' : '회원가입'}
           </Button>
         </NavbarItem>
       </NavbarContent>
 
       <NavbarMenu className="bg-gray-50">
         {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`} className="hover:text-blue-500"
-          isActive={item.isOpen}>
+          <NavbarMenuItem 
+            key={`${item}-${index}`} 
+            className="hover:text-blue-500"
+            isActive={item.isOpen}
+          >
             <Link
               className="w-full"
               href={item.href}

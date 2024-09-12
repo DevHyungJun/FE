@@ -3,9 +3,11 @@ import { useMutation } from "@tanstack/react-query";
 import { Login } from "../../types/login";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function useLogin() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (loginData: Login)=> login(loginData),
@@ -17,6 +19,7 @@ export default function useLogin() {
         showConfirmButton: false,
         timer: 1000,
       });
+      queryClient.invalidateQueries({queryKey: ['authCheck']});
       router.push('/');
     },
     onError: (error) => {
