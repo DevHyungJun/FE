@@ -5,21 +5,27 @@ import { Navbar, NavbarBrand, NavbarMenuToggle, NavbarMenuItem, NavbarMenu, Navb
 import { useState } from "react";
 import { AcmeLogo } from "../../../public/AcmeLogo";
 import Link from "next/link";
-import useAuthCheck from "@/hooks/useAuthCheck";
 import { useRouter } from "next/navigation";
+import useAuthCheck from "@/hooks/useAuthCheck";
+import useLogout from "@/hooks/useLogout";
 
 const Header = () => {
+  const router = useRouter();
   // 현재 경로 확인
   const pathname = usePathname();
   const isAdminOpen = pathname.startsWith("/admin");
   const isProductOpen = pathname.startsWith("/products");
   const isLoginOpen = pathname.startsWith("/login");
   const isSignupOpen = pathname.startsWith("/signup");
+
+  // 메뉴 상태 관리
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // 인증 상태 확인
   const { data: authCheckData, isSuccess: authCheckIsSuccess } = useAuthCheck();
-  const router = useRouter();
+
+  // 로그아웃
+  const { mutate: logout, isPending: logoutIsPending } = useLogout();
 
   // 데스크탑 메뉴 항목
   const navbarItems = [
@@ -38,12 +44,21 @@ const Header = () => {
     { label: "회원가입", href: "/signup", isOpen: isSignupOpen },
   ];
 
+  // 로그인 라우팅 혹은 로그아웃 처리
   const handleLoginLogout = () => {
-    if(authCheckIsSuccess) {
-      alert('로그아웃 되었습니다.');
+    if(!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
+      router.push('/login');
       return;
     } 
-    router.push('/login');
+    logout();
+  };
+  // 회원가입 라우팅 혹은 마이페이지 라우팅
+  const handleSignupMypage = () => {
+    if(!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
+      router.push('/signup');
+      return;
+    } 
+    router.push('/mypage');
   };
 
   return (
@@ -113,19 +128,19 @@ const Header = () => {
             onClick={handleLoginLogout}
             variant="flat"
             className="hidden sm:flex"
+            isLoading={logoutIsPending}
           >
-            {authCheckIsSuccess ? '로그아웃' : '로그인'}
+            {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '로그인' : '로그아웃'}
           </Button>
         </NavbarItem>
         <NavbarItem>
           <Button 
-            as={Link} 
             color="warning" 
-            href="/signup" 
+            onClick={handleSignupMypage} 
             variant="flat" 
             className="hidden sm:flex"
           >
-            {authCheckIsSuccess ? '마이페이지' : '회원가입'}
+            {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '회원가입' : '마이페이지'}
           </Button>
         </NavbarItem>
       </NavbarContent>
