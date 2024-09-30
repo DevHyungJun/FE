@@ -12,8 +12,10 @@ import useLogin from "@/hooks/useLogin";
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
   
+  // 로그인 요청
   const login = useLogin();
 
+  // 로그인 폼 제출
   const onSubmit = (formData: LoginForm) => login.mutate(formData);
 
   const errorS = 'text-sm text-red-500';

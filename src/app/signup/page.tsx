@@ -14,11 +14,13 @@ import Swal from "sweetalert2";
 
 const Signup = () => {
   const { register, handleSubmit, formState: { errors }, getValues, trigger } = useForm<SignupForm>({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: 'onChange', // 입력값이 변경될 때마다 유효성 검사
+    reValidateMode: 'onChange', // 입력값이 변경될 때마다 유효성 검사
   });
 
+  // 이메일 인증시간 카운트다운
   const [countdown, setCountdown] = useState<number | null>(null);
+  // 인증시간 만료 메세지 여부
   const [expriedMessage, setExpriedMessage] = useState(false);
 
   // 커스텀 훅 사용
@@ -27,6 +29,7 @@ const Signup = () => {
   const usernameCheck = useUsernameCheck();
   const signup = useSignup();
 
+  // 시간 포맷 함수
   const formatTime = useCallback((second: number | null) => {
     if(second === null) return;
     const min = Math.floor(second / 60);
@@ -34,6 +37,7 @@ const Signup = () => {
     return `${min}:${sec.toString().padStart(2, '0')}`;
   }, []);
 
+  // 카운트다운 처리
   useEffect(()=> {
     let timer: NodeJS.Timeout;
     if(countdown !== null && countdown > 0) {
@@ -46,7 +50,8 @@ const Signup = () => {
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  const handleSendMail = async() => { // 이메일 전송
+  // 이메일 전송
+  const handleSendMail = async() => {
     const isValid = await trigger('email');
     if(isValid) {
       const emailValue = getValues('email');
@@ -59,7 +64,8 @@ const Signup = () => {
     };
   };
 
-  const handleMailConfirm = async() => { // 이메일 인증
+  // 이메일 인증
+  const handleMailConfirm = async() => {
     const isValid = await trigger('emailConfirm');
     if(isValid) {
       const email = getValues('email');
@@ -73,7 +79,8 @@ const Signup = () => {
     };
   };
 
-  const handleUsernameCheck = async() => { // 유저이름 중복확인
+  // 유저이름 중복확인
+  const handleUsernameCheck = async() => { 
     const isValid = await trigger('username');
     if(isValid) {
       const userName = getValues('username');
@@ -81,7 +88,8 @@ const Signup = () => {
     };
   };
 
-  const onSubmit = (formData:SignupForm) => { // 회원가입
+  // 회원가입 요청
+  const onSubmit = (formData:SignupForm) => {
     if(!confirmMail.isSuccess || !usernameCheck.isSuccess) {
       Swal.fire({
         icon: 'error',

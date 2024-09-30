@@ -1,6 +1,7 @@
-import Image from "next/image";
+import { Image } from "@nextui-org/react";
 
 export default function MostPopular() {
+  // 데모 인기 상품 정보
   const mostPopularProducts = [
     {
       src: '/mostPopular_img1.webp',
@@ -45,34 +46,49 @@ export default function MostPopular() {
   ];
 
   return (
-    <div className="flex flex-col gap-3 max-w-[50vw] mx-auto mt-10">
-      <div className="flex flex-col pl-1">
-        <h2 className="font-semibold">Most Popular</h2>
-        <p className="text-sm text-gray-500">인기 상품</p>
-      </div>
-      <div className="flex justify-center">
-        {mostPopularProducts.map(product => (
-          <div key={product.price}
-            className="flex flex-col justify-between gap-1 w-[300px] h-[350px] text-sm text-gray-800 p-1 cursor-pointer">
-            <Image src={product.src} alt={product.alt} width={300} height={300}
-              className="bg-gray-100 rounded-md" />
-            <div className="flex flex-col gap-1 p-1">
-              <p className="font-semibold">{product.brand}</p>
-              <p className="text-xs">{product.Ename}</p>
+    <>
+      <div className="flex flex-col gap-3 w-[800px] lg:w-[1200px] mx-auto mt-10 p-1">
+        <div className="flex flex-col pl-1">
+          <h2 className="font-semibold">
+            Most Popular
+          </h2>
+          <p className="text-sm text-gray-500">
+            인기 상품
+          </p>
+        </div>
+        <div className="flex justify-center">
+          {mostPopularProducts.map(product => (
+            <div key={product.price}
+              className="flex flex-col justify-between gap-2 w-[180px] lg:w-[300px] text-sm text-gray-800 p-1 cursor-pointer">
+              <Image 
+                src={product.src} 
+                alt={product.alt} 
+                width={300}
+                className="bg-gray-100 rounded-md" 
+              />
+              <p className="font-semibold">
+                {product.brand}
+              </p>
+              <p className="text-xs two-line-ellipsis h-[32px]">
+                {product.Ename}
+              </p>
+              <div>
+                <p className="font-semibold">
+                  {product.price}원
+                </p>
+                <p className="text-[11px] text-gray-400">
+                  즉시 구매가
+                </p>
+              </div>
             </div>
-            <div className="p-1">
-              <p className="font-semibold">{product.price}원</p>
-              <p className="text-[11px] text-gray-400">즉시 구매가</p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-
       <div className="flex justify-center mt-5">
         <button className="border px-8 py-2.5 rounded-xl text-sm text-gray-600 hover:bg-gray-100">
           더보기
         </button>
       </div>
-    </div>
+    </>
   );
 }

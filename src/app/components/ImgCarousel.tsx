@@ -1,13 +1,14 @@
 'use client'
-// 이미지 캐러셀 React slick으로 바꿔서 구현하기 현재 브랜치:feature-#4
+
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Slider from "react-slick";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 export default function ImgCarousel() {
+  // 화면 width가 800px 이하라면 모바일로 판단
   const [isMobile, setIsMobile] = useState(false);
-
+  // 화면 width가 변경될 때마다 모바일 여부 확인
   useEffect(()=> {
     const checkMobile = () => setIsMobile(window.innerWidth < 800);
     checkMobile();
@@ -15,6 +16,7 @@ export default function ImgCarousel() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // 데모 이미지 정보
   const image = [
     {
       src: '/home_main1.webp',
@@ -36,6 +38,7 @@ export default function ImgCarousel() {
     }
   ];
 
+  // react sclick 설정
   const settings = {
     arrows: true,
     dots: true,
@@ -60,12 +63,11 @@ export default function ImgCarousel() {
           <Image 
             src={isMobile ? img.miniSrc : img.src}
             alt={img.alt}
-            objectFit="contain"
             fill
             sizes="100vw"
             loading="lazy"
             className="cursor-pointer" 
-            style={{background: img.bg}}
+            style={{background: img.bg, objectFit: 'contain'}}
           />
         </div>
       ))}

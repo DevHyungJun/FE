@@ -1,0 +1,9 @@
+import allProducts from "@/api/allProducts";
+import { useQuery } from "@tanstack/react-query";
+
+export default function useAllProducts(page: number) {
+  return useQuery({
+    queryKey: ['allProducts'],
+    queryFn:()=> allProducts(page),
+  });
+};

@@ -11,6 +11,7 @@ import useLogout from "@/hooks/useLogout";
 
 const Header = () => {
   const router = useRouter();
+
   // 현재 경로 확인
   const pathname = usePathname();
   const isAdminOpen = pathname.startsWith("/admin");
@@ -23,7 +24,6 @@ const Header = () => {
 
   // 인증 상태 확인
   const { data: authCheckData, isSuccess: authCheckIsSuccess } = useAuthCheck();
-
   // 로그아웃
   const { mutate: logout, isPending: logoutIsPending } = useLogout();
 
