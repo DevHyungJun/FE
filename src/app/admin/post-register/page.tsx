@@ -7,6 +7,7 @@ import Image from "next/image";
 import useNewPost from "@/hooks/useNewPost";
 import Swal from "sweetalert2";
 import { MdCancel } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 export default function PostRegister() {
   const { data, isLoading, isError, error } = useGetItem();
@@ -16,6 +17,7 @@ export default function PostRegister() {
   const [previews, setPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const items = data?.data;
 
@@ -43,6 +45,7 @@ export default function PostRegister() {
           showConfirmButton: false,
           timer: 1500,
         });
+        router.push('/products');
       }
     });
   };

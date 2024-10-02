@@ -13,7 +13,7 @@ const Admin = () => {
         className="hover:font-semibold"
         href='/admin/item-list'
       >
-        상품 리스트
+        상품 목록
       </Link>
       <Link 
         className="hover:font-semibold"

@@ -31,17 +31,7 @@ const Header = () => {
   const navbarItems = [
     { label: "제품", href: "/products", isActive: isProductOpen },
     { label: "장바구니", href: "#" },
-    { label: "마이페이지", href: "#" },
     { label: "관리자", href: "/admin", isActive: isAdminOpen },
-  ];
-  // 모바일 메뉴 항목
-  const menuItems = [
-    { label: "제품", href: "/products", isOpen: isProductOpen },
-    { label: "장바구니", href: "#" },
-    { label: "마이페이지", href: "#" },
-    { label: "관리자", href: "/admin", isOpen: isAdminOpen },
-    { label: "로그인", href: "/login", isOpen: isLoginOpen },
-    { label: "회원가입", href: "/signup", isOpen: isSignupOpen },
   ];
 
   // 로그인 라우팅 혹은 로그아웃 처리
@@ -60,6 +50,23 @@ const Header = () => {
     } 
     router.push('/mypage');
   };
+
+    // 모바일 메뉴 항목
+    const menuItems = [
+      { label: "제품", href: "/products", isOpen: isProductOpen },
+      { label: "장바구니", href: "#" },
+      { label: "관리자", href: "/admin", isOpen: isAdminOpen },
+      { label: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '로그인' : '로그아웃', 
+        href: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? "/login" : "#", 
+        isOpen: isLoginOpen,
+        onclick: handleLoginLogout
+      },
+      { label: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '회원가입' : '마이페이지',
+        href: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? "/signup" : "#",
+        isOpen: isSignupOpen,
+        onclick: handleSignupMypage
+      },
+    ];
 
   return (
     <Navbar
@@ -155,7 +162,13 @@ const Header = () => {
             <Link
               className="w-full"
               href={item.href}
-              onClick={() => setIsMenuOpen(false)}
+              onClick={()=>{
+                if(item.onclick) {
+                  item.onclick();
+                  setIsMenuOpen(false);
+                }
+                setIsMenuOpen(false);
+              }}
             >
               {item.label}
             </Link>
