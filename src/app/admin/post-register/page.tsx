@@ -8,6 +8,8 @@ import useNewPost from "@/hooks/useNewPost";
 import Swal from "sweetalert2";
 import { MdCancel } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
+import { Product } from "../../../../types/Product";
 
 export default function PostRegister() {
   const { data, isLoading, isError, error } = useGetItem();
@@ -31,7 +33,6 @@ export default function PostRegister() {
   }, [images]);
 
   const handleSubmit = () => {
-    console.log('on submit');
     const formData = new FormData();
 
     formData.append('title', titleRef.current?.value || '');
@@ -63,81 +64,87 @@ export default function PostRegister() {
 
   const handleAddImagesClick = () => fileInputRef.current?.click();
 
-  if (isLoading) return <div>Loading...</div>;
-
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => setSelectedProduct(e.target.value);
 
   return (
-    <div className="p-1 max-w-[800px] mx-auto">
-      <h1>게시글 등록 페이지</h1>
-      <form className="flex flex-col gap-3">
-        <Input
-          label="게시글 제목"
-          name="title"
-          ref={titleRef}
-        />
-        <Select
-          items={items}
-          label='상품'
-          placeholder='상품을 선택하세요'
-          onChange={handleSelectChange}
-        >
-          {items?.map((item: any) => (
-            <SelectItem
-              key={item._id}
-              value={item._id}
+    <>
+      {isLoading ? <LoadingSpinner /> : (
+        <div className="p-1 max-w-[800px] mx-auto">
+          <h1>게시글 등록 페이지</h1>
+          <form className="flex flex-col gap-3">
+            <Input
+              label="게시글 제목"
+              name="title"
+              ref={titleRef}
+            />
+            <Select
+              items={items}
+              label='상품'
+              placeholder='상품을 선택하세요'
+              onChange={handleSelectChange}
             >
-              {item.product_name}
-            </SelectItem>
-          ))}
-        </Select>
-        {selectedProduct && (
-          <div>
-            <p>
-              선택한 {items.find((item: any) => item._id === selectedProduct)?.product_name} 상품의 미리보기 이미지
-            </p>
-            <Image
-              src={items.find((item: any) => item._id === selectedProduct)?.thumbnail}
-              alt={selectedProduct}
-              width={500}
-              height={500}
-              className="object-cover mx-auto"
-            />
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageChange}
-              accept="image/*"
-              multiple
-              className="hidden"
-            />
-          </div>
-        )}
-        <Button type="button" color="success" onClick={handleAddImagesClick}>
-          제품 상세 이미지 추가
-        </Button>
-        <div className="flex flex-wrap gap-2 mt-2">
-          {previews.map((preview, index) => (
-            <div key={index} className="relative mx-auto">
-              <Image
-                src={preview}
-                alt={`Preview ${index + 1}`}
-                className="object-cover"
-                width={500}
-                height={500}
-              />
-              <button
-                type="button"
-                onClick={() => handleImageDelete(index)}
-                className="absolute top-1 right-1 p-[1px] bg-white rounded-full"
-              >
-                <MdCancel className="text-2xl" />
-              </button>
+              {items?.map((item: Product) => (
+                <SelectItem
+                  key={item._id}
+                  value={item._id}
+                >
+                  {item.product_name}
+                </SelectItem>
+              ))}
+            </Select>
+            {selectedProduct && (
+              <div>
+                <p>
+                  선택한 {items.find((item: Product) => item._id === selectedProduct)?.product_name} 상품의 미리보기 이미지
+                </p>
+                <Image
+                  src={items.find((item: Product) => item._id === selectedProduct)?.thumbnail}
+                  alt={selectedProduct}
+                  width={500}
+                  height={500}
+                  className="mx-auto"
+                />
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                />
+              </div>
+            )}
+            <Button type="button" color="success" onClick={handleAddImagesClick}>
+              제품 상세 이미지 추가
+            </Button>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {previews.map((preview, index) => (
+                <div key={index} className="relative mx-auto">
+                  <Image
+                    src={preview}
+                    alt={`Preview ${index + 1}`}
+                    className="object-cover"
+                    width={500}
+                    height={500}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleImageDelete(index)}
+                    className="absolute top-1 right-1 p-[1px] bg-white rounded-full"
+                  >
+                    <MdCancel className="text-2xl" />
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
+            <Button
+              color="primary"
+              onClick={handleSubmit}
+              isLoading={newPost.isPending}
+            >등록</Button>
+          </form>
         </div>
-        <Button color="primary" onClick={handleSubmit}>등록</Button>
-      </form>
-    </div>
+      )}
+    </>
   )
 };

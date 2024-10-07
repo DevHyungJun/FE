@@ -31,7 +31,7 @@ const Signup = () => {
 
   // 시간 포맷 함수
   const formatTime = useCallback((second: number | null) => {
-    if(second === null) return;
+    if(second == null) return;
     const min = Math.floor(second / 60);
     const sec = second % 60;
     return `${min}:${sec.toString().padStart(2, '0')}`;

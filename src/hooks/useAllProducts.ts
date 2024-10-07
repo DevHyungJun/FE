@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function useAllProducts(page: number) {
   return useQuery({
-    queryKey: ['allProducts'],
+    queryKey: ['allProducts', page],
     queryFn:()=> allProducts(page),
   });
 };

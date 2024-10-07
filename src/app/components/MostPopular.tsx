@@ -1,6 +1,20 @@
+'use client';
+
 import { Image } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import Slider from "react-slick";
 
 export default function MostPopular() {
+    // 화면 width가 800px 이하라면 모바일로 판단
+    const [isMobile, setIsMobile] = useState(false);
+    // 화면 width가 변경될 때마다 모바일 여부 확인
+    useEffect(()=> {
+      const checkMobile = () => setIsMobile(window.innerWidth < 570);
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
   // 데모 인기 상품 정보
   const mostPopularProducts = [
     {
@@ -45,9 +59,19 @@ export default function MostPopular() {
     },
   ];
 
+  const settings = {
+    dots: false,
+    arrows: false,
+    infinite: false,
+    speed: 250,
+    slidesToScroll: isMobile ? 2.5 : 0,
+    slidesToShow: isMobile ? 2.5 : mostPopularProducts.length,
+    draggable: isMobile ? true : false,
+  };
+
   return (
     <>
-      <div className="flex flex-col gap-3 w-[800px] lg:w-[1200px] mx-auto mt-10 p-1">
+      <div className="flex flex-col max-w-[1200px] gap-3 mx-auto mt-10 p-1">
         <div className="flex flex-col pl-1">
           <h2 className="font-semibold">
             Most Popular
@@ -56,32 +80,34 @@ export default function MostPopular() {
             인기 상품
           </p>
         </div>
-        <div className="flex justify-center">
-          {mostPopularProducts.map(product => (
-            <div key={product.price}
-              className="flex flex-col justify-between gap-2 w-[180px] lg:w-[300px] text-sm text-gray-800 p-1 cursor-pointer">
-              <Image 
-                src={product.src} 
-                alt={product.alt} 
-                width={300}
-                className="bg-gray-100 rounded-md" 
-              />
-              <p className="font-semibold">
-                {product.brand}
-              </p>
-              <p className="text-xs two-line-ellipsis h-[32px]">
-                {product.Ename}
-              </p>
-              <div>
+        <div>
+          <Slider {...settings}>
+            {mostPopularProducts.map(product => (
+              <div key={product.price}
+                className="flex flex-col justify-between gap-2 w-[300px] text-sm text-gray-800 p-1 cursor-pointer">
+                <Image
+                  src={product.src}
+                  alt={product.alt}
+                  width={300}
+                  className="bg-gray-100 rounded-md"
+                />
                 <p className="font-semibold">
-                  {product.price}원
+                  {product.brand}
                 </p>
-                <p className="text-[11px] text-gray-400">
-                  즉시 구매가
+                <p className="text-xs two-line-ellipsis h-[32px]">
+                  {product.Ename}
                 </p>
+                <div>
+                  <p className="font-semibold">
+                    {product.price}원
+                  </p>
+                  <p className="text-[11px] text-gray-400">
+                    즉시 구매가
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </Slider>
         </div>
       </div>
       <div className="flex justify-center mt-5">

@@ -2,8 +2,9 @@
 
 import useGetItem from "@/hooks/useGetItem";
 import { Image, Pagination } from "@nextui-org/react";
-import formatPrice from "@/api/formatPrice";
+import formatPrice from "@/util/formatPrice";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import { Product } from "../../../../types/Product";
 
 export default function ItemList() {
   const { data, isLoading, isError, error } = useGetItem();
@@ -21,7 +22,7 @@ export default function ItemList() {
             관리자 상품 목록
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-10 text-xs md:text-sm p-1">
-            {data?.data?.map((item: any) => (
+            {data?.data?.map((item: Product) => (
               <div
                 key={item._id}
                 className="flex flex-col justify-between gap-2 text-sm text-gray-800 p-2 cursor-pointer hover:bg-gray-100 rounded-md max-h-[500px] sm:max-h-[700px]"

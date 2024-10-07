@@ -36,37 +36,39 @@ const Header = () => {
 
   // 로그인 라우팅 혹은 로그아웃 처리
   const handleLoginLogout = () => {
-    if(!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
+    if (!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
       router.push('/login');
       return;
-    } 
+    }
     logout();
   };
   // 회원가입 라우팅 혹은 마이페이지 라우팅
   const handleSignupMypage = () => {
-    if(!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
+    if (!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
       router.push('/signup');
       return;
-    } 
+    }
     router.push('/mypage');
   };
 
-    // 모바일 메뉴 항목
-    const menuItems = [
-      { label: "제품", href: "/products", isOpen: isProductOpen },
-      { label: "장바구니", href: "#" },
-      { label: "관리자", href: "/admin", isOpen: isAdminOpen },
-      { label: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '로그인' : '로그아웃', 
-        href: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? "/login" : "#", 
-        isOpen: isLoginOpen,
-        onclick: handleLoginLogout
-      },
-      { label: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '회원가입' : '마이페이지',
-        href: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? "/signup" : "#",
-        isOpen: isSignupOpen,
-        onclick: handleSignupMypage
-      },
-    ];
+  // 모바일 메뉴 항목
+  const menuItems = [
+    { label: "제품", href: "/products", isOpen: isProductOpen },
+    { label: "장바구니", href: "#" },
+    { label: "관리자", href: "/admin", isOpen: isAdminOpen },
+    {
+      label: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '로그인' : '로그아웃',
+      href: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? "/login" : "#",
+      isOpen: isLoginOpen,
+      onclick: handleLoginLogout
+    },
+    {
+      label: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '회원가입' : '마이페이지',
+      href: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? "/signup" : "#",
+      isOpen: isSignupOpen,
+      onclick: handleSignupMypage
+    },
+  ];
 
   return (
     <Navbar
@@ -75,21 +77,21 @@ const Header = () => {
       onMenuOpenChange={setIsMenuOpen}
       className={`${isMenuOpen ? "bg-gray-50" : ""}text-gray-800`}
     >
-      <NavbarContent 
+      <NavbarContent
         className="sm:hidden" justify="start"
       >
-        <NavbarMenuToggle 
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"} 
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         />
       </NavbarContent>
 
-      <NavbarContent 
-        className="sm:hidden pr-3" 
+      <NavbarContent
+        className="sm:hidden pr-3"
         justify="center"
       >
         <NavbarBrand>
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="flex items-center"
           >
             <AcmeLogo />
@@ -100,13 +102,13 @@ const Header = () => {
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent 
-        className="hidden sm:flex gap-4" 
+      <NavbarContent
+        className="hidden sm:flex gap-4"
         justify="center"
       >
         <NavbarBrand>
-          <Link 
-            href={'/'} 
+          <Link
+            href={'/'}
             className="flex items-center"
           >
             <AcmeLogo />
@@ -116,9 +118,9 @@ const Header = () => {
           </Link>
         </NavbarBrand>
         {navbarItems.map((item, index) => (
-          <NavbarItem 
-            key={`${item}-${index}`} 
-            isActive={item.isActive} 
+          <NavbarItem
+            key={`${item}-${index}`}
+            isActive={item.isActive}
             className="hover:text-blue-500"
           >
             <Link href={item.href}>
@@ -129,41 +131,32 @@ const Header = () => {
       </NavbarContent>
 
       <NavbarContent justify="end">
-        <NavbarItem className="hidden sm:flex">
-          <Button  
-            color="default"
-            onClick={handleLoginLogout}
-            variant="flat"
-            className="hidden sm:flex"
-            isLoading={logoutIsPending}
-          >
-            {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '로그인' : '로그아웃'}
-          </Button>
+        <NavbarItem
+          className={`hidden sm:flex cursor-pointer hover:text-blue-500 ${isLoginOpen && 'font-semibold'}`}
+          onClick={handleLoginLogout}
+        >
+          {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '로그인' : '로그아웃'}
         </NavbarItem>
-        <NavbarItem>
-          <Button 
-            color="warning" 
-            onClick={handleSignupMypage} 
-            variant="flat" 
-            className="hidden sm:flex"
-          >
-            {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '회원가입' : '마이페이지'}
-          </Button>
+        <NavbarItem
+          className={`hidden sm:flex cursor-pointer hover:text-blue-500 ${isSignupOpen && 'font-semibold'}`}
+          onClick={handleSignupMypage}
+        >
+          {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '회원가입' : '마이페이지'}
         </NavbarItem>
       </NavbarContent>
 
       <NavbarMenu className="bg-gray-50">
         {menuItems.map((item, index) => (
-          <NavbarMenuItem 
-            key={`${item}-${index}`} 
+          <NavbarMenuItem
+            key={`${item}-${index}`}
             className="hover:text-blue-500"
             isActive={item.isOpen}
           >
             <Link
               className="w-full"
               href={item.href}
-              onClick={()=>{
-                if(item.onclick) {
+              onClick={() => {
+                if (item.onclick) {
                   item.onclick();
                   setIsMenuOpen(false);
                 }
