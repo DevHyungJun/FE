@@ -8,13 +8,29 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import { useEffect, useState, useCallback } from "react";
 import { PostData } from "../../../types/Product";
 import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
+import { useQueryClient } from "@tanstack/react-query";
+
+type AuthCheckResponse = {
+  code: number;
+  data: {
+    email: string;
+    isLoggedIn: boolean;
+    role: string;
+    userId: string;
+    username: string;
+    message: string;
+  };
+};
 
 const Products = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const { data, isLoading, error } = useAllProducts(page);
   const [products, setProducts] = useState<PostData[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const cachedData = queryClient.getQueryData<AuthCheckResponse>(['authCheck']);
+  const userId = cachedData?.data?.userId;
 
   useEffect(() => {
     if (data) {
@@ -46,6 +62,13 @@ const Products = () => {
 
   const handleRouteProductDetail = (productID: string) => router.push(`products/product-detail/${productID}`);
 
+  const FavoriteShow = (like_user_list: string[]) => {
+    if (userId && like_user_list.includes(userId)) {
+      return <IoHeartSharp />;
+    }
+    return <IoHeartOutline />;
+  }
+
   return (
     <div className="max-w-[1400px] mx-auto">
       <h2 className="text-2xl font-semibold m-1">
@@ -59,8 +82,8 @@ const Products = () => {
             onClick={() => handleRouteProductDetail(product?._id)}
           >
             <Image
-              src={product?.product.thumbnail}
-              alt={product.title}
+              src={product?.product?.thumbnail}
+              alt={product?.title}
               width={500}
               className="rounded-md object-contain max-h-[300px] sm:max-h-[500px]"
             />
@@ -68,10 +91,10 @@ const Products = () => {
               <h3 className="text-sm md:text-lg">{product.title}</h3>
               <div className="flex justify-between items-center">
                 <p className="text-xs md:text-medium">
-                  {formatPrice(product?.product.price)}
+                  {formatPrice(product?.product?.price)}
                 </p>
-                <div className="flex gap-1 text-lg">
-                  <IoHeartOutline />
+                <div className="flex gap-1 text-lg text-red-600">
+                  {FavoriteShow(product?.like_user_list)}
                 </div>
               </div>
             </div>

@@ -25,7 +25,10 @@ const Header = () => {
   // 인증 상태 확인
   const { data: authCheckData, isSuccess: authCheckIsSuccess } = useAuthCheck();
   // 로그아웃
-  const { mutate: logout, isPending: logoutIsPending } = useLogout();
+  const { mutate: logout} = useLogout();
+
+  const isAdmin = authCheckData?.data?.role === 'admin';
+  const isLoggedIn = authCheckData?.data?.isLoggedIn;
 
   // 데스크탑 메뉴 항목
   const navbarItems = [
@@ -121,7 +124,7 @@ const Header = () => {
           <NavbarItem
             key={`${item}-${index}`}
             isActive={item.isActive}
-            className="hover:text-blue-500"
+            className={`hover:text-blue-500 ${item.label === '관리자' && !isAdmin ? 'hidden' : ''} ${item.label === '장바구니' && !isLoggedIn ? 'hidden' : ''}`}
           >
             <Link href={item.href}>
               {item.label}
@@ -149,7 +152,7 @@ const Header = () => {
         {menuItems.map((item, index) => (
           <NavbarMenuItem
             key={`${item}-${index}`}
-            className="hover:text-blue-500"
+            className={`hover:text-blue-500 ${item.label === '관리자' && !isAdmin ? 'hidden' : ''}${item.label === '장바구니' && !isLoggedIn ? 'hidden' : ''}`}
             isActive={item.isOpen}
           >
             <Link

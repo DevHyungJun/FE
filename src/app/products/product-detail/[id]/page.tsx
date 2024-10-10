@@ -42,7 +42,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   const isLoggedIn = cachedData?.data?.isLoggedIn;
 
   useEffect(() => {
-    if (data?.data?.product.images.length === 1) {
+    if (data?.data?.product?.images.length === 1) {
       setOnlyOneImage(true);
     } else {
       setOnlyOneImage(false);
@@ -74,6 +74,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
             showConfirmButton: false,
             timer: 1500
           });
+          queryClient.invalidateQueries({queryKey: ['allProducts']});
           setIsFavorite(false);
         },
         onError: () => {
@@ -94,6 +95,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
             showConfirmButton: false,
             timer: 1500
           });
+          queryClient.invalidateQueries({queryKey: ['allProducts']});
           setIsFavorite(true);
         },
         onError: () => {
@@ -130,7 +132,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
           <div className="flex flex-col md:flex-row justify-between gap-3 md:gap-10">
             <div className="w-full md:w-1/2">
               <Slider {...settings} className='mb-5'>
-                {data?.data?.product.images.map((img: string, i: number) => (
+                {data?.data?.product?.images.map((img: string, i: number) => (
                   <div key={i}>
                     <Image
                       src={img}
@@ -145,7 +147,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
             <div className="w-full md:w-1/2 flex flex-col items-center gap-3 pt-0 md:pt-32">
               <h2 className="text-center text-xl font-semibold text-gray-800">{data?.data?.title}</h2>
               <p className="text-md font-semibold">
-                {formatPrice(data?.data?.product.price)}
+                {formatPrice(data?.data?.product?.price)}
               </p>
               <div>
                 <p className="text-sm">선택된 수량: {quantity}</p>
@@ -159,7 +161,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
                 </Button>
               </div>
               <Button color="primary" className="w-[300px] text-xs md:text-medium mt-2">구매하기</Button>
-              <p className="text-sm text-yellow-600">현재 {data?.data?.product.stock_quantity}개의 수량이 남았습니다.</p>
+              <p className="text-sm text-yellow-600">현재 {data?.data?.product?.stock_quantity}개의 수량이 남았습니다.</p>
               <button
                 className='text-4xl text-red-600'
                 onClick={handleFavorite}
