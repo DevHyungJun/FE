@@ -4,31 +4,38 @@ import { Button, Select, SelectItem, Textarea, Input, Checkbox } from "@nextui-o
 import { useEffect, useState } from "react";
 import { IoClose, IoArrowBack } from "react-icons/io5";
 import { useForm } from "react-hook-form";
-import useNewAddress from "@/hooks/useNewAddress";
+import useEditAddress from "@/hooks/useEditAddress";
 import Swal from "sweetalert2";
-import { storeModalShowstep } from "@/store";
-import { storeAddressData } from "@/store";
+import { storeModalShowstep, storeAddressData } from "@/store";
+import { useQueryClient } from "@tanstack/react-query";
 
-const PostNewAddress = () => {
+export default function EditAddress({ editId }: { editId: string }) {
   const [selfDeliveryOption, setSelfDeliveryOption] = useState(false);
   const [deliveryMemo, setDeliveryMemo] = useState('');
 
-  const { setStep, decrementStep } = storeModalShowstep();
+  const { setStep } = storeModalShowstep();
   const { addressData, setAddressData } = storeAddressData();
+  const queryClient = useQueryClient();
+  const data = queryClient.getQueryData(['searchAddress']);
+  const { mutate: editAddress } = useEditAddress();
 
-  const { register, handleSubmit } = useForm({
-    defaultValues: addressData
-  });
+  const { register, handleSubmit, reset } = useForm();
 
-  useEffect(()=> {
+  useEffect(() => {
+    if (data && !addressData.main_address) {
+      const foundAddress = (data as any)?.data?.find((address: any) => address._id === editId);
+      setAddressData(foundAddress);
+      reset(foundAddress);
+    }
+  }, [data, editId, setAddressData, reset]);
+
+  useEffect(() => {
     setDeliveryMemo(addressData.shipping_memo || '');
   }, [addressData]);
 
   const handleInputChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddressData({ [e.target.name]: e.target.value });
   };
-
-  const { mutate: newAddress } = useNewAddress();
 
   const selectDeliveryOption = [
     { id: 1, name: '문 앞에 놔주세요' },
@@ -40,7 +47,7 @@ const PostNewAddress = () => {
 
   const handleSelectChanges = (value: string) => {
     const selectedOption = selectDeliveryOption.find((option) => option.id.toString() === value);
-    if(selectedOption?.name === '직접입력') {
+    if (selectedOption?.name === '직접입력') {
       setDeliveryMemo('');
       setAddressData({ shipping_memo: '' });
       setSelfDeliveryOption(true);
@@ -49,7 +56,7 @@ const PostNewAddress = () => {
       setDeliveryMemo(selectedOption?.name || '');
       setAddressData({ shipping_memo: selectedOption?.name || '' });
     }
-  }
+  };
 
   const handleCheckboxChanges = () => {
     const updatedDefault = !addressData.is_default;
@@ -63,17 +70,24 @@ const PostNewAddress = () => {
       main_address: addressData.main_address,
       detail_address: data.detail_address,
       zip_code: addressData.zip_code,
-      shipping_memo: selfDeliveryOption ? deliveryMemo : addressData.shipping_memo
+      shipping_memo: selfDeliveryOption ? deliveryMemo : addressData.shipping_memo,
     };
-    newAddress(newAddressData, {
+    editAddress({newAddressData, editId}, {
       onSuccess: () => {
         Swal.fire({
           icon: 'success',
-          title: '주소가 성공적으로 추가되었습니다.',
+          title: '주소가 성공적으로 수정되었습니다.',
           showConfirmButton: false,
           timer: 1500
         });
         setStep(1);
+      }, 
+      onError: () => {
+        Swal.fire({
+          icon: 'error',
+          title: '주소 수정 실패',
+          text: '주소를 수정하지 못했습니다.',
+        });
       }
     });
   };
@@ -84,9 +98,9 @@ const PostNewAddress = () => {
       <div className="relative overflow-y-auto w-[800px] min-h-[443px] max-h-[600px] p-3 bg-white z-10 rounded-lg">
         <div className='flex flex-col justify-between'>
           <div className="flex justify-between items-start">
-            <h1 className="text-lg font-semibold mb-5">신규 주소 추가</h1>
+            <h1 className="text-lg font-semibold mb-5">주소 수정</h1>
             <div className="flex items-center gap-2 text-2xl">
-              <button onClick={decrementStep}>
+              <button onClick={() => setStep(1)}>
                 <IoArrowBack />
               </button>
               <button onClick={() => setStep(0)}>
@@ -102,6 +116,7 @@ const PostNewAddress = () => {
               defaultValue={addressData.receiver_name}
               {...register('receiver_name')}
               onChange={handleInputChanges}
+              required
             />
             <Input
               label="전화번호 *"
@@ -111,9 +126,10 @@ const PostNewAddress = () => {
               defaultValue={addressData.receiver_phone}
               {...register('receiver_phone')}
               onChange={handleInputChanges}
+              required
             />
             <div className="flex items-end gap-3">
-              <Input label="기본주소 *" placeholder="받는 곳의 기본 주소를 우측 주소 선택을 하여 입력하세요" variant="underlined" readOnly value={addressData?.main_address} />
+              <Input label="기본주소 *" placeholder="받는 곳의 기본 주소를 우측 주소 선택을 하여 입력하세요" variant="underlined" readOnly value={addressData.main_address || ''} required />
               <Button size="sm" onClick={() => setStep(3)}>주소 선택</Button>
             </div>
             {addressData.zip_code && (
@@ -121,10 +137,17 @@ const PostNewAddress = () => {
                 variant="underlined"
                 readOnly
                 value={addressData.zip_code}
+                required
                 {...register('zip_code')}
               />
             )}
-            <Input label="상세주소" placeholder="받는 곳의 상세 주소를 입력하세요" variant="underlined" {...register('detail_address')} />
+            <Input 
+              label="상세주소" 
+              placeholder="받는 곳의 상세 주소를 입력하세요" 
+              variant="underlined" 
+              defaultValue={addressData?.detail_address}
+              {...register('detail_address')} 
+            />
             <Select
               items={selectDeliveryOption}
               label="배송 요청사항"
@@ -132,6 +155,7 @@ const PostNewAddress = () => {
               variant="underlined"
               size="sm"
               onChange={(e) => handleSelectChanges(e.target.value)}
+              required
             >
               {selectDeliveryOption.map((option) => (
                 <SelectItem
@@ -143,10 +167,10 @@ const PostNewAddress = () => {
               ))}
             </Select>
             {selfDeliveryOption && (
-              <Textarea 
-                placeholder="배송 요청사항을 입력해주세요" 
+              <Textarea
+                placeholder="배송 요청사항을 입력해주세요"
                 value={deliveryMemo}
-                onChange={(e) => setDeliveryMemo(e.target.value)}  
+                onChange={(e) => setDeliveryMemo(e.target.value)}
               />)}
             <div className="flex justify-end">
               <Checkbox
@@ -157,12 +181,10 @@ const PostNewAddress = () => {
                 기본 배송지로 설정하기
               </Checkbox>
             </div>
-            <Button type="submit" color="primary" className="w-full">주소 추가</Button>
+            <Button type="submit" color="primary" className="w-full">주소 수정</Button>
           </form>
         </div>
       </div>
     </div>
   );
 };
-
-export default PostNewAddress;

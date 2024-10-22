@@ -2,19 +2,19 @@ import { IoClose, IoArrowBack } from "react-icons/io5";
 import DaumPostcodeEmbed from "react-daum-postcode";
 import { storeModalShowstep } from "@/store";
 import { storeAddressData } from "@/store";
+import { storeDaumStep } from "@/store";
 
 const DaumPost = () => {
   const { setStep, decrementStep } = storeModalShowstep();
-  const { addressData, setAddressData } = storeAddressData();
+  const { setAddressData } = storeAddressData();
+  const { daumStep } = storeDaumStep();
 
   const handleCompleted = (data: any) => {
     setAddressData({
-      ...addressData,
-      main_address: data.sido,
-      detail_address: `${data.sigungu} ${data.bname}`,
+      main_address: `${data.roadAddress} ${data.buildingName || ''}`,
       zip_code: data.zonecode
     });
-    setStep(2);
+    setStep(daumStep);
   };
 
   return (

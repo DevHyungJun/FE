@@ -24,6 +24,11 @@ interface AddressDataState {
   resetAddressData: () => void;
 }
 
+interface DaumStepState {
+  daumStep: number;
+  setDaumStep: (step: number) => void;
+}
+
 const initialAddressData: AddressData = {
   receiver_name: '',
   receiver_phone: '',
@@ -49,3 +54,8 @@ export const storeModalShowstep = create<ModalShowstepState>((set) => ({
   setStep: (step: number) => set({ step }),
   decrementStep: () => set((state) => ({ step: state.step - 1 })),
 }));
+
+export const storeDaumStep = create<DaumStepState>((set) => ({
+  daumStep: 0,
+  setDaumStep: (step: number) => set({ daumStep: step }),
+}))
