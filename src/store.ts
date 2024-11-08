@@ -14,8 +14,6 @@ interface AddressData {
   zip_code: string;
   is_default: boolean;
   shipping_memo: string;
-  delivery_option: string;
-  self_delivery_memo: string;
 }
 
 interface AddressDataState {
@@ -24,9 +22,9 @@ interface AddressDataState {
   resetAddressData: () => void;
 }
 
-interface DaumStepState {
-  daumStep: number;
-  setDaumStep: (step: number) => void;
+interface EditModeState {
+  editMode: boolean;
+  setEditMode: (editMode: boolean) => void;
 }
 
 const initialAddressData: AddressData = {
@@ -37,8 +35,6 @@ const initialAddressData: AddressData = {
   zip_code: '',
   is_default: false,
   shipping_memo: '',
-  delivery_option: '',
-  self_delivery_memo: '',
 };
 
 export const storeAddressData = create<AddressDataState>((set) => ({
@@ -55,7 +51,7 @@ export const storeModalShowstep = create<ModalShowstepState>((set) => ({
   decrementStep: () => set((state) => ({ step: state.step - 1 })),
 }));
 
-export const storeDaumStep = create<DaumStepState>((set) => ({
-  daumStep: 0,
-  setDaumStep: (step: number) => set({ daumStep: step }),
-}))
+export const storeEditMode = create<EditModeState>((set) => ({
+  editMode: false,
+  setEditMode: (editMode) => set({ editMode }),
+}));

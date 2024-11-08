@@ -9,12 +9,6 @@ export default function useLogout() {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      Swal.fire({
-        icon: "success",
-        title: "로그아웃 되었습니다.",
-        showConfirmButton: false,
-        timer: 1500,
-      });
       queryClient.setQueryData(['authCheck'], { isLoggedIn: false });
       queryClient.invalidateQueries({queryKey: ['authCheck']});
     },

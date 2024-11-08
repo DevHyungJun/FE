@@ -114,7 +114,7 @@ const PostNewAddress = () => {
             />
             <div className="flex items-end gap-3">
               <Input label="기본주소 *" placeholder="받는 곳의 기본 주소를 우측 주소 선택을 하여 입력하세요" variant="underlined" readOnly value={addressData?.main_address} />
-              <Button size="sm" onClick={() => setStep(3)}>주소 선택</Button>
+              <Button size="sm" variant="flat" onClick={() => setStep(3)}>주소 선택</Button>
             </div>
             {addressData.zip_code && (
               <Input label="우편번호 *"

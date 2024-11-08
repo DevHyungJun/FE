@@ -1,5 +1,5 @@
 'use client';
-
+// DaumPost 컴포넌트에 갔다 돌아와서 컴포넌트가 리렌더링되면 기존 배송요청사항이 초기화되는 문제가 발생한다.
 import { Button, Select, SelectItem, Textarea, Input, Checkbox } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { IoClose, IoArrowBack } from "react-icons/io5";
@@ -8,6 +8,7 @@ import useEditAddress from "@/hooks/useEditAddress";
 import Swal from "sweetalert2";
 import { storeModalShowstep, storeAddressData } from "@/store";
 import { useQueryClient } from "@tanstack/react-query";
+import { Controller } from "react-hook-form";
 
 export default function EditAddress({ editId }: { editId: string }) {
   const [selfDeliveryOption, setSelfDeliveryOption] = useState(false);
@@ -18,24 +19,9 @@ export default function EditAddress({ editId }: { editId: string }) {
   const queryClient = useQueryClient();
   const data = queryClient.getQueryData(['searchAddress']);
   const { mutate: editAddress } = useEditAddress();
+  const foundAddress = (data as any)?.data?.find((address: any) => address._id === editId);
 
-  const { register, handleSubmit, reset } = useForm();
-
-  useEffect(() => {
-    if (data && !addressData.main_address) {
-      const foundAddress = (data as any)?.data?.find((address: any) => address._id === editId);
-      setAddressData(foundAddress);
-      reset(foundAddress);
-    }
-  }, [data, editId, setAddressData, reset]);
-
-  useEffect(() => {
-    setDeliveryMemo(addressData.shipping_memo || '');
-  }, [addressData]);
-
-  const handleInputChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddressData({ [e.target.name]: e.target.value });
-  };
+  const { register, handleSubmit, reset, control, setValue } = useForm();
 
   const selectDeliveryOption = [
     { id: 1, name: '문 앞에 놔주세요' },
@@ -44,6 +30,32 @@ export default function EditAddress({ editId }: { editId: string }) {
     { id: 4, name: '배송 전에 연락 주세요' },
     { id: 5, name: '직접입력' }
   ];
+
+  useEffect(() => {
+    if (data && !addressData.main_address && foundAddress) {
+      setAddressData(foundAddress);
+      reset(foundAddress);
+      const defaultSelectedOption = selectDeliveryOption.find((option) => option.name === foundAddress.shipping_memo);
+
+      if(!defaultSelectedOption) {
+        setSelfDeliveryOption(true);
+        setDeliveryMemo(foundAddress.shipping_memo);
+        setValue('shipping_memo', 5);
+        return;
+      }
+      setValue('shipping_memo', defaultSelectedOption?.id);
+    }
+  }, [data, editId, setAddressData, reset, setValue]);
+
+  useEffect(() => {
+    if(addressData.shipping_memo || foundAddress?.shipping_memo) {
+      setDeliveryMemo(foundAddress?.shipping_memo || addressData.shipping_memo || '');
+    }
+  }, [addressData.shipping_memo, foundAddress]);
+
+  const handleInputChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddressData({ [e.target.name]: e.target.value });
+  };
 
   const handleSelectChanges = (value: string) => {
     const selectedOption = selectDeliveryOption.find((option) => option.id.toString() === value);
@@ -72,7 +84,7 @@ export default function EditAddress({ editId }: { editId: string }) {
       zip_code: addressData.zip_code,
       shipping_memo: selfDeliveryOption ? deliveryMemo : addressData.shipping_memo,
     };
-    editAddress({newAddressData, editId}, {
+    editAddress({ newAddressData, editId }, {
       onSuccess: () => {
         Swal.fire({
           icon: 'success',
@@ -81,7 +93,8 @@ export default function EditAddress({ editId }: { editId: string }) {
           timer: 1500
         });
         setStep(1);
-      }, 
+        queryClient.invalidateQueries({queryKey: ['searchAddress']});
+      },
       onError: () => {
         Swal.fire({
           icon: 'error',
@@ -130,7 +143,7 @@ export default function EditAddress({ editId }: { editId: string }) {
             />
             <div className="flex items-end gap-3">
               <Input label="기본주소 *" placeholder="받는 곳의 기본 주소를 우측 주소 선택을 하여 입력하세요" variant="underlined" readOnly value={addressData.main_address || ''} required />
-              <Button size="sm" onClick={() => setStep(3)}>주소 선택</Button>
+              <Button size="sm" variant="flat" onClick={() => setStep(3)}>주소 선택</Button>
             </div>
             {addressData.zip_code && (
               <Input label="우편번호 *"
@@ -141,34 +154,47 @@ export default function EditAddress({ editId }: { editId: string }) {
                 {...register('zip_code')}
               />
             )}
-            <Input 
-              label="상세주소" 
-              placeholder="받는 곳의 상세 주소를 입력하세요" 
-              variant="underlined" 
-              defaultValue={addressData?.detail_address}
-              {...register('detail_address')} 
-            />
-            <Select
-              items={selectDeliveryOption}
-              label="배송 요청사항"
-              placeholder="선택해주세요"
+            <Input
+              label="상세주소"
+              placeholder="받는 곳의 상세 주소를 입력하세요"
               variant="underlined"
-              size="sm"
-              onChange={(e) => handleSelectChanges(e.target.value)}
-              required
-            >
-              {selectDeliveryOption.map((option) => (
-                <SelectItem
-                  key={option.id}
-                  value={option.name}
+              defaultValue={addressData?.detail_address}
+              {...register('detail_address')}
+            />
+            <Controller
+              control={control}
+              name="shipping_memo"
+              defaultValue={addressData.shipping_memo || ''}
+              render={({ field }) => (
+                <Select
+                  items={selectDeliveryOption}
+                  label="배송 요청사항"
+                  placeholder="선택해주세요"
+                  variant="underlined"
+                  size="sm"
+                  onChange={(e) => {
+                    handleSelectChanges(e.target.value)
+                    field.onChange(e.target.value)
+                  }}
+                  selectedKeys={[String(field.value || '')]}
+                  required
                 >
-                  {option.name}
-                </SelectItem>
-              ))}
-            </Select>
+                  {selectDeliveryOption.map((option) => (
+                    <SelectItem
+                      key={option.id}
+                      value={option.id}
+                    >
+                      {option.name}
+                    </SelectItem>
+                  ))}
+                </Select>
+              )}
+            >
+            </Controller>
             {selfDeliveryOption && (
               <Textarea
                 placeholder="배송 요청사항을 입력해주세요"
+                defaultValue={addressData.shipping_memo}
                 value={deliveryMemo}
                 onChange={(e) => setDeliveryMemo(e.target.value)}
               />)}

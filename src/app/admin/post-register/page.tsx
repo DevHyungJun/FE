@@ -12,7 +12,7 @@ import LoadingSpinner from "@/app/components/LoadingSpinner";
 import { Product } from "../../../../types/Product";
 
 export default function PostRegister() {
-  const { data, isLoading, isError, error } = useGetItem();
+  const { data, isLoading, isError, error } = useGetItem(1);
   const [selectedProduct, setSelectedProduct] = useState<string>('');
   const newPost = useNewPost();
   const [images, setImages] = useState<File[]>([]);

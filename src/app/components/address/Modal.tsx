@@ -8,7 +8,8 @@ import useDeleteAddress from "@/hooks/useDeleteAdress";
 import { useQueryClient } from "@tanstack/react-query";
 import { storeModalShowstep } from "@/store";
 import LoadingSpinner from "../LoadingSpinner";
-import { storeDaumStep } from "@/store";
+import formatPhoneNumber from "@/util/formatPhoneNumber";
+import { storeEditMode } from "@/store";
 
 interface ModalProps {
   setSelectedAddress: (address: any) => void;
@@ -20,7 +21,7 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
   const { mutate: deleteAddress } = useDeleteAddress();
   const queryClient = useQueryClient();
   const { setStep } = storeModalShowstep();
-  const { setDaumStep } = storeDaumStep();
+  const { setEditMode } = storeEditMode();
 
   const sortedData = [...(data?.data || [])].sort((a: any, b: any) => b.is_default - a.is_default);
 
@@ -46,8 +47,8 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
   };
 
   const handleNewAddress = () => {
-    setDaumStep(2);
     setStep(2);
+    setEditMode(false);
   };
 
   const handleSelectAddress = (address: any) => {
@@ -57,8 +58,8 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
 
   const handleEditAddress = (id: string) => {
     setEditId(id);
-    setDaumStep(4);
     setStep(4);
+    setEditMode(true);
   };
 
   return (
@@ -83,18 +84,17 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
         {sortedData?.map((address: any) => (
           <div className="mt-3">
             <div className="border-b-2 pb-2">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <p className="text-lg font-semibold">{address?.receiver_name}</p>
                 {address?.is_default && (
                   <p className="text-xs bg-gray-100 text-gray-600 rounded-sm p-0.5">기본 배송지</p>
                 )}
               </div>
               <div className="my-2 space-y-1 text-sm">
-                <p>{address?.main_address}</p>
-                <p>{address?.detail_address}</p>
-                <p>우편번호 {address?.zip_code}</p>
-                <p>{address?.receiver_phone}</p>
-                {address?.shipping_memo && <p>배송메모 {address?.shipping_memo}</p>}
+                <p>{address?.main_address} {address?.detail_address}</p>
+                <p>{address?.zip_code}</p>
+                <p>{formatPhoneNumber(address?.receiver_phone)}</p>
+                {address?.shipping_memo && <p>{address?.shipping_memo}</p>}
               </div>
               <div className="space-x-0.5">
                 <button 

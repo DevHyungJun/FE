@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import useDetail from "@/hooks/useDetail";
-import { Button, Image } from "@nextui-org/react";
+import { Button, Image, Accordion, AccordionItem } from "@nextui-org/react";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import Slider from "react-slick";
 import formatPrice from '@/util/formatPrice';
@@ -14,6 +14,9 @@ import useFavoriteDelete from '@/hooks/useFavoriteDelete';
 import Swal from 'sweetalert2';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { FaCartPlus } from "react-icons/fa";
+import useAddCart from '@/hooks/useAddCart';
+import useOrder from '@/hooks/useOrder';
 
 type ParamsId = { id: string };
 type AuthCheckResponse = {
@@ -40,6 +43,8 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const cachedData = queryClient.getQueryData<AuthCheckResponse>(['authCheck']);
   const isLoggedIn = cachedData?.data?.isLoggedIn;
+  const { mutate: addCartMutate } = useAddCart();
+  const { mutate: orderMutate } = useOrder();
 
   useEffect(() => {
     if (data?.data?.product?.images.length === 1) {
@@ -67,14 +72,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
     if (isFavorite) {
       favoriteDeleteMutate(id, {
         onSuccess: () => {
-          Swal.fire({
-            icon: 'success',
-            title: '좋아요',
-            text: '상품을 좋아요 목록에서 삭제했습니다.',
-            showConfirmButton: false,
-            timer: 1500
-          });
-          queryClient.invalidateQueries({queryKey: ['allProducts']});
+          queryClient.invalidateQueries({ queryKey: ['allProducts'] });
           setIsFavorite(false);
         },
         onError: () => {
@@ -88,14 +86,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
     } else {
       favoritePostMutate(id, {
         onSuccess: () => {
-          Swal.fire({
-            icon: 'success',
-            title: '좋아요',
-            text: '상품을 좋아요 목록에 추가했습니다.',
-            showConfirmButton: false,
-            timer: 1500
-          });
-          queryClient.invalidateQueries({queryKey: ['allProducts']});
+          queryClient.invalidateQueries({ queryKey: ['allProducts'] });
           setIsFavorite(true);
         },
         onError: () => {
@@ -115,6 +106,11 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
     }
   };
 
+  const plusQuantity = () => {
+    if (quantity >= 20) return;
+    setQuantity(quantity + 1);
+  };
+
   const settings = {
     arrows: false,
     dots: !onlyOneImage,
@@ -124,6 +120,30 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
     slidesToScroll: 1,
     fade: true,
   };
+
+  const handleRouteOrder = () => {
+    orderMutate([{ product: id, quantity }], {
+      onSuccess: (data) => {
+        router.push(`/order/${data?.data?._id}`);
+      }
+    });
+  };
+
+  const handleAddCart = () => {
+    const article = { article: data?.data?._id, quantity };
+    addCartMutate(article, {
+      onSuccess: () => {
+        Swal.fire({
+          icon: 'success',
+          title: '장바구니',
+          text: '상품을 장바구니에 추가했습니다.',
+          showConfirmButton: false,
+          timer: 1000
+        });
+        queryClient.invalidateQueries({ queryKey: ['cart'] });
+      }
+    });
+  }
 
   return (
     <>
@@ -149,41 +169,58 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
               <p className="text-md font-semibold">
                 {formatPrice(data?.data?.product?.price)}
               </p>
-              <div>
-                <p className="text-sm">선택된 수량: {quantity}</p>
-              </div>
-              <div className="flex justify-start gap-3">
-                <Button onClick={minusQuantity}>
+              <div className="flex gap-3 items-center rounded-sm">
+                <button onClick={minusQuantity} className='p-2 border hover:bg-gray-50 rounded-md'>
                   <FiMinus className="text-sm md:text-medium" />
-                </Button>
-                <Button onClick={() => setQuantity(quantity + 1)}>
+                </button>
+                <p className='text-sm'>{quantity}</p>
+                <button onClick={plusQuantity} className='p-2 border hover:bg-gray-50 rounded-md'>
                   <FiPlus className="text-sm md:text-medium" />
-                </Button>
+                </button>
               </div>
-              <Button color="primary" className="w-[300px] text-xs md:text-medium mt-2">구매하기</Button>
-              <p className="text-sm text-yellow-600">현재 {data?.data?.product?.stock_quantity}개의 수량이 남았습니다.</p>
-              <button
-                className='text-4xl text-red-600'
-                onClick={handleFavorite}
-              >
-                {isFavorite ? <IoHeartSharp /> : <IoHeartOutline />}
-              </button>
+              <div className='flex-col md:flex items-center gap-1'>
+                <Button
+                  color="primary"
+                  className="w-[300px] text-xs md:text-medium mt-2"
+                  onClick={handleRouteOrder}
+                >
+                  구매하기
+                </Button>
+                <div className='w-full flex justify-end gap-2'>
+                  <button
+                    className='text-3xl mt-2'
+                    onClick={handleAddCart}
+                  >
+                    <FaCartPlus className='text-gray-500' />
+                  </button>
+                  <button
+                    className='text-3xl text-red-500 mt-2'
+                    onClick={handleFavorite}
+                  >
+                    {isFavorite ? <IoHeartSharp /> : <IoHeartOutline />}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex flex-col items-center mt-10 border-2 rounded-md">
-            <div className='flex flex-col gap-3 text-center m-20'>
-              <p className="text-xs md:text-medium text-gray-500">{formatDate(data?.data?.createdAt)}에 등록된 상품입니다.</p>
-              <h2 className="text-xl font-semibold">제품 상세 정보</h2>
-            </div>
-            {data?.data?.detail_images.map((img: string, i: number) => (
-              <Image
-                key={i}
-                src={img}
-                alt={data?.data?.title}
-                width={800}
-              />
-            ))}
-          </div>
+          <Accordion variant='bordered' className='mt-10' fullWidth={true}>
+            <AccordionItem key='1' startContent={<div className='font-semibold'>제품 상세 정보 보기</div>}>
+              <div className="flex flex-col max-w-[900px] mx-auto items-center mt-10">
+                <div className='flex flex-col gap-3 text-center m-20'>
+                  <p className="text-xs md:text-medium text-gray-500">{formatDate(data?.data?.createdAt)}에 등록된 상품입니다.</p>
+                  <h2 className="text-xl font-semibold">제품 상세 정보</h2>
+                </div>
+                {data?.data?.detail_images.map((img: string, i: number) => (
+                  <Image
+                    key={i}
+                    src={img}
+                    alt={data?.data?.title}
+                    width={800}
+                  />
+                ))}
+              </div>
+            </AccordionItem>
+          </Accordion>
         </div>
       )
       }

@@ -11,6 +11,7 @@ import useUsernameCheck from "@/hooks/useUsernameCheck";
 import useSignup from "@/hooks/useSignup";
 import { useCallback, useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { IoPersonAddOutline } from "react-icons/io5";
 
 const Signup = () => {
   const { register, handleSubmit, formState: { errors }, getValues, trigger } = useForm<SignupForm>({
@@ -105,10 +106,14 @@ const Signup = () => {
   const formInDiv = 'flex items-end gap-1';
   const errorS = 'text-sm text-red-500';
   return (
-    <div className="mt-3">
-      <form className="flex flex-col max-w-[500px] mx-auto gap-3 border p-3 rounded-md"
+    <div className="flex items-center justify-center h-[60vh] text-gray-800">
+      <form className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
         onSubmit={handleSubmit(onSubmit)}
       >
+        <div className="flex items-center gap-2 text-2xl font-semibold m-1">
+          <IoPersonAddOutline />
+          회원가입
+        </div>
         {/* 이메일 입력&전송&에러메세지 */}
         <div className={formInDiv}>
           <Input 
