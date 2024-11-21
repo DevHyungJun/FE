@@ -106,6 +106,8 @@ export default function Order({ params }: { params: { id: string } }) {
     handlePay();
   };
 
+  console.log(resultPrice)
+
   return (
     <div className="flex flex-col gap-5 max-w-[1400px] mx-auto p-1">
       <h1 className="text-2xl font-semibold m-1">주문서</h1>

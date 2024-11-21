@@ -25,7 +25,7 @@ export default function ItemList() {
   const [page, setPage] = useState(1);
   const [products, setProducts] = useState<ItemListType[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const { data, isLoading, isError, error } = useGetItem(page);
+  const { data, isLoading, isError, error, isSuccess } = useGetItem(page);
 
   const { ref, inView } = useInView({
     threshold: 0.1,
@@ -41,13 +41,16 @@ export default function ItemList() {
   useEffect(() => {
     if (data?.data) {
       const newProducts = data.data.filter(
-        (newProduct: ItemListType) => !products.some(existingProduct => existingProduct._id === newProduct._id)
+        (newProduct: any) => !products.some(existingProduct => existingProduct._id === newProduct._id)
       );
-
+  
       if (newProducts.length === 0) {
         setHasMore(false);
       } else {
-        setProducts(prevProducts => [...prevProducts, ...newProducts]);
+        setProducts((prevProducts) => [
+          ...prevProducts, 
+          ...newProducts.filter((newProduct: { _id: string; }) => !prevProducts.some(existingProduct => existingProduct._id === newProduct._id))
+        ]);
       }
     }
   }, [data]);
@@ -55,7 +58,7 @@ export default function ItemList() {
   return (
     <div className="max-w-[1400px] mx-auto">
       <h2 className="text-2xl font-semibold m-1">
-        관리자 상품 목록
+      {isSuccess ? (products?.length === 0 ? '등록된 상품이 없습니다' : '관리자 상품 목록') : null}
       </h2>
       {isLoading && products.length === 0 ? <LoadingSpinner /> : (
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-10 text-xs md:text-sm p-1">
@@ -86,6 +89,7 @@ export default function ItemList() {
         ))}
       </div>
       )}
+      {products?.length === 0 && <div className="h-[90vh]"/>}
       <div ref={ref} className="h-10">
         {isLoading && products.length !== 0 && <LoadingSpinner mode="1" />}
       </div>

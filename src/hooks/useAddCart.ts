@@ -9,5 +9,5 @@ type AddCartType = {
 export default function useAddCart() {
   return useMutation({
     mutationFn:(data: AddCartType)=> addCart(data),
-    });
+  });
 };

@@ -10,6 +10,9 @@ import { MdCancel } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import { Product } from "../../../../types/Product";
+import useGetCategory from "@/hooks/useGetCategory";
+import usePostCategory from "@/hooks/usePostCategory";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function PostRegister() {
   const { data, isLoading, isError, error } = useGetItem(1);
@@ -19,9 +22,16 @@ export default function PostRegister() {
   const [previews, setPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
   const router = useRouter();
+  const { data: categroy } = useGetCategory();
+  const { mutate: postCategory, isPending: postCategoryPending } = usePostCategory();
+  const [categoryShow, setCategoryShow] = useState<boolean>(false);
+  const [categoryName, setCategoryName] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   const items = data?.data;
+  const categoryItems = categroy?.data;
 
   useEffect(() => {
     // 이미지 미리보기 URL 생성
@@ -38,6 +48,18 @@ export default function PostRegister() {
     formData.append('title', titleRef.current?.value || '');
     images.forEach((image) => formData.append('detail_images', image));
     formData.append('product', selectedProduct);
+    formData.append('category', selectedCategory);
+
+    if(!titleRef.current?.value || !selectedProduct || !selectedCategory || images.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: '모든 항목을 입력해주세요',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+    
     newPost.mutate(formData as any, {
       onSuccess: () => {
         Swal.fire({
@@ -66,6 +88,33 @@ export default function PostRegister() {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => setSelectedProduct(e.target.value);
 
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => setSelectedCategory(e.target.value);
+  
+  const handlePostCategory = () => {
+    if(categoryName === '') {
+      Swal.fire({
+        icon: 'error',
+        title: '카테고리 이름을 입력해주세요',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+    postCategory({category_name: categoryName}, {
+      onSuccess: () => {
+        Swal.fire({
+          icon: 'success',
+          title: '카테고리 등록 성공',
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        setCategoryShow(false);
+        setCategoryName('');
+        queryClient.invalidateQueries({queryKey: ['category']});
+      }
+    });
+  };
+
   return (
     <>
       {isLoading ? <LoadingSpinner /> : (
@@ -92,6 +141,40 @@ export default function PostRegister() {
                 </SelectItem>
               ))}
             </Select>
+            <Select
+              items={categoryItems}
+              label='카테고리'
+              placeholder='카테고리를 선택하세요'
+              onChange={handleCategoryChange}
+            >
+              {categoryItems?.map((item: any) => (
+                <SelectItem
+                  key={item._id}
+                  value={item._id}
+                >
+                  {item.category}
+                </SelectItem>
+              ))}
+            </Select>
+            <button type="button" onClick={()=>setCategoryShow((prev) => !prev)}>
+              <p className="text-sm hover:text-blue-500 font-semibold">원하는 카테고리가 없다면? 등록하기</p>
+            </button>
+            {categoryShow && (
+              <div className="flex flex-col items-end gap-2">
+                <Input
+                  label="카테고리 이름"
+                  name="category"
+                  value={categoryName}
+                  onChange={(e) => setCategoryName(e.target.value)}
+                />
+                <Button
+                  type="button"
+                  className="w-1/2"
+                  onClick={handlePostCategory}
+                  isLoading={postCategoryPending}
+                >카테고리 등록</Button>
+              </div>
+            )}
             {selectedProduct && (
               <div>
                 <p>

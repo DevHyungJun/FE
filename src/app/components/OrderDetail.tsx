@@ -17,9 +17,15 @@ export default function OrderDetail({id, quantity, setResultPrice} : OrderDetail
 
   useEffect(() => {
     if (price) {
-      setResultPrice((prev) => [...prev, price]);
+      setResultPrice((prev) => {
+        // price가 이미 있는지 확인하여 중복 추가 방지
+        if (!prev.includes(price)) {
+          return [...prev, price];
+        }
+        return prev;
+      });
     }
-  }, [price]);
+  }, [price, setResultPrice]);
 
   return (
     <div>

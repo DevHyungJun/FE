@@ -55,7 +55,7 @@ export default function CartProductDetail({ articleId, setPrices, quantity }: Ca
             <>
               <div className="flex justify-between">
                 <Link href={`/products/product-detail/${productData?.data?._id}`}>
-                  <p>{productData?.data?.product?.product_name}</p>
+                  <p className="text-xs md:text-sm">{productData?.data?.product?.product_name}</p>
                 </Link>
                 <button className="text-3xl" onClick={() => handleCartItemRemove(productData?.data?._id)}><IoIosClose /></button>
               </div>

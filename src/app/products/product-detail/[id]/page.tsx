@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import useDetail from "@/hooks/useDetail";
-import { Button, Image, Accordion, AccordionItem } from "@nextui-org/react";
+import { Button, Image, Accordion, AccordionItem, Tabs, Tab } from "@nextui-org/react";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import Slider from "react-slick";
 import formatPrice from '@/util/formatPrice';
@@ -17,6 +17,10 @@ import { useRouter } from 'next/navigation';
 import { FaCartPlus } from "react-icons/fa";
 import useAddCart from '@/hooks/useAddCart';
 import useOrder from '@/hooks/useOrder';
+import ReviewItem from '@/app/components/reviewItem';
+import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import useGetReview from '@/hooks/useGetReview';
+import Link from 'next/link';
 
 type ParamsId = { id: string };
 type AuthCheckResponse = {
@@ -45,6 +49,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   const isLoggedIn = cachedData?.data?.isLoggedIn;
   const { mutate: addCartMutate } = useAddCart();
   const { mutate: orderMutate } = useOrder();
+  const { data: reviewData, isLoading: reviewLoading } = useGetReview(id);
 
   useEffect(() => {
     if (data?.data?.product?.images.length === 1) {
@@ -143,7 +148,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
         queryClient.invalidateQueries({ queryKey: ['cart'] });
       }
     });
-  }
+  };
 
   return (
     <>
@@ -203,24 +208,39 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
               </div>
             </div>
           </div>
-          <Accordion variant='bordered' className='mt-10' fullWidth={true}>
-            <AccordionItem key='1' startContent={<div className='font-semibold'>제품 상세 정보 보기</div>}>
-              <div className="flex flex-col max-w-[900px] mx-auto items-center mt-10">
-                <div className='flex flex-col gap-3 text-center m-20'>
-                  <p className="text-xs md:text-medium text-gray-500">{formatDate(data?.data?.createdAt)}에 등록된 상품입니다.</p>
-                  <h2 className="text-xl font-semibold">제품 상세 정보</h2>
-                </div>
-                {data?.data?.detail_images.map((img: string, i: number) => (
-                  <Image
-                    key={i}
-                    src={img}
-                    alt={data?.data?.title}
-                    width={800}
-                  />
-                ))}
-              </div>
-            </AccordionItem>
-          </Accordion>
+          <Tabs variant='underlined'>
+            <Tab key='productDetail' title='정보'>
+              <Accordion className='border-y' fullWidth={true}>
+                <AccordionItem key='detail' startContent={<div className='font-semibold'>제품 상세 정보 보기</div>}>
+                  <div className="flex flex-col max-w-[900px] mx-auto items-center mt-10">
+                    <p className="text-xs md:text-medium text-gray-500 mb-5">{formatDate(data?.data?.createdAt)}에 등록된 상품입니다.</p>
+                    {data?.data?.detail_images.map((img: string, i: number) => (
+                      <Image
+                        key={i}
+                        src={img}
+                        alt={data?.data?.title}
+                        width={800}
+                      />
+                    ))}
+                  </div>
+                </AccordionItem>
+              </Accordion>
+            </Tab>
+            <Tab key='review' title='리뷰'>
+              <Link href={`/review/${id}`} className='border-t py-3'>
+                <Button variant='flat' className='w-full'>상품평 작성하러 가기</Button>
+              </Link>
+              {reviewLoading && <LoadingSpinner mode='1' />}
+              {reviewData?.data?.length === 0 && <p className='text-center text-gray-500 py-10'>등록된 상품평이 없습니다.</p>}
+              {reviewData?.data?.map((reviewItem: any) => (
+                <ReviewItem key={reviewItem._id} review={reviewItem} />
+              ))}
+              <Button variant='bordered' className='w-full'>
+                130개 후기 전체보기
+                <MdOutlineKeyboardArrowRight className='text-lg' />
+              </Button>
+            </Tab>
+          </Tabs>
         </div>
       )
       }
