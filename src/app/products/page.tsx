@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Image, Tabs, Tab } from "@nextui-org/react";
 import useAllProducts from "@/hooks/useAllProducts";
@@ -29,16 +29,19 @@ const Products = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const { data, isLoading, error, isSuccess } = useAllProducts(page, selectedCategory);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const { data, isLoading, error, isSuccess } = useAllProducts(
+    page,
+    selectedCategory
+  );
   const [products, setProducts] = useState<PostData[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const cachedData = queryClient.getQueryData<AuthCheckResponse>(['authCheck']);
+  const cachedData = queryClient.getQueryData<AuthCheckResponse>(["authCheck"]);
   const userId = cachedData?.data?.userId;
   const { data: category } = useGetCategory();
   const { ref, inView } = useInView({
     threshold: 0.1,
-    rootMargin: '100px'
+    rootMargin: "100px",
   });
 
   useEffect(() => {
@@ -50,7 +53,10 @@ const Products = () => {
   useEffect(() => {
     if (data?.data?.results) {
       const newProducts = data.data.results.filter(
-        (newProduct: any) => !products.some(existingProduct => existingProduct._id === newProduct._id)
+        (newProduct: any) =>
+          !products.some(
+            (existingProduct) => existingProduct._id === newProduct._id
+          )
       );
 
       if (newProducts.length === 0) {
@@ -58,13 +64,19 @@ const Products = () => {
       } else {
         setProducts((prevProducts) => [
           ...prevProducts,
-          ...newProducts.filter((newProduct: { _id: string; }) => !prevProducts.some(existingProduct => existingProduct._id === newProduct._id))
+          ...newProducts.filter(
+            (newProduct: { _id: string }) =>
+              !prevProducts.some(
+                (existingProduct) => existingProduct._id === newProduct._id
+              )
+          ),
         ]);
       }
     }
   }, [data]);
 
-  const handleRouteProductDetail = (productID: string) => router.push(`products/product-detail/${productID}`);
+  const handleRouteProductDetail = (productID: string) =>
+    router.push(`products/product-detail/${productID}`);
 
   const FavoriteShow = (like_user_list: string[]) => {
     if (userId && like_user_list?.includes(userId)) {
@@ -80,20 +92,43 @@ const Products = () => {
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto">
-      <div className="bg-gray-50 py-1">
-        <Tabs variant="underlined" onSelectionChange={handleTabs} size="lg" color="primary">
-          <Tab title="전체" key='' />
+    <div className="max-w-[1200px] mx-auto">
+      <div className="py-1">
+        <Tabs
+          variant="underlined"
+          onSelectionChange={handleTabs}
+          size="lg"
+          color="primary"
+        >
+          <Tab title="전체" key="" />
           {category?.data?.map((category: any) => (
-            <Tab key={category._id} title={category.category} value={category._id} />
+            <Tab
+              key={category._id}
+              title={category.category}
+              value={category._id}
+            />
           ))}
         </Tabs>
       </div>
       <div className="flex items-center gap-2 text-2xl font-semibold m-1">
-        {isSuccess ? (products?.length === 0 ? <><CiShoppingTag />등록된 상품이 없습니다</> : <><CiShoppingTag />상품 목록</>) : null}
+        {isSuccess ? (
+          products?.length === 0 ? (
+            <>
+              <CiShoppingTag />
+              등록된 상품이 없습니다
+            </>
+          ) : (
+            <>
+              <CiShoppingTag />
+              상품 목록
+            </>
+          )
+        ) : null}
       </div>
-      {isLoading && products.length === 0 ? <LoadingSpinner /> :
-        (<div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-10 text-xs md:text-sm p-1">
+      {isLoading && products.length === 0 ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-10 text-xs md:text-sm p-1">
           {products.map((product: PostData) => (
             <div
               key={product._id}
@@ -118,9 +153,7 @@ const Products = () => {
                 </div>
                 <div className="flex gap-2 text-xs text-gray-500">
                   {product?.like_count !== 0 && (
-                    <p className="mt-2">
-                      좋아요 {product?.like_count}
-                    </p>
+                    <p className="mt-2">좋아요 {product?.like_count}</p>
                   )}
                   {product?.comment_list.length !== 0 && (
                     <p className="mt-2">
@@ -131,7 +164,8 @@ const Products = () => {
               </div>
             </div>
           ))}
-        </div>)}
+        </div>
+      )}
       {products?.length === 0 && <div className="h-[90vh]" />}
       <div ref={ref} className="h-10">
         {isLoading && products.length !== 0 && <LoadingSpinner mode="1" />}
