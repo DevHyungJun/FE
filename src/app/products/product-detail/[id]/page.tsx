@@ -56,12 +56,16 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   const isLoggedIn = cachedData?.data?.isLoggedIn;
   const { mutate: addCartMutate } = useAddCart();
   const { mutate: orderMutate } = useOrder();
-  const { data: reviewData, isLoading: reviewLoading } = useGetReview(id);
+  const [orderOption, setOrderOption] = useState("updatedAt");
+  const { data: reviewData, isLoading: reviewLoading } = useGetReview(
+    id,
+    orderOption
+  );
 
   const orderingOptions = [
-    { label: "날짜순", value: "_createdAt" },
-    { label: "추천순", value: "likedBy" },
-    { label: "별점순", value: "rating" },
+    { label: "날짜순", value: "updatedAt" },
+    { label: "추천순", value: "-likes" },
+    { label: "별점순", value: "-rate" },
   ];
 
   useEffect(() => {
@@ -229,10 +233,11 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
             </div>
           </div>
           <Tabs variant="underlined">
-            <Tab key="productDetail" title="정보">
+            <Tab key="productDetail" title="정보" textValue="productDetail">
               <Accordion className="border-y" fullWidth={true}>
                 <AccordionItem
                   key="detail"
+                  textValue="detail"
                   startContent={
                     <div className="font-semibold">제품 상세 정보 보기</div>
                   }
@@ -253,7 +258,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
                 </AccordionItem>
               </Accordion>
             </Tab>
-            <Tab key="review" title="리뷰">
+            <Tab key="review" title="리뷰" textValue="review">
               <Link href={`/review/${id}`} className="border-t py-3">
                 <Button variant="flat" className="w-full">
                   상품평 작성하러 가기
@@ -262,28 +267,33 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
               {reviewLoading ? (
                 <LoadingSpinner mode="1" />
               ) : (
-                <div className="flex justify-end">
-                  <Select
-                    items={orderingOptions}
-                    label="정렬"
-                    className="w-[100px]"
-                    variant="underlined"
-                    defaultSelectedKeys={["_createdAt"]}
-                  >
-                    {(item) => (
-                      <SelectItem key={item.value}>{item.label}</SelectItem>
-                    )}
-                  </Select>
-                </div>
+                <>
+                  <div className="flex justify-end">
+                    <Select
+                      items={orderingOptions}
+                      label="정렬"
+                      className="w-[100px]"
+                      variant="underlined"
+                      defaultSelectedKeys={["updatedAt"]}
+                      onChange={(e) => setOrderOption(e.target.value)}
+                    >
+                      {(item) => (
+                        <SelectItem key={item.value} textValue={item.label}>
+                          {item.label}
+                        </SelectItem>
+                      )}
+                    </Select>
+                  </div>
+                  {reviewData?.data?.map((reviewItem: any) => (
+                    <ReviewItem key={reviewItem._id} review={reviewItem} />
+                  ))}
+                </>
               )}
               {reviewData?.data?.length === 0 && (
                 <p className="text-center text-gray-500 py-10">
                   등록된 상품평이 없습니다.
                 </p>
               )}
-              {reviewData?.data?.map((reviewItem: any) => (
-                <ReviewItem key={reviewItem._id} review={reviewItem} />
-              ))}
             </Tab>
           </Tabs>
         </div>

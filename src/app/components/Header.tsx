@@ -1,21 +1,52 @@
-'use client';
+"use client";
 
 import { usePathname } from "next/navigation";
-import { Navbar, NavbarBrand, NavbarMenuToggle, NavbarMenuItem, NavbarMenu, NavbarContent, NavbarItem, Badge } from "@nextui-org/react";
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarMenuToggle,
+  NavbarMenuItem,
+  NavbarMenu,
+  NavbarContent,
+  NavbarItem,
+  Badge,
+  Image,
+} from "@nextui-org/react";
 import { useState } from "react";
 import { AcmeLogo } from "../../../public/AcmeLogo";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useAuthCheck from "@/hooks/useAuthCheck";
 import useLogout from "@/hooks/useLogout";
-import { CiLogout, CiLogin, CiShoppingCart, CiShoppingTag } from "react-icons/ci";
+import {
+  CiLogout,
+  CiLogin,
+  CiShoppingCart,
+  CiShoppingTag,
+} from "react-icons/ci";
 import { IoPersonOutline, IoPersonAddOutline } from "react-icons/io5";
 import { VscTools } from "react-icons/vsc";
 import useGetCart from "@/hooks/useGetCart";
+import { useQueryClient } from "@tanstack/react-query";
+
+interface CahcedUserLoggedIn {
+  data: {
+    isLoggedIn: boolean;
+  };
+}
 
 const Header = () => {
   const router = useRouter();
-  const { data: cartData, isSuccess: cartIsSuccess, isLoading } = useGetCart();
+  const queryClient = useQueryClient();
+  const cahcedUserLoggedIn = queryClient.getQueryData<CahcedUserLoggedIn>([
+    "authCheck",
+  ]);
+  const loginState = cahcedUserLoggedIn?.data?.isLoggedIn;
+  const {
+    data: cartData,
+    isSuccess: cartIsSuccess,
+    isLoading,
+  } = useGetCart(!!loginState);
 
   // 현재 경로 확인
   const pathname = usePathname();
@@ -33,7 +64,7 @@ const Header = () => {
   // 로그아웃
   const { mutate: logout } = useLogout();
 
-  const isAdmin = authCheckData?.data?.role === 'admin';
+  const isAdmin = authCheckData?.data?.role === "admin";
   const isLoggedIn = authCheckData?.data?.isLoggedIn;
 
   // 데스크탑 메뉴 항목
@@ -42,31 +73,36 @@ const Header = () => {
       label: "제품",
       href: "/products",
       isActive: isProductOpen,
-      icon: <CiShoppingTag className="text-xl" />
+      icon: <CiShoppingTag className="text-xl" />,
     },
     {
       label: "장바구니",
       href: "/cart",
-      icon: cartData?.article_list.length ? <Badge content={cartData?.article_list.length}
-        size="sm"
-        color="primary"
-      >
+      icon: cartData?.article_list.length ? (
+        <Badge
+          content={cartData?.article_list.length}
+          size="sm"
+          color="primary"
+        >
+          <CiShoppingCart className="text-xl" />
+        </Badge>
+      ) : (
         <CiShoppingCart className="text-xl" />
-      </Badge> : <CiShoppingCart className="text-xl" />,
-      isActive: isCartOpen
+      ),
+      isActive: isCartOpen,
     },
     {
       label: "관리자",
       href: "/admin",
       isActive: isAdminOpen,
-      icon: <VscTools className="text-lg" />
+      icon: <VscTools className="text-lg" />,
     },
   ];
 
   // 로그인 라우팅 혹은 로그아웃 처리
   const handleLoginLogout = () => {
     if (!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
     logout();
@@ -75,10 +111,10 @@ const Header = () => {
   // 회원가입 라우팅 혹은 마이페이지 라우팅
   const handleSignupMypage = () => {
     if (!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
-      router.push('/signup');
+      router.push("/signup");
       return;
     }
-    router.push('/mypage');
+    router.push("/mypage");
   };
 
   // 모바일 메뉴 항목
@@ -87,38 +123,70 @@ const Header = () => {
       label: "제품",
       href: "/products",
       isOpen: isProductOpen,
-      icon: <CiShoppingTag className="text-xl" />
+      icon: <CiShoppingTag className="text-xl" />,
     },
     {
       label: "장바구니",
       href: "/cart",
-      icon: cartData?.article_list.length ? <Badge content={cartData?.article_list.length}
-        size="sm"
-        color="primary"
-      >
+      icon: cartData?.article_list.length ? (
+        <Badge
+          content={cartData?.article_list.length}
+          size="sm"
+          color="primary"
+        >
+          <CiShoppingCart className="text-xl" />
+        </Badge>
+      ) : (
         <CiShoppingCart className="text-xl" />
-      </Badge> : <CiShoppingCart className="text-xl" />,
-      isOpen: isCartOpen
+      ),
+      isOpen: isCartOpen,
     },
     {
       label: "관리자",
       href: "/admin",
       isOpen: isAdminOpen,
-      icon: <VscTools className="text-lg" />
+      icon: <VscTools className="text-lg" />,
     },
     {
-      label: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '로그인' : '로그아웃',
-      href: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? "/login" : "#",
-      isOpen: isLoginOpen,
-      onclick: handleLoginLogout,
-      icon: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? <CiLogin className="text-lg" /> : <CiLogout className="text-lg" />
-    },
-    {
-      label: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '회원가입' : '마이페이지',
-      href: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? "/signup" : "#",
+      label:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
+          ? "회원가입"
+          : "마이페이지",
+      href:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
+          ? "/signup"
+          : "/mypage",
       isOpen: isSignupOpen,
       onclick: handleSignupMypage,
-      icon: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? <IoPersonAddOutline className="text-lg" /> : <IoPersonOutline className="text-lg" />
+      icon:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? (
+          <IoPersonAddOutline className="text-lg" />
+        ) : (
+          <Image
+            src="/basic_profile.png"
+            alt="Profile Image"
+            width={20}
+            height={20}
+          />
+        ),
+    },
+    {
+      label:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
+          ? "로그인"
+          : "로그아웃",
+      href:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
+          ? "/login"
+          : "#",
+      isOpen: isLoginOpen,
+      onclick: handleLoginLogout,
+      icon:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? (
+          <CiLogin className="text-lg" />
+        ) : (
+          <CiLogout className="text-lg" />
+        ),
     },
   ];
 
@@ -129,51 +197,35 @@ const Header = () => {
       onMenuOpenChange={setIsMenuOpen}
       className={`${isMenuOpen ? "bg-gray-50" : ""}text-gray-800`}
     >
-      <NavbarContent
-        className="sm:hidden" justify="start"
-      >
+      <NavbarContent className="sm:hidden" justify="start">
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         />
       </NavbarContent>
 
-      <NavbarContent
-        className="sm:hidden pr-3"
-        justify="center"
-      >
+      <NavbarContent className="sm:hidden pr-3" justify="center">
         <NavbarBrand>
-          <Link
-            href="/"
-            className="flex items-center"
-          >
+          <Link href="/" className="flex items-center">
             <AcmeLogo />
-            <p className="font-bold text-inherit">
-              SHOP
-            </p>
+            <p className="font-bold text-inherit">SHOP</p>
           </Link>
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent
-        className="hidden sm:flex gap-4"
-        justify="center"
-      >
+      <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarBrand>
-          <Link
-            href={'/'}
-            className="flex items-center"
-          >
+          <Link href={"/"} className="flex items-center">
             <AcmeLogo />
-            <p className="font-bold text-inherit">
-              SHOP
-            </p>
+            <p className="font-bold text-inherit">SHOP</p>
           </Link>
         </NavbarBrand>
         {navbarItems.map((item, index) => (
           <NavbarItem
             key={`${item}-${index}`}
             isActive={item.isActive}
-            className={`hover:text-blue-500 text-sm ${item.label === '관리자' && !isAdmin ? 'hidden' : ''} ${item.label === '장바구니' && !isLoggedIn ? 'hidden' : ''}`}
+            className={`hover:text-blue-500 text-sm ${
+              item.label === "관리자" && !isAdmin ? "hidden" : ""
+            } ${item.label === "장바구니" && !isLoggedIn ? "hidden" : ""}`}
           >
             <Link href={item.href}>
               {item.icon ? (
@@ -181,7 +233,9 @@ const Header = () => {
                   {item.icon}
                   {item.label}
                 </div>
-              ) : item.label}
+              ) : (
+                item.label
+              )}
             </Link>
           </NavbarItem>
         ))}
@@ -189,17 +243,27 @@ const Header = () => {
 
       <NavbarContent justify="end">
         <NavbarItem
-          className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${isLoginOpen && 'font-semibold'}`}
+          className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${
+            isLoginOpen && "font-semibold"
+          }`}
           onClick={handleLoginLogout}
         >
           {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? (
-            <div className="flex items-center gap-1"><CiLogin className="text-lg" />로그인</div>
-          ) :
-            (<div className="flex items-center gap-1"><CiLogout className="text-lg" />로그아웃</div>
-            )}
+            <div className="flex items-center gap-1">
+              <CiLogin className="text-lg" />
+              로그인
+            </div>
+          ) : (
+            <div className="flex items-center gap-1">
+              <CiLogout className="text-lg" />
+              로그아웃
+            </div>
+          )}
         </NavbarItem>
         <NavbarItem
-          className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${isSignupOpen && 'font-semibold'}`}
+          className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${
+            isSignupOpen && "font-semibold"
+          }`}
           onClick={handleSignupMypage}
         >
           {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? (
@@ -209,7 +273,12 @@ const Header = () => {
             </div>
           ) : (
             <div className="flex items-center gap-1">
-              <IoPersonOutline className="text-lg" />
+              <Image
+                src="/basic_profile.png"
+                alt="Profile Image"
+                width={20}
+                height={20}
+              />
               마이페이지
             </div>
           )}
@@ -221,7 +290,9 @@ const Header = () => {
         {menuItems.map((item, index) => (
           <NavbarMenuItem
             key={`${item}-${index}`}
-            className={`hover:text-blue-500 ${item.label === '관리자' && !isAdmin ? 'hidden' : ''}${item.label === '장바구니' && !isLoggedIn ? 'hidden' : ''}`}
+            className={`hover:text-blue-500 ${
+              item.label === "관리자" && !isAdmin ? "hidden" : ""
+            }${item.label === "장바구니" && !isLoggedIn ? "hidden" : ""}`}
             isActive={item.isOpen}
           >
             <Link
@@ -240,7 +311,9 @@ const Header = () => {
                   {item.icon}
                   {item.label}
                 </div>
-              ) : item.label}
+              ) : (
+                item.label
+              )}
             </Link>
           </NavbarMenuItem>
         ))}

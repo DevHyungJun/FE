@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import usePostLike from "@/hooks/usePostLike";
 import useUnlike from "@/hooks/useUnlike";
 import formatDate from "@/util/formatDate";
+import Swal from "sweetalert2";
 
 interface UserId {
   data: {
@@ -33,7 +34,7 @@ export default function ReviewItem({ review }: { review: any }) {
   const { mutate: unlikeMutate, isPending: unlikePending } = useUnlike();
 
   const catchedUserId = queryClient.getQueryData<UserId>(["authCheck"]);
-  const likeCheck = review.likedBy.includes(catchedUserId?.data.userId);
+  const likeCheck = review.likedBy.includes(catchedUserId?.data?.userId);
 
   const showMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -52,6 +53,15 @@ export default function ReviewItem({ review }: { review: any }) {
 
   const handlePostLike = () => {
     if (postLikePending || unlikePending) return;
+    if (!catchedUserId?.data?.isLoggedIn) {
+      Swal.fire({
+        icon: "error",
+        title: "로그인이 필요한 서비스입니다.",
+        timer: 1000,
+        showConfirmButton: false,
+      });
+      return;
+    }
 
     if (likeCheck) {
       unlikeMutate(review._id, {
