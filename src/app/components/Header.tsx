@@ -1,16 +1,21 @@
 'use client';
 
 import { usePathname } from "next/navigation";
-import { Navbar, NavbarBrand, NavbarMenuToggle, NavbarMenuItem, NavbarMenu, NavbarContent, NavbarItem, Button } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarMenuToggle, NavbarMenuItem, NavbarMenu, NavbarContent, NavbarItem, Badge } from "@nextui-org/react";
 import { useState } from "react";
 import { AcmeLogo } from "../../../public/AcmeLogo";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useAuthCheck from "@/hooks/useAuthCheck";
 import useLogout from "@/hooks/useLogout";
+import { CiLogout, CiLogin, CiShoppingCart, CiShoppingTag } from "react-icons/ci";
+import { IoPersonOutline, IoPersonAddOutline } from "react-icons/io5";
+import { VscTools } from "react-icons/vsc";
+import useGetCart from "@/hooks/useGetCart";
 
 const Header = () => {
   const router = useRouter();
+  const { data: cartData, isSuccess: cartIsSuccess, isLoading } = useGetCart();
 
   // 현재 경로 확인
   const pathname = usePathname();
@@ -18,6 +23,7 @@ const Header = () => {
   const isProductOpen = pathname.startsWith("/products");
   const isLoginOpen = pathname.startsWith("/login");
   const isSignupOpen = pathname.startsWith("/signup");
+  const isCartOpen = pathname.startsWith("/cart");
 
   // 메뉴 상태 관리
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,13 +31,36 @@ const Header = () => {
   // 인증 상태 확인
   const { data: authCheckData, isSuccess: authCheckIsSuccess } = useAuthCheck();
   // 로그아웃
-  const { mutate: logout, isPending: logoutIsPending } = useLogout();
+  const { mutate: logout } = useLogout();
+
+  const isAdmin = authCheckData?.data?.role === 'admin';
+  const isLoggedIn = authCheckData?.data?.isLoggedIn;
 
   // 데스크탑 메뉴 항목
   const navbarItems = [
-    { label: "제품", href: "/products", isActive: isProductOpen },
-    { label: "장바구니", href: "#" },
-    { label: "관리자", href: "/admin", isActive: isAdminOpen },
+    {
+      label: "제품",
+      href: "/products",
+      isActive: isProductOpen,
+      icon: <CiShoppingTag className="text-xl" />
+    },
+    {
+      label: "장바구니",
+      href: "/cart",
+      icon: cartData?.article_list.length ? <Badge content={cartData?.article_list.length}
+        size="sm"
+        color="primary"
+      >
+        <CiShoppingCart className="text-xl" />
+      </Badge> : <CiShoppingCart className="text-xl" />,
+      isActive: isCartOpen
+    },
+    {
+      label: "관리자",
+      href: "/admin",
+      isActive: isAdminOpen,
+      icon: <VscTools className="text-lg" />
+    },
   ];
 
   // 로그인 라우팅 혹은 로그아웃 처리
@@ -42,6 +71,7 @@ const Header = () => {
     }
     logout();
   };
+
   // 회원가입 라우팅 혹은 마이페이지 라우팅
   const handleSignupMypage = () => {
     if (!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
@@ -53,20 +83,42 @@ const Header = () => {
 
   // 모바일 메뉴 항목
   const menuItems = [
-    { label: "제품", href: "/products", isOpen: isProductOpen },
-    { label: "장바구니", href: "#" },
-    { label: "관리자", href: "/admin", isOpen: isAdminOpen },
+    {
+      label: "제품",
+      href: "/products",
+      isOpen: isProductOpen,
+      icon: <CiShoppingTag className="text-xl" />
+    },
+    {
+      label: "장바구니",
+      href: "/cart",
+      icon: cartData?.article_list.length ? <Badge content={cartData?.article_list.length}
+        size="sm"
+        color="primary"
+      >
+        <CiShoppingCart className="text-xl" />
+      </Badge> : <CiShoppingCart className="text-xl" />,
+      isOpen: isCartOpen
+    },
+    {
+      label: "관리자",
+      href: "/admin",
+      isOpen: isAdminOpen,
+      icon: <VscTools className="text-lg" />
+    },
     {
       label: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '로그인' : '로그아웃',
       href: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? "/login" : "#",
       isOpen: isLoginOpen,
-      onclick: handleLoginLogout
+      onclick: handleLoginLogout,
+      icon: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? <CiLogin className="text-lg" /> : <CiLogout className="text-lg" />
     },
     {
       label: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '회원가입' : '마이페이지',
       href: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? "/signup" : "#",
       isOpen: isSignupOpen,
-      onclick: handleSignupMypage
+      onclick: handleSignupMypage,
+      icon: !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? <IoPersonAddOutline className="text-lg" /> : <IoPersonOutline className="text-lg" />
     },
   ];
 
@@ -121,10 +173,15 @@ const Header = () => {
           <NavbarItem
             key={`${item}-${index}`}
             isActive={item.isActive}
-            className="hover:text-blue-500"
+            className={`hover:text-blue-500 text-sm ${item.label === '관리자' && !isAdmin ? 'hidden' : ''} ${item.label === '장바구니' && !isLoggedIn ? 'hidden' : ''}`}
           >
             <Link href={item.href}>
-              {item.label}
+              {item.icon ? (
+                <div className="flex items-center gap-1">
+                  {item.icon}
+                  {item.label}
+                </div>
+              ) : item.label}
             </Link>
           </NavbarItem>
         ))}
@@ -132,24 +189,39 @@ const Header = () => {
 
       <NavbarContent justify="end">
         <NavbarItem
-          className={`hidden sm:flex cursor-pointer hover:text-blue-500 ${isLoginOpen && 'font-semibold'}`}
+          className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${isLoginOpen && 'font-semibold'}`}
           onClick={handleLoginLogout}
         >
-          {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '로그인' : '로그아웃'}
+          {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? (
+            <div className="flex items-center gap-1"><CiLogin className="text-lg" />로그인</div>
+          ) :
+            (<div className="flex items-center gap-1"><CiLogout className="text-lg" />로그아웃</div>
+            )}
         </NavbarItem>
         <NavbarItem
-          className={`hidden sm:flex cursor-pointer hover:text-blue-500 ${isSignupOpen && 'font-semibold'}`}
+          className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${isSignupOpen && 'font-semibold'}`}
           onClick={handleSignupMypage}
         >
-          {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? '회원가입' : '마이페이지'}
+          {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? (
+            <div className="flex items-center gap-1">
+              <IoPersonAddOutline className="text-lg" />
+              회원가입
+            </div>
+          ) : (
+            <div className="flex items-center gap-1">
+              <IoPersonOutline className="text-lg" />
+              마이페이지
+            </div>
+          )}
         </NavbarItem>
       </NavbarContent>
 
-      <NavbarMenu className="bg-gray-50">
+      <NavbarMenu className="bg-gray-50 flex gap-3">
+        <div className="mt-1" />
         {menuItems.map((item, index) => (
           <NavbarMenuItem
             key={`${item}-${index}`}
-            className="hover:text-blue-500"
+            className={`hover:text-blue-500 ${item.label === '관리자' && !isAdmin ? 'hidden' : ''}${item.label === '장바구니' && !isLoggedIn ? 'hidden' : ''}`}
             isActive={item.isOpen}
           >
             <Link
@@ -163,7 +235,12 @@ const Header = () => {
                 setIsMenuOpen(false);
               }}
             >
-              {item.label}
+              {item.icon ? (
+                <div className="flex items-center gap-2">
+                  {item.icon}
+                  {item.label}
+                </div>
+              ) : item.label}
             </Link>
           </NavbarMenuItem>
         ))}

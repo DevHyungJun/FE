@@ -3,6 +3,7 @@
 import { Image } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import Slider from "react-slick";
+import formatPrice from "@/util/formatPrice";
 
 export default function MostPopular() {
     // 화면 width가 800px 이하라면 모바일로 판단
@@ -99,7 +100,7 @@ export default function MostPopular() {
                 </p>
                 <div>
                   <p className="font-semibold">
-                    {product.price}원
+                    {formatPrice(product.price)}
                   </p>
                   <p className="text-[11px] text-gray-400">
                     즉시 구매가

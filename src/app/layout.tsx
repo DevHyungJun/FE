@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "./components/Header";
 import { NextUIProvider } from "@nextui-org/react";
 import QueryProvider from "./QueryProvider";
+import ChatUI from "./components/chatUI";
 
 const inter = Noto_Sans_KR({ subsets: ["latin"] });
 
@@ -24,6 +25,7 @@ export default function RootLayout({
           <NextUIProvider>
             <Header />
             {children}
+            <ChatUI />
           </NextUIProvider>
         </QueryProvider>
       </body>

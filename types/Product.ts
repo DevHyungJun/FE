@@ -22,4 +22,5 @@ export type PostData = {
   __v: number;
   like_count: number;
   like_user_list: string[];
+  comment_list: string[];
 };
