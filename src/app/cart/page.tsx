@@ -72,22 +72,26 @@ export default function Cart() {
     });
   };
 
+  const cartOrFavoriteStyle = 'flex items-center gap-1 text-lg md:text-2xl font-semibold m-1 text-gray-900 bg-gray-100 p-2 rounded-md hover:opacity-100';
   return (
     <div className="flex flex-col gap-5 max-w-[1400px] mx-auto p-1">
-      <div className="flex gap-2">
-        <button className={`flex items-center gap-1 text-2xl font-semibold m-1 ${cartOrFavorite === 'cart' ? 'text-primary' : 'text-gray-700'}`}
-          onClick={() => setCartOrFavorite('cart')}>
-          <CiShoppingCart className="text-3xl" />
+      <div className="flex">
+        <button 
+          className={`${cartOrFavorite !== 'cart' && 'opacity-30 bg-white'} ${cartOrFavoriteStyle}`}
+          onClick={() => setCartOrFavorite('cart')}
+        >
+          <CiShoppingCart className="text-xl md:text-2xl" />
           장바구니
         </button>
-        <button className={`flex items-center gap-1 text-2xl font-semibold m-1 ${cartOrFavorite === 'favorite' ? 'text-primary' : 'text-gray-700'}`}
+        <button 
+          className={`${cartOrFavorite !== 'favorite' && 'opacity-30 bg-white'} ${cartOrFavoriteStyle}`}
           onClick={() => setCartOrFavorite('favorite')}>
-          <IoHeartSharp className="text-2xl" />
+          <IoHeartSharp className="text-xl md:text-2xl text-red-500" />
           좋아요한 상품
         </button>
       </div>
       {isLoading || likeLoading ? <LoadingSpinner /> : (
-        cartOrFavorite === 'favorite' ? <Favorite likeList={likeList?.data?.articles} /> : (
+        cartOrFavorite === 'favorite' ? <Favorite likeList={likeList?.data?.articles} setCartOrFavorite={setCartOrFavorite} /> : (
         <>
           {cartData?.article_list.length !== 0 ? (
             <>

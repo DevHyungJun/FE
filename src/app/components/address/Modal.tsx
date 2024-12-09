@@ -82,7 +82,7 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
         </Button>
         {isLoading && <LoadingSpinner />}
         {sortedData?.map((address: any) => (
-          <div className="mt-3">
+          <div className="mt-3" key={address?._id}>
             <div className="border-b-2 pb-2">
               <div className="flex items-center gap-2">
                 <p className="text-lg font-semibold">{address?.receiver_name}</p>
