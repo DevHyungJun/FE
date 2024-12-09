@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button } from "@nextui-org/react";
 import { useEffect, useState } from "react";
@@ -28,29 +28,33 @@ interface SelectedAddress {
   delivery_option: string;
   self_delivery_memo: string;
   _id: string;
-};
+}
 
 export default function Order({ params }: { params: { id: string } }) {
   const { id } = params;
   const { step, setStep } = storeModalShowstep();
   const { resetAddressData } = storeAddressData();
-  const [editId, setEditId] = useState('');
+  const [editId, setEditId] = useState("");
   const queryClient = useQueryClient();
-  const data = queryClient.getQueryData(['searchAddress']);
+  const data = queryClient.getQueryData(["searchAddress"]);
   const { data: orderData, isLoading } = useSingleOrderGet(id);
   const deliveryPrice = 3000;
   const [resultPrice, setResultPrice] = useState<number[]>([]);
   const totalPrice = resultPrice.reduce((acc, cur) => acc + cur, 0);
   const initialAddress = {} as SelectedAddress;
   const [selectedAddress, setSelectedAddress] = useState(initialAddress);
-  const { data: detailData } = useDetail(orderData?.data?.product_list[0]?.product);
+  const { data: detailData } = useDetail(
+    orderData?.data?.product_list[0]?.product
+  );
   const firstProductName = detailData?.data?.product?.product_name;
 
   useEffect(() => {
     if (!data) return;
-    const foundAddress = (data as { data: SelectedAddress[] })?.data?.find((address: SelectedAddress) => address._id === selectedAddress?._id);
+    const foundAddress = (data as { data: SelectedAddress[] })?.data?.find(
+      (address: SelectedAddress) => address._id === selectedAddress?._id
+    );
     if (foundAddress) {
-      setSelectedAddress(foundAddress)
+      setSelectedAddress(foundAddress);
     } else {
       setSelectedAddress(initialAddress);
     }
@@ -59,7 +63,7 @@ export default function Order({ params }: { params: { id: string } }) {
   useEffect(() => {
     if (step < 2) {
       resetAddressData();
-    };
+    }
   }, [step]);
 
   useEffect(() => {
@@ -86,7 +90,9 @@ export default function Order({ params }: { params: { id: string } }) {
       method: "card",
       orderId: `order-${randomOrderId()}`,
       amount: totalPrice + deliveryPrice,
-      goodsName: `${firstProductName} 외 ${orderData?.data?.product_list.length - 1}개`,
+      goodsName: `${firstProductName} 외 ${
+        orderData?.data?.product_list.length - 1
+      }개`,
       returnUrl: "https://pay.dev-nicepay.co.kr/v1/webhook/response",
       fnError: function (result: any) {
         alert("개발자확인용 : " + result.errorMsg + "");
@@ -97,16 +103,14 @@ export default function Order({ params }: { params: { id: string } }) {
   const handleClickPay = () => {
     if (!selectedAddress?._id) {
       Swal.fire({
-        icon: 'error',
-        title: '배송지 선택',
-        text: '배송지를 선택해주세요',
+        icon: "error",
+        title: "배송지 선택",
+        text: "배송지를 선택해주세요",
       });
       return;
-    };
+    }
     handlePay();
   };
-
-  console.log(resultPrice)
 
   return (
     <div className="flex flex-col gap-5 max-w-[1400px] mx-auto p-1">
@@ -114,7 +118,9 @@ export default function Order({ params }: { params: { id: string } }) {
       <h2 className="text-lg font-semibold">
         주문 상품 {orderData?.data?.product_list.length}개
       </h2>
-      {step === 1 && <Modal setSelectedAddress={setSelectedAddress} setEditId={setEditId} />}
+      {step === 1 && (
+        <Modal setSelectedAddress={setSelectedAddress} setEditId={setEditId} />
+      )}
       {step === 2 && <PostNewAddress />}
       {step === 3 && <DaumPost />}
       {step === 4 && <EditAddress editId={editId} />}
@@ -122,14 +128,24 @@ export default function Order({ params }: { params: { id: string } }) {
         <div className="border-y p-3 rounded-sm">
           <div className="flex justify-between">
             <div className="flex items-center gap-2 mb-5">
-              <p className="text-lg font-semibold">{selectedAddress?.receiver_name}</p>
-              {selectedAddress.is_default && <p className="text-xs bg-gray-100 text-gray-600 rounded-sm p-0.5">기본 배송지</p>}
+              <p className="text-lg font-semibold">
+                {selectedAddress?.receiver_name}
+              </p>
+              {selectedAddress.is_default && (
+                <p className="text-xs bg-gray-100 text-gray-600 rounded-sm p-0.5">
+                  기본 배송지
+                </p>
+              )}
             </div>
-            <Button size="sm" variant="flat" onClick={() => setStep(1)}>배송지 변경</Button>
+            <Button size="sm" variant="flat" onClick={() => setStep(1)}>
+              배송지 변경
+            </Button>
           </div>
 
           <div className="space-y-1 text-sm text-gray-800 font-medium">
-            <p>{selectedAddress?.main_address} {selectedAddress?.detail_address}</p>
+            <p>
+              {selectedAddress?.main_address} {selectedAddress?.detail_address}
+            </p>
             <p>{formatPhoneNumber(selectedAddress?.receiver_phone)}</p>
             <p>{selectedAddress?.shipping_memo}</p>
           </div>
@@ -138,19 +154,23 @@ export default function Order({ params }: { params: { id: string } }) {
         <div className="border-b p-3 rounded-sm">
           <div className="flex justify-between items-center mb-5">
             <p>배송지가 선택되지 않았습니다. 배송지를 선택해주세요</p>
-            <Button size="sm" variant="flat" onClick={() => setStep(1)}>배송지 선택</Button>
+            <Button size="sm" variant="flat" onClick={() => setStep(1)}>
+              배송지 선택
+            </Button>
           </div>
         </div>
       )}
 
-      {isLoading ? <LoadingSpinner /> : (
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
         <>
           {orderData?.data?.product_list?.map((product: any) => (
-            <OrderDetail 
-              id={product?.product} 
-              quantity={product?.quantity} 
-              setResultPrice={setResultPrice} 
-              key={`${product?.product}-${product?.quantity}`} 
+            <OrderDetail
+              id={product?.product}
+              quantity={product?.quantity}
+              setResultPrice={setResultPrice}
+              key={`${product?.product}-${product?.quantity}`}
             />
           ))}
         </>
@@ -170,13 +190,10 @@ export default function Order({ params }: { params: { id: string } }) {
           <p>{formatPrice(totalPrice + deliveryPrice)}</p>
         </div>
       </div>
-      <Button color="primary"
-        className="w-full mt-1"
-        onClick={handleClickPay}
-      >
+      <Button color="primary" className="w-full mt-1" onClick={handleClickPay}>
         {formatPrice(totalPrice + deliveryPrice)}
         <p>결제하기</p>
       </Button>
     </div>
-  )
-};
+  );
+}

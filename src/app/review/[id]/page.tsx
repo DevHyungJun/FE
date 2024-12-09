@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import useDetail from "@/hooks/useDetail";
 import { Button, Image, Input, Textarea } from "@nextui-org/react";
@@ -18,8 +18,8 @@ export default function Review({ params }: { params: ParamsId }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data, isLoading, isError, error } = useDetail(id);
   const item = data?.data;
-  const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
   const [rate, setRate] = useState<number>(0);
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -27,10 +27,10 @@ export default function Review({ params }: { params: ParamsId }) {
   const router = useRouter();
 
   useEffect(() => {
-    const objectUrls = images.map(file => URL.createObjectURL(file));
+    const objectUrls = images.map((file) => URL.createObjectURL(file));
     setPreviews(objectUrls);
 
-    return () => objectUrls.forEach(url => URL.revokeObjectURL(url));
+    return () => objectUrls.forEach((url) => URL.revokeObjectURL(url));
   }, [images]);
 
   const handleAddImagesClick = () => fileInputRef.current?.click();
@@ -38,26 +38,28 @@ export default function Review({ params }: { params: ParamsId }) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      setImages(prevImages => [...prevImages, ...Array.from(files)]);
+      setImages((prevImages) => [...prevImages, ...Array.from(files)]);
     }
   };
 
   const handleImageDelete = (index: number) => {
-    setImages(prevImages => prevImages.filter((_, i) => i !== index));
+    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
   const handlePostReview = () => {
     const formData = new FormData();
 
-    formData.append('title', title);
-    formData.append('content', content);
-    images.forEach((image) => formData.append('images', image));
-    formData.append('rate', rate.toString());
+    formData.append("title", title);
+    formData.append("content", content);
+    if (images.length > 0) {
+      images.forEach((image) => formData.append("images", image));
+    }
+    formData.append("rate", rate.toString());
 
-    if (images.length === 0 || !title || !content || !rate) {
+    if (!title || !content || !rate) {
       Swal.fire({
-        icon: 'error',
-        title: '모든 항목을 입력해주세요',
+        icon: "error",
+        title: "모든 항목을 입력해주세요",
         showConfirmButton: false,
         timer: 1500,
       });
@@ -67,13 +69,13 @@ export default function Review({ params }: { params: ParamsId }) {
     mutate(formData as any, {
       onSuccess: () => {
         Swal.fire({
-          icon: 'success',
-          title: '상품 등록 성공',
+          icon: "success",
+          title: "상품 등록 성공",
           showConfirmButton: false,
           timer: 1500,
         });
         router.back();
-      }
+      },
     });
   };
 
@@ -83,20 +85,30 @@ export default function Review({ params }: { params: ParamsId }) {
         <span className="font-semibold">{item?.product?.product_name} </span>
         상품평 작성하기
       </h1>
-      {isLoading ? <LoadingSpinner mode="1" /> : <div className="flex-grow p-3 rounded-sm">
-        <div className="flex gap-3">
-          <Link href={`/products/product-detail/${item?._id}`}>
-            <Image width={100}
-              alt="product image"
-              src={item?.product?.thumbnail}
-              className="rounded-md object-contain bg-gray-100"
-            />
-          </Link>
-          <Link href={`/products/product-detail/${item?._id}`} className="flex items-center hover:font-semibold">
-            <p className="text-xs md:text-sm">{item?.product?.product_name}</p>
-          </Link>
+      {isLoading ? (
+        <LoadingSpinner mode="1" />
+      ) : (
+        <div className="flex-grow p-3 rounded-sm">
+          <div className="flex gap-3">
+            <Link href={`/products/product-detail/${item?._id}`}>
+              <Image
+                width={100}
+                alt="product image"
+                src={item?.product?.thumbnail}
+                className="rounded-md object-contain bg-gray-100"
+              />
+            </Link>
+            <Link
+              href={`/products/product-detail/${item?._id}`}
+              className="flex items-center hover:font-semibold"
+            >
+              <p className="text-xs md:text-sm">
+                {item?.product?.product_name}
+              </p>
+            </Link>
+          </div>
         </div>
-      </div>}
+      )}
 
       <div className="space-y-3">
         <Input
@@ -108,7 +120,7 @@ export default function Review({ params }: { params: ParamsId }) {
           onChange={(e) => setTitle(e.target.value)}
         />
         <Textarea
-          label='상품평 본문'
+          label="상품평 본문"
           placeholder="상품평의 본문을 입력하세요."
           variant="bordered"
           maxRows={10}
@@ -123,7 +135,13 @@ export default function Review({ params }: { params: ParamsId }) {
           multiple
           className="hidden"
         />
-        <Button className="w-full" variant="bordered" onClick={handleAddImagesClick}>상품평 이미지 추가</Button>
+        <Button
+          className="w-full"
+          variant="bordered"
+          onClick={handleAddImagesClick}
+        >
+          상품평 이미지 추가
+        </Button>
         {previews.map((preview, index) => (
           <div key={index} className="relative mx-auto">
             <Image
@@ -142,19 +160,26 @@ export default function Review({ params }: { params: ParamsId }) {
             </button>
           </div>
         ))}
-        {!isLoading &&
+        {!isLoading && (
           <Rate
             value={rate}
             onChange={(value) => setRate(value)}
             style={{
-              fontSize: '32px',
-              textAlign: 'right',
-              width: '100%',
+              fontSize: "32px",
+              textAlign: "right",
+              width: "100%",
             }}
           />
-        }
-        <Button className="w-full" color="success" onClick={handlePostReview} isLoading={isPending}>상품평 등록</Button>
+        )}
+        <Button
+          className="w-full"
+          color="success"
+          onClick={handlePostReview}
+          isLoading={isPending}
+        >
+          상품평 등록
+        </Button>
       </div>
     </div>
-  )
-};
+  );
+}

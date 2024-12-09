@@ -27,6 +27,7 @@ import useOrder from "@/hooks/useOrder";
 import ReviewItem from "@/app/components/reviewItem";
 import useGetReview from "@/hooks/useGetReview";
 import Link from "next/link";
+import { Select, SelectSection, SelectItem } from "@nextui-org/select";
 
 type ParamsId = { id: string };
 type AuthCheckResponse = {
@@ -56,6 +57,12 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   const { mutate: addCartMutate } = useAddCart();
   const { mutate: orderMutate } = useOrder();
   const { data: reviewData, isLoading: reviewLoading } = useGetReview(id);
+
+  const orderingOptions = [
+    { label: "날짜순", value: "_createdAt" },
+    { label: "추천순", value: "likedBy" },
+    { label: "별점순", value: "rating" },
+  ];
 
   useEffect(() => {
     if (data?.data?.product?.images.length === 1) {
@@ -252,7 +259,23 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
                   상품평 작성하러 가기
                 </Button>
               </Link>
-              {reviewLoading && <LoadingSpinner mode="1" />}
+              {reviewLoading ? (
+                <LoadingSpinner mode="1" />
+              ) : (
+                <div className="flex justify-end">
+                  <Select
+                    items={orderingOptions}
+                    label="정렬"
+                    className="w-[100px]"
+                    variant="underlined"
+                    defaultSelectedKeys={["_createdAt"]}
+                  >
+                    {(item) => (
+                      <SelectItem key={item.value}>{item.label}</SelectItem>
+                    )}
+                  </Select>
+                </div>
+              )}
               {reviewData?.data?.length === 0 && (
                 <p className="text-center text-gray-500 py-10">
                   등록된 상품평이 없습니다.
