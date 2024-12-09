@@ -44,7 +44,8 @@ export default function Order({ params }: { params: { id: string } }) {
   const initialAddress = {} as SelectedAddress;
   const [selectedAddress, setSelectedAddress] = useState(initialAddress);
   const { data: detailData } = useDetail(
-    orderData?.data?.product_list[0]?.product
+    orderData?.data?.product_list[0]?.product,
+    !!orderData?.data?.product_list[0]?.product
   );
   const firstProductName = detailData?.data?.product?.product_name;
 
