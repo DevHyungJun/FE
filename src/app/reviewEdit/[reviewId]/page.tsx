@@ -52,11 +52,23 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
   const { mutate: aditReview, isPending: aditReviewIsPending } =
     useAditReview(reviewId);
 
-  const fetchImageAsFile = async (url: string) => {
-    const response = await fetch(url, { mode: "no-cors" });
-    const blob = await response.blob();
-    const file = new File([blob], "image.jpg", { type: blob.type });
-    setImages(() => [{ file: file, url: url, id: Date.now() }]);
+  const initializeImages = async (imageUrls: string[]) => {
+    setImages([]);
+
+    const newImages = await Promise.all(
+      imageUrls.map(async (url) => {
+        const response = await fetch(url, { mode: "no-cors" });
+        const blob = await response.blob();
+        const file = new File([blob], "image.jpg", { type: blob.type });
+        return {
+          file: file,
+          url: url,
+          id: Date.now() + Math.random(),
+        };
+      })
+    );
+
+    setImages(newImages);
   };
 
   useEffect(() => {
@@ -64,9 +76,7 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
       setRate(reviewData.data.rate);
       setValue("title", reviewData.data.title);
       setValue("content", reviewData.data.content);
-      reviewData.data.images?.forEach((image: string) => {
-        fetchImageAsFile(image);
-      });
+      initializeImages(reviewData.data.images);
     }
   }, [reviewData]);
 
@@ -112,7 +122,17 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
     form.append("title", formData.title);
     form.append("content", formData.content);
     form.append("rate", rate.toString());
-    images.forEach((image) => form.append("images", image.file));
+    const areImagesEqual =
+      reviewData.data.images.length === images.length &&
+      reviewData.data.images.every(
+        (url: string, index: number) => url === images[index].url
+      );
+    if (!areImagesEqual) {
+      images.forEach((image) => {
+        form.append("images", image.file);
+      });
+    }
+
     aditReview(form as any, {
       onSuccess: () => {
         queryClient.invalidateQueries({
@@ -187,7 +207,7 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
           >
             상품평 이미지 추가
           </Button>
-          {images.map((image, index) => (
+          {images.map((image) => (
             <div
               key={image.id}
               className="flex justify-center relative mx-auto"
