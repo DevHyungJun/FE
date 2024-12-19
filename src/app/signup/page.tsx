@@ -18,6 +18,7 @@ import useSignup from "@/hooks/useSignup";
 import { useCallback, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { IoPersonAddOutline } from "react-icons/io5";
+import { IoMdMan, IoMdWoman } from "react-icons/io";
 
 const Signup = () => {
   const {
@@ -35,6 +36,7 @@ const Signup = () => {
   const [countdown, setCountdown] = useState<number | null>(null);
   // 인증시간 만료 메세지 여부
   const [expriedMessage, setExpriedMessage] = useState(false);
+  const [gender, setGender] = useState("");
 
   // 커스텀 훅 사용
   const sendMail = useSendMail();
@@ -235,6 +237,27 @@ const Signup = () => {
           name="passwordConfirm"
           render={({ message }) => <p className={errorS}>{message}</p>}
         />
+        <div className="flex gap-2">
+          <button
+            className={`flex items-center bg-gray-100 ${
+              gender === "man" && "bg-blue-200"
+            } p-2 rounded-md text-gray-900 hover:bg-blue-200`}
+          >
+            남성
+            <IoMdMan
+              className="text-2xl text-blue-500"
+              onClick={() => setGender("man")}
+            />
+          </button>
+          <button
+            className={`flex items-center bg-gray-100 ${
+              gender === "woman" && "bg-pink-200"
+            } p-2 rounded-md text-gray-900 hover:bg-pink-200`}
+            onClick={() => setGender("woman")}
+          >
+            여성 <IoMdWoman className="text-2xl text-pink-500" />
+          </button>
+        </div>
         {/* 회원가입 버튼 */}
         <div className="flex justify-end">
           <Button type="submit" color="primary" isLoading={signup.isPending}>
