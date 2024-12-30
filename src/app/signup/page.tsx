@@ -164,6 +164,7 @@ const Signup = () => {
             label="이메일"
             variant="underlined"
             required
+            isClearable
             {...register("email", emailV)}
             isDisabled={confirmMail.isSuccess}
           />
@@ -189,6 +190,7 @@ const Signup = () => {
             label="이메일 인증"
             variant="underlined"
             required
+            isClearable
             {...register("emailConfirm", emailConfirmV)}
             isDisabled={confirmMail.isSuccess}
           />
@@ -220,6 +222,7 @@ const Signup = () => {
             label="유저이름"
             variant="underlined"
             required
+            isClearable
             {...register("username", usernameV)}
           />
           <Button
@@ -242,6 +245,7 @@ const Signup = () => {
           label="비밀번호"
           variant="underlined"
           required
+          isClearable
           {...register("password", passwordV)}
         />
         <ErrorMessage
@@ -255,6 +259,7 @@ const Signup = () => {
           label="비밀번호 확인"
           variant="underlined"
           required
+          isClearable
           {...register("passwordConfirm", passwordConfirmV)}
         />
         <ErrorMessage

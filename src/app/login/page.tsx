@@ -31,7 +31,7 @@ const Login = () => {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["authCheck"] });
         queryClient.invalidateQueries({ queryKey: ["getCart"] });
-        router.back();
+        router.push("/");
       },
       onError: (error) => {
         Swal.fire({
@@ -60,6 +60,7 @@ const Login = () => {
           label="이메일을 입력해주세요"
           variant="underlined"
           required
+          isClearable
           {...register("email", emailV)}
         />
         <ErrorMessage
@@ -71,6 +72,7 @@ const Login = () => {
           type="password"
           label="비밀번호를 입력해주세요"
           variant="underlined"
+          isClearable
           {...register("password", passwordV)}
         />
         <ErrorMessage

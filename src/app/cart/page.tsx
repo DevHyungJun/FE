@@ -74,7 +74,7 @@ export default function Cart() {
       },
     });
   };
-
+  console.log(cartData);
   const cartOrFavoriteStyle =
     "flex items-center gap-1 text-lg md:text-2xl font-semibold m-1 text-gray-900 border-b-4 p-2 hover:opacity-100";
   return (
