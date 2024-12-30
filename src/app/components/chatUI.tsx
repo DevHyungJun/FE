@@ -244,6 +244,7 @@ export default function ChatUI() {
         method: "POST",
       });
       const data = await res.json();
+      console.log(data, "data");
       setThreadId(data.threadId); // threadId가 제대로 설정되는지 콘솔로 확인
       console.log("Created thread ID:", data.threadId);
     };
@@ -253,7 +254,7 @@ export default function ChatUI() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userInput.trim() || !threadId) return; // threadId 체크 추가
-
+    console.log("hi");
     console.log("Using thread ID:", threadId); // 사용되는 threadId 확인
 
     // Add user message
@@ -352,7 +353,10 @@ export default function ChatUI() {
 
           <form
             className="flex items-center gap-1 w-[390px] mx-auto p-2"
-            onSubmit={handleSubmit}
+            onSubmit={(data) => {
+              console.log("hi");
+              handleSubmit(data);
+            }}
           >
             <input
               type="text"
