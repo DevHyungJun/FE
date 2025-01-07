@@ -1,31 +1,43 @@
 "use client";
 
-import { Button } from "@nextui-org/react";
-import { IoClose } from "react-icons/io5";
-import useSearchAddress from "@/hooks/useSearchAddress";
-import Swal from "sweetalert2";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
 import useDeleteAddress from "@/hooks/useDeleteAdress";
-import { useQueryClient } from "@tanstack/react-query";
-import { storeModalShowstep } from "@/store";
-import LoadingSpinner from "../LoadingSpinner";
+import useSearchAddress from "@/hooks/useSearchAddress";
 import formatPhoneNumber from "@/util/formatPhoneNumber";
-import { storeEditMode } from "@/store";
+import { Button } from "@nextui-org/react";
+import { useQueryClient } from "@tanstack/react-query";
+import Swal from "sweetalert2";
+import PostNewAddress from "@/app/components/address/PostNewAddress";
+import EditAddress from "@/app/components/address/EditAddress";
+import DaumPost from "@/app/components/address/DaumPost";
+import { storeAddressData, storeEditMode, storeModalShowstep } from "@/store";
+import { useEffect, useState } from "react";
 
-interface ModalProps {
-  setSelectedAddress: (address: any) => void;
-  setEditId: (id: string) => void;
-}
-
-const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
+export default function MpAddress() {
+  const queryClient = useQueryClient();
   const { data, isLoading } = useSearchAddress();
   const { mutate: deleteAddress } = useDeleteAddress();
-  const queryClient = useQueryClient();
-  const { setStep } = storeModalShowstep();
+  const [address, setAddress] = useState("");
+  const { setStep, step } = storeModalShowstep();
+  const { resetAddressData } = storeAddressData();
   const { setEditMode } = storeEditMode();
-
   const sortedData = [...(data?.data || [])].sort(
     (a: any, b: any) => b.is_default - a.is_default
   );
+
+  useEffect(() => {
+    // 모달 켜졌을 때 배경 스크롤 막기
+    if (step > 0) {
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    } else {
+      document.body.style.touchAction = "auto";
+      document.body.style.overflow = "auto";
+    }
+    if (step === 0) {
+      resetAddressData();
+    }
+  }, [step]);
 
   const handleDeleteAdress = (id: string) => {
     deleteAddress(id, {
@@ -47,34 +59,21 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
     setEditMode(false);
   };
 
-  const handleSelectAddress = (address: any) => {
-    setSelectedAddress(address);
-    setStep(0);
-  };
-
-  const handleEditAddress = (id: string) => {
-    setEditId(id);
+  const handleEditAddress = () => {
     setStep(4);
     setEditMode(true);
   };
 
+  const btnStyle = "border px-2 py-0.5 rounded-md text-sm bold";
   return (
-    <div className="fixed p-1 inset-0 flex items-center justify-center z-50">
-      <div
-        className="fixed inset-0 bg-black opacity-50"
-        onClick={() => setStep(0)}
-      />
-      <div className="relative overflow-y-auto scrollbar-hide w-[800px] min-h-[443px] max-h-[600px] p-3 bg-white z-10 rounded-lg">
+    <div className="mx-auto max-w-[800px] text-gray-800">
+      <div className="w-full p-5 bg-white rounded-md">
         <div className="flex justify-between items-start">
-          <h1 className="text-lg font-semibold mb-5">배송지 정보</h1>
-          <button onClick={() => setStep(0)}>
-            <IoClose className="text-2xl" />
-          </button>
+          <h1 className="text-2xl extra-bold my-5">배송지 정보</h1>
         </div>
         <Button
           variant="bordered"
-          className="w-full"
-          size="sm"
+          className="w-full mb-5 bold"
           onClick={handleNewAddress}
         >
           배송지 추가하기
@@ -89,11 +88,9 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
           <div className="mt-3" key={address?._id}>
             <div className="border-b-2 pb-2">
               <div className="flex items-center gap-2">
-                <p className="text-lg font-semibold">
-                  {address?.receiver_name}
-                </p>
+                <p className="text-lg bold">{address?.receiver_name}</p>
                 {address?.is_default && (
-                  <p className="text-xs bg-gray-100 text-gray-600 rounded-sm p-0.5">
+                  <p className="text-xs bg-gray-100 text-gray-600 rounded-sm p-0.5 light">
                     기본 배송지
                   </p>
                 )}
@@ -108,19 +105,16 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
               </div>
               <div className="space-x-0.5">
                 <button
-                  className="border px-2 py-0.5 rounded-md text-sm"
-                  onClick={() => handleEditAddress(address?._id)}
+                  className={btnStyle}
+                  onClick={() => {
+                    handleEditAddress();
+                    setAddress(address?._id);
+                  }}
                 >
                   수정
                 </button>
                 <button
-                  className="border px-2 py-0.5 rounded-md text-sm"
-                  onClick={() => handleSelectAddress(address)}
-                >
-                  선택
-                </button>
-                <button
-                  className="border px-2 py-0.5 rounded-md text-sm"
+                  className={btnStyle}
                   onClick={() => handleDeleteAdress(address?._id)}
                 >
                   삭제
@@ -130,8 +124,9 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
           </div>
         ))}
       </div>
+      {step === 2 && <PostNewAddress mypage={true} />}
+      {step === 3 && <DaumPost />}
+      {step === 4 && <EditAddress editId={address} mypage={true} />}
     </div>
   );
-};
-
-export default Modal;
+}

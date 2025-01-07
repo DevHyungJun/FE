@@ -84,7 +84,7 @@ export default function EditPassword() {
         className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <h1 className="flex items-center gap-2 text-2xl font-semibold m-1">
+        <h1 className="flex items-center gap-2 text-2xl extra-bold my-5">
           비밀번호 변경
         </h1>
         {passwordInputObject.map((input) => (
@@ -105,10 +105,10 @@ export default function EditPassword() {
           </>
         ))}
         <div className="w-full flex gap-1 mt-5">
-          <Button className="w-1/2" onClick={handleBack}>
+          <Button className="w-1/2 bold" onClick={handleBack}>
             취소
           </Button>
-          <Button className="w-1/2" color="primary" type="submit">
+          <Button className="w-1/2 bold" color="primary" type="submit">
             비밀번호 변경
           </Button>
         </div>

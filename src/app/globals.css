@@ -1,11 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import '~slick-carousel/slick/slick.css';
-@import '~slick-carousel/slick/slick-theme.css';
+@import "~slick-carousel/slick/slick.css";
+@import "~slick-carousel/slick/slick-theme.css";
+
+@font-face {
+  font-family: "NanumSquareLight";
+  src: url("/fonts/NanumSquareL.otf") format("opentype");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "NanumSquareRegular";
+  src: url("/fonts/NanumSquareR.otf") format("opentype");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "NanumSquareBold";
+  src: url("/fonts/NanumSquareB.otf") format("opentype");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "NanumSquareExtraBold";
+  src: url("/fonts/NanumSquareEB.otf") format("opentype");
+  font-style: normal;
+}
 
 body {
   overflow-x: hidden;
+}
+
+.light {
+  font-family: "NanumSquareLight";
+}
+
+.regular {
+  font-family: "NanumSquareRegular";
+}
+
+.bold {
+  font-family: "NanumSquareBold";
+}
+
+.extra-bold {
+  font-family: "NanumSquareExtraBold";
 }
 
 .two-line-ellipsis {
@@ -22,7 +62,7 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
-};
+}
 
 .slick-dots {
   cursor: pointer;

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Input, Button } from "@nextui-org/react";
 import { useState, useEffect, useRef } from "react";
@@ -17,11 +17,11 @@ export default function NewItem() {
 
   useEffect(() => {
     // 이미지 미리보기 URL 생성
-    const objectUrls = images.map(file => URL.createObjectURL(file));
+    const objectUrls = images.map((file) => URL.createObjectURL(file));
     setPreviews(objectUrls);
 
     // 컴포넌트 언마운트 시 URL 해제
-    return () => objectUrls.forEach(url => URL.revokeObjectURL(url));
+    return () => objectUrls.forEach((url) => URL.revokeObjectURL(url));
   }, [images]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -29,65 +29,69 @@ export default function NewItem() {
 
     const formData = new FormData();
 
-    formData.append('product_name', e.currentTarget.product_name.value);
-    formData.append('price', e.currentTarget.price.value);
-    formData.append('stock_quantity', e.currentTarget.stock_quantity.value);
+    formData.append("product_name", e.currentTarget.product_name.value);
+    formData.append("price", e.currentTarget.price.value);
+    formData.append("stock_quantity", e.currentTarget.stock_quantity.value);
     images.forEach((image, index) => {
-      formData.append('images', image);
+      formData.append("images", image);
       if (index === 0) {
-        formData.append('thumbnail', image);
+        formData.append("thumbnail", image);
       }
     });
     newItem.mutate(formData as any, {
       onSuccess: () => {
         Swal.fire({
-          icon: 'success',
-          title: '상품 등록 성공',
+          icon: "success",
+          title: "상품 등록 성공",
           showConfirmButton: false,
           timer: 1500,
         });
-        router.push('/admin/item-list');
-      }
+        router.push("/admin/item-list");
+      },
     });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      setImages(prevImages => [...prevImages, ...Array.from(files)]);
+      setImages((prevImages) => [...prevImages, ...Array.from(files)]);
     }
   };
 
   const handleImageDelete = (index: number) => {
-    setImages(prevImages => prevImages.filter((_, i) => i !== index));
+    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
   const handleAddImagesClick = () => fileInputRef.current?.click();
 
   return (
     <div>
-      <form className="flex flex-col gap-3 max-w-[800px] mx-auto"
-        onSubmit={handleSubmit}>
-        <h1>신규 상품 등록</h1>
+      <form
+        className="flex flex-col gap-3 max-w-[800px] mx-auto"
+        onSubmit={handleSubmit}
+      >
+        <h1 className="flex items-center gap-2 text-2xl extra-bold my-5">
+          신규 상품 등록
+        </h1>
 
         <Input
           label="상품명"
           placeholder="상품명을 입력하세요"
           name="product_name"
         />
-        <Input 
+        <Input
           label="가격"
           type="number"
           placeholder="상품 가격을 입력하세요"
           name="price"
         />
-        <Input 
+        <Input
           label="수량"
           type="number"
           placeholder="상품 수량을 입력하세요"
           name="stock_quantity"
         />
-        <input 
+        <input
           type="file"
           ref={fileInputRef}
           onChange={handleImageChange}
@@ -95,19 +99,24 @@ export default function NewItem() {
           multiple
           className="hidden"
         />
-        <Button type="button" color="success" onClick={handleAddImagesClick}>
+        <Button
+          type="button"
+          color="success"
+          onClick={handleAddImagesClick}
+          className="bold"
+        >
           이미지 추가
         </Button>
         <div className="flex flex-wrap gap-2 mt-2">
           {previews.map((preview, index) => (
             <div key={index} className="relative mx-auto">
-              <Image 
-                src={preview} 
+              <Image
+                src={preview}
                 alt={`Preview ${index + 1}`}
                 className="object-cover"
                 width={500}
                 height={500}
-                />
+              />
               <button
                 type="button"
                 onClick={() => handleImageDelete(index)}
@@ -118,10 +127,10 @@ export default function NewItem() {
             </div>
           ))}
         </div>
-        <Button type="submit" color="primary">
+        <Button type="submit" color="primary" className="bold">
           상품 등록
         </Button>
       </form>
     </div>
-  )
+  );
 }

@@ -38,7 +38,7 @@ export default function Order({ params }: { params: { id: string } }) {
   const queryClient = useQueryClient();
   const data = queryClient.getQueryData(["searchAddress"]);
   const { data: orderData, isLoading } = useSingleOrderGet(id);
-  const deliveryPrice = 3000;
+  const DELIVERY_PRICE = 3000;
   const [resultPrice, setResultPrice] = useState<number[]>([]);
   const totalPrice = resultPrice.reduce((acc, cur) => acc + cur, 0);
   const initialAddress = {} as SelectedAddress;
@@ -48,6 +48,17 @@ export default function Order({ params }: { params: { id: string } }) {
     !!orderData?.data?.product_list[0]?.product
   );
   const firstProductName = detailData?.data?.product?.product_name;
+
+  useEffect(() => {
+    // 모달 켜졌을 때 배경 스크롤 막기
+    if (step > 0) {
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    } else {
+      document.body.style.touchAction = "auto";
+      document.body.style.overflow = "auto";
+    }
+  }, [step]);
 
   useEffect(() => {
     if (!data) return;
@@ -90,7 +101,7 @@ export default function Order({ params }: { params: { id: string } }) {
       clientId: process.env.NEXT_PUBLIC_NICEPAY_CLIENT_ID,
       method: "card",
       orderId: `order-${randomOrderId()}`,
-      amount: totalPrice + deliveryPrice,
+      amount: totalPrice + DELIVERY_PRICE,
       goodsName: `${firstProductName} 외 ${
         orderData?.data?.product_list.length - 1
       }개`,
@@ -184,15 +195,15 @@ export default function Order({ params }: { params: { id: string } }) {
         </div>
         <div className="flex justify-between text-sm">
           <p className="text-gray-500">배송비</p>
-          <p>{formatPrice(deliveryPrice)}</p>
+          <p>{formatPrice(DELIVERY_PRICE)}</p>
         </div>
         <div className="flex justify-between font-semibold">
           <h3>총 결제 금액</h3>
-          <p>{formatPrice(totalPrice + deliveryPrice)}</p>
+          <p>{formatPrice(totalPrice + DELIVERY_PRICE)}</p>
         </div>
       </div>
       <Button color="primary" className="w-full mt-1" onClick={handleClickPay}>
-        {formatPrice(totalPrice + deliveryPrice)}
+        {formatPrice(totalPrice + DELIVERY_PRICE)}
         <p>결제하기</p>
       </Button>
     </div>

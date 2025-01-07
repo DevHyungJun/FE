@@ -65,7 +65,7 @@ export default function ItemList() {
 
   return (
     <div className="max-w-[1200px] mx-auto">
-      <h2 className="text-2xl font-semibold m-1">
+      <h2 className="flex items-center gap-2 text-2xl extra-bold my-5">
         {isSuccess
           ? products?.length === 0
             ? "등록된 상품이 없습니다"
@@ -88,15 +88,16 @@ export default function ItemList() {
                 className="rounded-md object-contain max-h-[300px] sm:max-h-[500px]"
               />
               <div>
-                <p className="font-semibold text-sm md:text-lg">
-                  {item.product_name}
-                </p>
-                <p className="font-semibold text-xs md:text-medium">
+                <p className="bold text-sm md:text-lg">{item.product_name}</p>
+                <p className="text-xs md:text-medium">
                   {formatPrice(item.price)}
                 </p>
-                <div className="flex justify-between text-xs">
+                <div className="flex justify-between text-sm light">
                   <p>{formatDate(item.createdAt)}</p>
-                  <p>{item.stock_quantity}개의 재고</p>
+                  <p>
+                    <span className="regular">{item.stock_quantity}</span>개의
+                    재고
+                  </p>
                 </div>
               </div>
             </div>
@@ -107,7 +108,7 @@ export default function ItemList() {
       <div ref={ref} className="h-10">
         {isLoading && products.length !== 0 && <LoadingSpinner mode="1" />}
       </div>
-      {!hasMore && <div className="bg-blue-500 w-full h-10" />}
+      {!hasMore && <div className="bg-gray-500 w-full h-10" />}
     </div>
   );
 }

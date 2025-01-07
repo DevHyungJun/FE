@@ -51,7 +51,7 @@ const Login = () => {
         className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="flex items-center gap-2 text-2xl font-semibold m-1">
+        <div className="flex items-center gap-2 text-2xl extra-bold m-1">
           <CiLogin />
           로그인
         </div>
@@ -85,12 +85,17 @@ const Login = () => {
             <p>계정이 없으신가요?</p>
             <Link
               href="/signup"
-              className="ml-1 font-semibold hover:text-blue-500"
+              className="ml-1 extra-bold hover:text-blue-500"
             >
               회원가입
             </Link>
           </div>
-          <Button type="submit" color="primary" isLoading={login.isPending}>
+          <Button
+            type="submit"
+            color="primary"
+            isLoading={login.isPending}
+            className="bold"
+          >
             로그인
           </Button>
         </div>

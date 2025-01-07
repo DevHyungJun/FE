@@ -26,7 +26,7 @@ export default function Cart() {
     .filter((priceObj) => selectedItems.includes(priceObj.id))
     .reduce((acc, curr) => acc + curr.price, 0);
   const { mutate: removeMutate } = useRemoveCart();
-  const { mutate: orderMutate } = useOrder();
+  const { mutate: orderMutate, isPending: orderIsPending } = useOrder();
   const [cartOrFavorite, setCartOrFavorite] = useState("cart");
   const { data: likeList, isLoading: likeLoading } = useLikeList();
 
@@ -74,9 +74,9 @@ export default function Cart() {
       },
     });
   };
-  console.log(cartData);
+
   const cartOrFavoriteStyle =
-    "flex items-center gap-1 text-lg md:text-2xl font-semibold m-1 text-gray-900 border-b-4 p-2 hover:opacity-100";
+    "flex items-center gap-1 text-lg md:text-2xl extra-bold m-1 text-gray-900 border-b-4 p-2 hover:opacity-100";
   return (
     <div className="flex flex-col gap-5 max-w-[1400px] mx-auto p-1">
       <div className="flex">
@@ -110,7 +110,7 @@ export default function Cart() {
         <>
           {cartData?.article_list.length !== 0 ? (
             <>
-              <h2 className="text-lg font-semibold mb-5">
+              <h2 className="text-lg bold mb-5">
                 장바구니 상품 {cartData?.article_list.length}개
               </h2>
               <div className="flex justify-between">
@@ -120,10 +120,10 @@ export default function Cart() {
                   }
                   onChange={handleAllCheckClick}
                 >
-                  <p className="text-sm font-semibold">전체 선택</p>
+                  <p className="text-sm bold">전체 선택</p>
                 </Checkbox>
                 <button className="mr-1" onClick={selectedRemove}>
-                  <p className="text-sm font-semibold">선택 삭제</p>
+                  <p className="text-sm bold">선택 삭제</p>
                 </button>
               </div>
               <CheckboxGroup value={selectedItems}>
@@ -150,8 +150,9 @@ export default function Cart() {
               </CheckboxGroup>
               <Button
                 color="primary"
-                className="w-full mt-1"
+                className="w-full mt-1 bold"
                 isDisabled={totalPrice === 0}
+                isLoading={orderIsPending}
                 onClick={handleOrder}
               >
                 <p>
@@ -162,10 +163,12 @@ export default function Cart() {
             </>
           ) : (
             <div className="flex flex-col items-center gap-3 mt-10">
-              <h2 className="text-lg font-semibold m-1">
+              <h2 className="text-lg bold m-1">
                 장바구니에 담긴 상품이 없습니다.
               </h2>
-              <p className="text-gray-700 text-sm">상품을 추가해보세요.</p>
+              <p className="text-gray-700 text-sm light">
+                상품을 추가해보세요.
+              </p>
               <button
                 className="text-sm border p-1 rounded-md mt-3"
                 onClick={() => setCartOrFavorite("favorite")}
@@ -173,9 +176,7 @@ export default function Cart() {
                 좋아요한 상품 보기
               </button>
               <div className="mt-40 border-t-2">
-                <h2 className="text-lg font-semibold mt-2">
-                  이런 상품은 어떠세요?
-                </h2>
+                <h2 className="text-lg bold mt-2">이런 상품은 어떠세요?</h2>
                 <div className="flex gap-2 mt-3">
                   <div>
                     <img src="https://via.placeholder.com/150" alt="product" />
@@ -210,7 +211,7 @@ export default function Cart() {
                 </div>
               </div>
               <Link href="/products" className="w-full mt-10" passHref>
-                <Button color="primary" className="w-full">
+                <Button color="primary" className="w-full bold">
                   쇼핑 계속하기
                 </Button>
               </Link>

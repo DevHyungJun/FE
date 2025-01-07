@@ -83,11 +83,11 @@ export default function EditUsername() {
           className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <h1 className="flex items-center gap-2 text-2xl font-semibold m-1">
+          <h1 className="flex items-center gap-2 text-2xl extra-bold my-5">
             닉네임 변경
           </h1>
-          <p className="text-sm m-1 text-red-500">
-            닉네임 변경 시 재로그인을 해주셔야 합니다.
+          <p className="text-sm m-1 light text-red-500">
+            *닉네임 변경 시 재로그인을 해주셔야 합니다.
           </p>
           <Input
             label="변경할 닉네임을 입력해주세요"
@@ -102,11 +102,11 @@ export default function EditUsername() {
             render={({ message }) => <p className={errorS}>{message}</p>}
           />
           <div className="w-full flex gap-1 mt-5">
-            <Button className="w-1/2" onClick={handleBack}>
+            <Button className="w-1/2 bold" onClick={handleBack}>
               취소
             </Button>
             <Button
-              className="w-1/2"
+              className="w-1/2 bold"
               color="primary"
               type="submit"
               isLoading={isPending}

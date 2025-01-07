@@ -55,6 +55,7 @@ const Header = () => {
   const isLoginOpen = pathname.startsWith("/login");
   const isSignupOpen = pathname.startsWith("/signup");
   const isCartOpen = pathname.startsWith("/cart");
+  const isMypageOpen = pathname.startsWith("/mypage");
 
   // 메뉴 상태 관리
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -156,7 +157,7 @@ const Header = () => {
         !authCheckIsSuccess || authCheckData?.isLoggedIn === false
           ? "/signup"
           : "/mypage",
-      isOpen: isSignupOpen,
+      isOpen: isSignupOpen || isMypageOpen,
       onclick: handleSignupMypage,
       icon:
         !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? (
@@ -207,7 +208,7 @@ const Header = () => {
         <NavbarBrand>
           <Link href="/" className="flex items-center">
             <AcmeLogo />
-            <p className="font-bold text-inherit">SHOP</p>
+            <p className="extra-bold text-inherit">SHOP</p>
           </Link>
         </NavbarBrand>
       </NavbarContent>
@@ -216,7 +217,7 @@ const Header = () => {
         <NavbarBrand>
           <Link href={"/"} className="flex items-center">
             <AcmeLogo />
-            <p className="font-bold text-inherit">SHOP</p>
+            <p className="extra-bold text-inherit">SHOP</p>
           </Link>
         </NavbarBrand>
         {navbarItems.map((item, index) => (
@@ -244,7 +245,7 @@ const Header = () => {
       <NavbarContent justify="end">
         <NavbarItem
           className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${
-            isLoginOpen && "font-semibold"
+            isLoginOpen && "bold"
           }`}
           onClick={handleLoginLogout}
         >
@@ -262,7 +263,7 @@ const Header = () => {
         </NavbarItem>
         <NavbarItem
           className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${
-            isSignupOpen && "font-semibold"
+            isSignupOpen || isMypageOpen ? "bold" : ""
           }`}
           onClick={handleSignupMypage}
         >

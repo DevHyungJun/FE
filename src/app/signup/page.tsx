@@ -153,7 +153,7 @@ const Signup = () => {
         className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="flex items-center gap-2 text-2xl font-semibold m-1">
+        <div className="flex items-center gap-2 text-2xl extra-bold m-1">
           <IoPersonAddOutline />
           회원가입
         </div>
@@ -174,6 +174,7 @@ const Signup = () => {
             onClick={handleSendMail}
             isLoading={sendMail.isPending}
             isDisabled={confirmMail.isSuccess}
+            className="bold"
           >
             전송
           </Button>
@@ -201,6 +202,7 @@ const Signup = () => {
             onClick={handleMailConfirm}
             isLoading={confirmMail.isPending}
             isDisabled={confirmMail.isSuccess}
+            className="bold"
           >
             인증
           </Button>
@@ -230,6 +232,7 @@ const Signup = () => {
             size="sm"
             isLoading={usernameCheck.isPending}
             onClick={handleUsernameCheck}
+            className="bold"
           >
             중복확인
           </Button>
@@ -267,7 +270,7 @@ const Signup = () => {
           name="passwordConfirm"
           render={({ message }) => <p className={errorS}>{message}</p>}
         />
-        <div className="flex gap-2 mb-5">
+        <div className="flex gap-2 mb-5 bold">
           <div
             className={`flex items-center border ${
               gender === "man" && "bg-blue-100"
@@ -302,7 +305,12 @@ const Signup = () => {
         </Select>
         {/* 회원가입 버튼 */}
         <div className="flex justify-end">
-          <Button type="submit" color="primary" isLoading={signup.isPending}>
+          <Button
+            type="submit"
+            color="primary"
+            isLoading={signup.isPending}
+            className="bold"
+          >
             회원가입
           </Button>
         </div>

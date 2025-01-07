@@ -82,10 +82,10 @@ export default function CartProductDetail({
                   <IoIosClose />
                 </button>
               </div>
-              <p className="text-gray-500">
+              <p className="text-gray-500 light">
                 {formatPrice(productData?.data?.product?.price)} / {quantity}개
               </p>
-              <p className="font-semibold">
+              <p className="bold">
                 {formatPrice(productData?.data?.product?.price * quantity)}
               </p>
             </>

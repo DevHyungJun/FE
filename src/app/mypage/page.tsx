@@ -21,12 +21,12 @@ export default function MyPage() {
       subLabel: "등록된 비밀번호를 변경합니다.",
     },
     {
-      href: "/",
+      href: "/mypage/mp-address",
       label: "배송지 관리",
       subLabel: "등록된 배송지를 삭제/수정합니다.",
     },
     {
-      href: "/",
+      href: `/mypage/mp-review`,
       label: "리뷰 관리",
       subLabel: "작성한 리뷰를 수정/삭제합니다.",
     },
@@ -50,19 +50,22 @@ export default function MyPage() {
             width={50}
             height={50}
           />
-          <div className="space-y-1 font-[550] text-gray-800">
-            <p>{data?.data?.email}</p>
-            <p className="text-sm">
-              <span className="text-gray-400">닉네임:</span>
+          <div className="space-y-1 text-gray-700">
+            <p className="extra-bold">{data?.data?.email}</p>
+            <p className="text-sm bold">
+              <span className="text-gray-400 light">닉네임:</span>
               {data?.data?.username}
             </p>
           </div>
         </div>
       )}
       <div className="w-full flex gap-1 mt-2">
-        <button className="text-sm border p-2 w-full rounded-md hover:font-semibold">
-          프로필 이미지 변경
-        </button>
+        <Link
+          href="mypage/user-image"
+          className="text-sm border p-2 w-full rounded-md hover:font-semibold"
+        >
+          <p className="text-center">프로필 이미지 변경</p>
+        </Link>
         <Link
           className="text-sm border p-2 w-full rounded-md hover:font-semibold"
           href="mypage/edit-username"
