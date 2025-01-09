@@ -8,7 +8,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function MyPage() {
   const { data, isLoading } = useGetUserInfo();
-
+  const profileImage = data?.data?.profile_image;
   const links = [
     {
       href: "/",
@@ -37,7 +37,6 @@ export default function MyPage() {
         "쇼핑몰에 등록된 아이디 탈퇴, 탈퇴한 아이디로는 다시 접속하실 수 없습니다.",
     },
   ];
-
   return (
     <div className="max-w-[800px] mx-auto flex flex-col items-center gap-3 text-lg p-3 mt-5 text-gray-900">
       {isLoading ? (
@@ -45,10 +44,11 @@ export default function MyPage() {
       ) : (
         <div className="flex justify-start w-full items-center gap-4 ml-5">
           <Image
-            src="/basic_profile.png"
+            src={profileImage ? profileImage : "/basic_profile.png"}
             alt="Profile Image"
             width={50}
             height={50}
+            radius="full"
           />
           <div className="space-y-1 text-gray-700">
             <p className="extra-bold">{data?.data?.email}</p>

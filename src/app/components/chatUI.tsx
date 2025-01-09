@@ -8,6 +8,7 @@ import { IoIosClose } from "react-icons/io";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import Markdown from "react-markdown";
 import useGetJson from "@/hooks/useGetJson";
+import useGetUserInfo from "@/hooks/useGetUserInfo";
 
 interface ChatMessage {
   role: "user" | "assistant" | "code";
@@ -15,11 +16,13 @@ interface ChatMessage {
 }
 
 const Message = ({ role, text }: { role: string; text: string }) => {
+  const { data } = useGetUserInfo();
+  const profileImage = data?.data?.profile_image;
   if (role === "user") {
     return (
       <div className="flex items-center justify-end">
         <Image
-          src="/basic_profile.png"
+          src={profileImage ? profileImage : "/basic_profile.png"}
           className="min-w-[30px]"
           width={30}
           height={30}
@@ -128,7 +131,7 @@ export default function ChatUI() {
     });
   };
 
-  // // 파일 목록 가져오기
+  // 파일 목록 가져오기
   // const fetchFiles = async () => {
   //   const resp = await fetch("/api/assistants/files", {
   //     method: "GET",
@@ -213,7 +216,7 @@ export default function ChatUI() {
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg 
+          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg
           hover:animate-wiggle transition-all duration-300 
           active:scale-95 hover:shadow-xl extra-bold"
         >
@@ -223,8 +226,8 @@ export default function ChatUI() {
 
       {isOpen && (
         <div className="bg-white rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
-          <div className="p-3 bg-gray-200 flex justify-between items-center rounded-t-lg">
-            <h3 className="extra-bold text-gray-600">Chatbot</h3>
+          <div className="p-3 bg-gray-100 flex justify-between items-center rounded-t-lg">
+            <h3 className="extra-bold text-gray-600">채팅문의</h3>
             <button onClick={fileUpload}>파일</button>
             <button
               onClick={toggleChat}

@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { CiShoppingTag } from "react-icons/ci";
 import useGetCategory from "@/hooks/useGetCategory";
+import ScrollUpButton from "../components/ScrollUpButton";
 
 type AuthCheckResponse = {
   code: number;
@@ -172,6 +173,7 @@ const Products = () => {
         {isLoading && products.length !== 0 && <LoadingSpinner mode="1" />}
       </div>
       {!hasMore && <div className="bg-gray-500 w-full h-10" />}
+      <ScrollUpButton />
     </div>
   );
 };

@@ -7,6 +7,7 @@ import LoadingSpinner from "@/app/components/LoadingSpinner";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import formatDate from "@/util/formatDate";
+import ScrollUpButton from "@/app/components/ScrollUpButton";
 
 type ItemListType = {
   createdAt: string;
@@ -109,6 +110,7 @@ export default function ItemList() {
         {isLoading && products.length !== 0 && <LoadingSpinner mode="1" />}
       </div>
       {!hasMore && <div className="bg-gray-500 w-full h-10" />}
+      <ScrollUpButton />
     </div>
   );
 }

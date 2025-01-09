@@ -28,6 +28,7 @@ import { IoPersonOutline, IoPersonAddOutline } from "react-icons/io5";
 import { VscTools } from "react-icons/vsc";
 import useGetCart from "@/hooks/useGetCart";
 import { useQueryClient } from "@tanstack/react-query";
+import useGetUserInfo from "@/hooks/useGetUserInfo";
 
 interface CahcedUserLoggedIn {
   data: {
@@ -41,12 +42,10 @@ const Header = () => {
   const cahcedUserLoggedIn = queryClient.getQueryData<CahcedUserLoggedIn>([
     "authCheck",
   ]);
+  const { data } = useGetUserInfo();
+  const profileImage = data?.data?.profile_image;
   const loginState = cahcedUserLoggedIn?.data?.isLoggedIn;
-  const {
-    data: cartData,
-    isSuccess: cartIsSuccess,
-    isLoading,
-  } = useGetCart(!!loginState);
+  const { data: cartData } = useGetCart(!!loginState);
 
   // 현재 경로 확인
   const pathname = usePathname();
@@ -164,10 +163,11 @@ const Header = () => {
           <IoPersonAddOutline className="text-lg" />
         ) : (
           <Image
-            src="/basic_profile.png"
+            src={profileImage ? profileImage : "/basic_profile.png"}
             alt="Profile Image"
             width={20}
             height={20}
+            radius="full"
           />
         ),
     },
@@ -275,7 +275,7 @@ const Header = () => {
           ) : (
             <div className="flex items-center gap-1">
               <Image
-                src="/basic_profile.png"
+                src={profileImage ? profileImage : "/basic_profile.png"}
                 alt="Profile Image"
                 width={20}
                 height={20}
