@@ -190,7 +190,7 @@ const Header = () => {
         ),
     },
   ];
-
+  console.log(profileImage);
   return (
     <Navbar
       isBordered

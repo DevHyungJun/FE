@@ -15,7 +15,6 @@ import LoadingSpinner from "@/app/components/LoadingSpinner";
 import Swal from "sweetalert2";
 import useSingleOrderGet from "@/hooks/useSingleOrderGet";
 import OrderDetail from "@/app/components/OrderDetail";
-import useDetail from "@/hooks/useDetail";
 
 interface SelectedAddress {
   receiver_name: string;
@@ -30,24 +29,44 @@ interface SelectedAddress {
   _id: string;
 }
 
+interface OrderResponseData {
+  product: {
+    _id: string;
+    product_name: string;
+    user: string;
+    price: number;
+    stock_quantity: number;
+    thumbnail: string;
+    quantity: number;
+  };
+  quantity: number;
+  _id: string;
+}
+
 export default function Order({ params }: { params: { id: string } }) {
   const { id } = params;
+  const queryClient = useQueryClient();
   const { step, setStep } = storeModalShowstep();
   const { resetAddressData } = storeAddressData();
   const [editId, setEditId] = useState("");
-  const queryClient = useQueryClient();
-  const data = queryClient.getQueryData(["searchAddress"]);
-  const { data: orderData, isLoading } = useSingleOrderGet(id);
-  const DELIVERY_PRICE = 3000;
-  const [resultPrice, setResultPrice] = useState<number[]>([]);
-  const totalPrice = resultPrice.reduce((acc, cur) => acc + cur, 0);
   const initialAddress = {} as SelectedAddress;
   const [selectedAddress, setSelectedAddress] = useState(initialAddress);
-  const { data: detailData } = useDetail(
-    orderData?.data?.product_list[0]?.product,
-    !!orderData?.data?.product_list[0]?.product
-  );
-  const firstProductName = detailData?.data?.product?.product_name;
+  const data = queryClient.getQueryData(["searchAddress"]);
+
+  const { data: orderData, isLoading } = useSingleOrderGet(id);
+  const DELIVERY_PRICE = 3000;
+  const firstProductName =
+    orderData?.data?.product_list[0].product?.product_name;
+
+  const resultPrice = () => {
+    if (orderData?.data?.product_list.length > 0) {
+      return orderData.data.product_list.reduce(
+        (acc: number, product: any) =>
+          acc + product?.product?.price * product?.quantity,
+        0
+      );
+    }
+  };
 
   useEffect(() => {
     // 모달 켜졌을 때 배경 스크롤 막기
@@ -94,6 +113,16 @@ export default function Order({ params }: { params: { id: string } }) {
     return Math.floor(Math.random() * 1000000);
   };
 
+  const goodsName = () => {
+    if (orderData?.data?.product_list.length > 1) {
+      return `${firstProductName} 외 ${
+        orderData?.data?.product_list.length - 1
+      }개`;
+    } else {
+      return firstProductName;
+    }
+  };
+
   const handlePay = () => {
     const { AUTHNICE } = window as any;
 
@@ -101,10 +130,8 @@ export default function Order({ params }: { params: { id: string } }) {
       clientId: process.env.NEXT_PUBLIC_NICEPAY_CLIENT_ID,
       method: "card",
       orderId: `order-${randomOrderId()}`,
-      amount: totalPrice + DELIVERY_PRICE,
-      goodsName: `${firstProductName} 외 ${
-        orderData?.data?.product_list.length - 1
-      }개`,
+      amount: resultPrice() + DELIVERY_PRICE,
+      goodsName: goodsName(),
       returnUrl: "https://pay.dev-nicepay.co.kr/v1/webhook/response",
       fnError: function (result: any) {
         alert("개발자확인용 : " + result.errorMsg + "");
@@ -123,7 +150,7 @@ export default function Order({ params }: { params: { id: string } }) {
     }
     handlePay();
   };
-
+  console.log(orderData?.data?.product_list);
   return (
     <div className="flex flex-col gap-5 max-w-[1400px] mx-auto p-1">
       <h1 className="text-2xl font-semibold m-1">주문서</h1>
@@ -177,13 +204,8 @@ export default function Order({ params }: { params: { id: string } }) {
         <LoadingSpinner />
       ) : (
         <>
-          {orderData?.data?.product_list?.map((product: any) => (
-            <OrderDetail
-              id={product?.product}
-              quantity={product?.quantity}
-              setResultPrice={setResultPrice}
-              key={`${product?.product}-${product?.quantity}`}
-            />
+          {orderData?.data?.product_list?.map((product: OrderResponseData) => (
+            <OrderDetail key={product._id} productData={product} />
           ))}
         </>
       )}
@@ -191,7 +213,7 @@ export default function Order({ params }: { params: { id: string } }) {
         <h2 className="text-lg font-semibold mb-5">결제 금액</h2>
         <div className="flex justify-between text-sm">
           <p className="text-gray-500">상품 금액</p>
-          <p>{formatPrice(totalPrice)}</p>
+          <p>{formatPrice(resultPrice())}</p>
         </div>
         <div className="flex justify-between text-sm">
           <p className="text-gray-500">배송비</p>
@@ -199,11 +221,11 @@ export default function Order({ params }: { params: { id: string } }) {
         </div>
         <div className="flex justify-between font-semibold">
           <h3>총 결제 금액</h3>
-          <p>{formatPrice(totalPrice + DELIVERY_PRICE)}</p>
+          <p>{formatPrice(resultPrice() + DELIVERY_PRICE)}</p>
         </div>
       </div>
       <Button color="primary" className="w-full mt-1" onClick={handleClickPay}>
-        {formatPrice(totalPrice + DELIVERY_PRICE)}
+        {formatPrice(resultPrice() + DELIVERY_PRICE)}
         <p>결제하기</p>
       </Button>
     </div>

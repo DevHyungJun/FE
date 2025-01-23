@@ -1,4 +1,4 @@
-import postUserImg from "@/api/postuserImg";
+import postUserImg from "@/api/postUserImg";
 import { useMutation } from "@tanstack/react-query";
 
 export default function usePostUserImg() {

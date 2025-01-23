@@ -3,7 +3,7 @@
 import useGetCart from "@/hooks/useGetCart";
 import CartProductDetail from "../components/cartProductDetail";
 import { Button, Checkbox, CheckboxGroup } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoadingSpinner from "../components/LoadingSpinner";
 import formatPrice from "@/util/formatPrice";
 import useRemoveCart from "@/hooks/useRomoveCart";
@@ -16,42 +16,79 @@ import { useRouter } from "next/navigation";
 import Favorite from "../components/Favorite";
 import useLikeList from "@/hooks/useLikeList";
 
+interface CartArticle {
+  article: string;
+  quantity: number;
+}
+
+interface Item {
+  article: string;
+  product: string;
+  quantity: number;
+  price: number;
+  onSelected: boolean;
+}
+
 export default function Cart() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { data: cartData, isLoading } = useGetCart();
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [prices, setPrices] = useState<{ id: string; price: number }[]>([]);
-  const totalPrice = prices
-    .filter((priceObj) => selectedItems.includes(priceObj.id))
-    .reduce((acc, curr) => acc + curr.price, 0);
+  const [items, setItems] = useState<Item[]>([]);
   const { mutate: removeMutate } = useRemoveCart();
   const { mutate: orderMutate, isPending: orderIsPending } = useOrder();
   const [cartOrFavorite, setCartOrFavorite] = useState("cart");
   const { data: likeList, isLoading: likeLoading } = useLikeList();
 
-  const handleAllCheckClick = () => {
-    if (selectedItems.length === cartData?.article_list.length) {
-      setSelectedItems([]);
-    } else {
-      setSelectedItems(
-        cartData?.article_list.map((item: any) => item.article) || []
+  useEffect(() => {
+    if (cartData) {
+      setItems(
+        cartData.article_list.map((item: CartArticle) => ({
+          article: item.article,
+          product: "",
+          quantity: item.quantity,
+          price: 0,
+          onSelected: false,
+        }))
       );
+    }
+  }, [cartData]);
+
+  const handleAllCheckClick = () => {
+    if (
+      items.filter((item) => item.onSelected).length ===
+      cartData?.article_list.length
+    ) {
+      setItems(items.map((item) => ({ ...item, onSelected: false })));
+    } else {
+      setItems(items.map((item) => ({ ...item, onSelected: true })));
     }
   };
 
-  const handleItemCheck = (id: string) => {
-    setSelectedItems((prevSelected) =>
-      prevSelected.includes(id)
-        ? prevSelected.filter((item) => item !== id)
-        : [...prevSelected, id]
+  const totalItemPrice = () => {
+    return items
+      .filter((item) => item.onSelected)
+      .reduce((total, item) => total + item.price, 0);
+  };
+
+  const isSelectedItem = () => {
+    return items.some((item) => item.onSelected);
+  };
+
+  const handleItemCheck = (checkedItem: Item) => {
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.article === checkedItem.article
+          ? { ...item, onSelected: !item.onSelected }
+          : item
+      )
     );
   };
 
   const selectedRemove = () => {
+    const selectedItems = items.filter((item) => item.onSelected);
     if (selectedItems.length === 0) return;
-    selectedItems.forEach((id) => {
-      removeMutate(id, {
+    selectedItems.forEach((item) => {
+      removeMutate(item.article, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["cart"] });
         },
@@ -60,12 +97,11 @@ export default function Cart() {
   };
 
   const handleOrder = () => {
+    const selectedItems = items.filter((item) => item.onSelected);
     if (selectedItems.length === 0) return;
     const orderData = selectedItems.map((item) => ({
-      product: item,
-      quantity: cartData?.article_list.find(
-        (articleItem: { article: string }) => articleItem.article === item
-      )?.quantity,
+      product: item.product,
+      quantity: item.quantity,
     }));
     orderMutate(orderData, {
       onSuccess: (data) => {
@@ -116,7 +152,8 @@ export default function Cart() {
               <div className="flex justify-between">
                 <Checkbox
                   isSelected={
-                    selectedItems.length === cartData?.article_list.length
+                    items.filter((item) => item.onSelected).length ===
+                    cartData?.article_list.length
                   }
                   onChange={handleAllCheckClick}
                 >
@@ -126,38 +163,32 @@ export default function Cart() {
                   <p className="text-sm bold">선택 삭제</p>
                 </button>
               </div>
-              <CheckboxGroup value={selectedItems}>
-                {cartData?.article_list?.map(
-                  (articleItem: {
-                    article: string;
-                    quantity: number;
-                    _id: string;
-                  }) => (
-                    <div className="flex" key={articleItem?.article}>
-                      <Checkbox
-                        value={articleItem?.article}
-                        isSelected={selectedItems.includes(articleItem.article)}
-                        onChange={() => handleItemCheck(articleItem?.article)}
-                      />
-                      <CartProductDetail
-                        articleId={articleItem?.article}
-                        quantity={articleItem?.quantity}
-                        setPrices={setPrices}
-                      />
-                    </div>
-                  )
-                )}
+              <CheckboxGroup
+                value={items
+                  .filter((item) => item.onSelected)
+                  .map((item) => item.article)}
+              >
+                {items.map((item) => (
+                  <div className="flex" key={item.article}>
+                    <Checkbox
+                      value={item.article}
+                      isSelected={item.onSelected}
+                      onChange={() => handleItemCheck(item)}
+                    />
+                    <CartProductDetail item={item} setItems={setItems} />
+                  </div>
+                ))}
               </CheckboxGroup>
               <Button
                 color="primary"
                 className="w-full mt-1 bold"
-                isDisabled={totalPrice === 0}
+                isDisabled={!isSelectedItem()}
                 isLoading={orderIsPending}
                 onClick={handleOrder}
               >
                 <p>
-                  {totalPrice !== 0 && formatPrice(totalPrice)}
-                  {totalPrice !== 0 ? " 결제하기" : "상품을 선택해주세요"}
+                  {isSelectedItem() && formatPrice(totalItemPrice())}
+                  {isSelectedItem() ? " 결제하기" : "상품을 선택해주세요"}
                 </p>
               </Button>
             </>

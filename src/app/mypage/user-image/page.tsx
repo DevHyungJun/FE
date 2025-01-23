@@ -59,7 +59,11 @@ export default function UserImage() {
       if (result.isConfirmed) {
         deleteUserImg(undefined, {
           onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["userImg"] });
+            queryClient.refetchQueries({ queryKey: ["userImg"] });
+            setUserImg({
+              file: null,
+              preview: "",
+            });
           },
           onError: () => {
             Swal.fire({
@@ -105,6 +109,8 @@ export default function UserImage() {
     });
   };
 
+  console.log(getUserImg?.data?.image);
+
   return (
     <div className="flex items-center justify-center h-[60vh] text-gray-800">
       {getUserImgIsLoading ? (
@@ -116,7 +122,9 @@ export default function UserImage() {
         >
           <h1 className="text-2xl extra-bold my-5">프로필 이미지 관리</h1>
           <Image
-            src={userImg.preview || getUserImg?.data?.image || ""}
+            src={
+              userImg.preview || getUserImg?.data?.image || "/basic_profile.png"
+            }
             width={100}
             height={100}
             className="bg-gray-50 object-cover rounded-full"

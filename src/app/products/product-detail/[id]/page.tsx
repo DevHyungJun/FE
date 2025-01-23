@@ -46,7 +46,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   const { id } = params;
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { data, isLoading, isError, error } = useDetail(id);
+  const { data, isLoading } = useDetail(id);
   const { mutate: favoritePostMutate } = useFavoritePost();
   const { mutate: favoriteDeleteMutate } = useFavoriteDelete();
   const [quantity, setQuantity] = useState(1);
@@ -55,7 +55,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   const cachedData = queryClient.getQueryData<AuthCheckResponse>(["authCheck"]);
   const isLoggedIn = cachedData?.data?.isLoggedIn;
   const { mutate: addCartMutate } = useAddCart();
-  const { mutate: orderMutate } = useOrder();
+  const { mutate: orderMutate, isPending: orderIsPending } = useOrder();
   const [orderOption, setOrderOption] = useState("updatedAt");
   const { data: reviewData, isLoading: reviewLoading } = useGetReview(
     id,
@@ -144,9 +144,13 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   };
 
   const handleRouteOrder = () => {
-    orderMutate([{ product: id, quantity }], {
+    const product = data?.data?.product?._id;
+    if (!product) return;
+    orderMutate([{ product, quantity }], {
       onSuccess: (data) => {
-        router.push(`/order/${data?.data?._id}`);
+        if (data?.data?._id) {
+          router.push(`/order/${data?.data?._id}`);
+        }
       },
     });
   };
@@ -220,6 +224,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
                   color="primary"
                   className="w-[300px] text-xs md:text-medium mt-2 bold"
                   onClick={handleRouteOrder}
+                  isLoading={orderIsPending}
                 >
                   구매하기
                 </Button>

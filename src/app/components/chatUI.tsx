@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Button, Image, Input, Textarea } from "@nextui-org/react";
+import { Button, Image, Textarea } from "@nextui-org/react";
 import { FaRobot } from "react-icons/fa";
 import { FaArrowUpLong } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
@@ -27,7 +27,7 @@ const Message = ({ role, text }: { role: string; text: string }) => {
           width={30}
           height={30}
         />
-        <p className="text-sm text-gray-700 bg-blue-100 inline p-2 m-1 rounded-md">
+        <p className="text-xs sm:text-sm text-gray-700 bg-blue-100 inline p-2 m-1 rounded-md">
           {text}
         </p>
       </div>
@@ -43,7 +43,7 @@ const Message = ({ role, text }: { role: string; text: string }) => {
           width={30}
           height={30}
         />
-        <div className="text-sm text-gray-700 bg-gray-100 inline p-2 m-1 rounded-md">
+        <div className="text-xs sm:text-sm text-gray-700 bg-gray-100 inline p-2 m-1 rounded-md">
           <Markdown>{text}</Markdown>
         </div>
       </div>
@@ -124,7 +124,6 @@ export default function ChatUI() {
     const data = new FormData();
     if (files.length < 0) return;
     data.append("file", JSON.stringify(files[0]));
-    console.log(data);
     await fetch("/api/assistants/files", {
       method: "POST",
       body: data,
@@ -227,7 +226,9 @@ export default function ChatUI() {
       {isOpen && (
         <div className="bg-white rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
           <div className="p-3 bg-gray-100 flex justify-between items-center rounded-t-lg">
-            <h3 className="extra-bold text-gray-600">채팅문의</h3>
+            <h3 className="extra-bold text-gray-600 text-sm sm:text-medium">
+              채팅문의
+            </h3>
             <button onClick={fileUpload}>파일</button>
             <button
               onClick={toggleChat}
@@ -237,8 +238,8 @@ export default function ChatUI() {
             </button>
           </div>
 
-          <div className="w-[450px] max-h-[700px] overflow-y-auto scrollbar-hide">
-            <div className="p-1 h-[600px]">
+          <div className="w-[250px] h-[400px] sm:w-[450px] sm:h-[700px] overflow-y-auto scrollbar-hide">
+            <div className="p-1">
               <div className="space-y-6 mt-3">
                 {messages.map((msg, index) => (
                   <Message key={index} role={msg.role} text={msg.text} />
@@ -253,7 +254,9 @@ export default function ChatUI() {
                       height={30}
                     />
                     <div className="text-sm text-blue-600 bg-gray-100 inline p-2 m-1 rounded-md animate-bounce delay-200 bold">
-                      <Markdown>답변을 작성중입니다...</Markdown>
+                      <Markdown className="text-sm sm:text-medium">
+                        답변을 작성중입니다...
+                      </Markdown>
                     </div>
                   </div>
                 )}
