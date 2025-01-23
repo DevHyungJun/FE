@@ -60,7 +60,7 @@ export default function Order({ params }: { params: { id: string } }) {
   );
   const firstProductName = firstProductData?.data?.product?.product_name;
 
-  // OrderDetail에서 받아올 데이터의 배열의 구조는 [{product: string, price: number}]
+  // 어떻게 결제 이력 API를 NICEPAY 결제가 완료된 시점에 호출하지?
 
   const resultPrice = () => {
     if (productList.length === 0) {
@@ -133,7 +133,7 @@ export default function Order({ params }: { params: { id: string } }) {
       orderId: `order-${randomOrderId()}`,
       amount: resultPrice() + DELIVERY_PRICE,
       goodsName: goodsName(),
-      returnUrl: "https://pay.dev-nicepay.co.kr/v1/webhook/response",
+      returnUrl: "http://localhost:5000/order-success",
       fnError: function (result: any) {
         alert("개발자확인용 : " + result.errorMsg + "");
       },

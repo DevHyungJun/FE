@@ -45,7 +45,7 @@ export default function OrderDetail({
     <div>
       <div className="border-b p-3 rounded-sm">
         <div className="flex gap-3">
-          <Link href={`/products/product-detail/${productData?._id}`}>
+          <Link href={`/products/product-detail/${productData?.data?._id}`}>
             <Image
               width={100}
               alt="product image"
@@ -55,7 +55,7 @@ export default function OrderDetail({
           </Link>
           <div className="space-y-2 text-sm">
             <Link
-              href={`/products/product-detail/${productData?._id}`}
+              href={`/products/product-detail/${productData?.data?._id}`}
               className="hover:font-semibold"
             >
               <p>{productData?.data?.product?.product_name}</p>
