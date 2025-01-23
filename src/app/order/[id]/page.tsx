@@ -15,6 +15,7 @@ import LoadingSpinner from "@/app/components/LoadingSpinner";
 import Swal from "sweetalert2";
 import useSingleOrderGet from "@/hooks/useSingleOrderGet";
 import OrderDetail from "@/app/components/OrderDetail";
+import useDetail from "@/hooks/useDetail";
 
 interface SelectedAddress {
   receiver_name: string;
@@ -30,17 +31,15 @@ interface SelectedAddress {
 }
 
 interface OrderResponseData {
-  product: {
-    _id: string;
-    product_name: string;
-    user: string;
-    price: number;
-    stock_quantity: number;
-    thumbnail: string;
-    quantity: number;
-  };
+  product: string;
   quantity: number;
+  articleId: string;
   _id: string;
+}
+
+interface ProductList {
+  product: string;
+  price: number;
 }
 
 export default function Order({ params }: { params: { id: string } }) {
@@ -52,20 +51,22 @@ export default function Order({ params }: { params: { id: string } }) {
   const initialAddress = {} as SelectedAddress;
   const [selectedAddress, setSelectedAddress] = useState(initialAddress);
   const data = queryClient.getQueryData(["searchAddress"]);
-
+  const [productList, setProductList] = useState<ProductList[]>([]);
   const { data: orderData, isLoading } = useSingleOrderGet(id);
   const DELIVERY_PRICE = 3000;
-  const firstProductName =
-    orderData?.data?.product_list[0].product?.product_name;
+  const { data: firstProductData } = useDetail(
+    orderData?.data?.product_list[0].articleId,
+    !!orderData?.data?.product_list[0].articleId
+  );
+  const firstProductName = firstProductData?.data?.product?.product_name;
+
+  // OrderDetail에서 받아올 데이터의 배열의 구조는 [{product: string, price: number}]
 
   const resultPrice = () => {
-    if (orderData?.data?.product_list.length > 0) {
-      return orderData.data.product_list.reduce(
-        (acc: number, product: any) =>
-          acc + product?.product?.price * product?.quantity,
-        0
-      );
+    if (productList.length === 0) {
+      return 0;
     }
+    return productList.reduce((total, product) => total + product.price, 0);
   };
 
   useEffect(() => {
@@ -150,7 +151,7 @@ export default function Order({ params }: { params: { id: string } }) {
     }
     handlePay();
   };
-  console.log(orderData?.data?.product_list);
+
   return (
     <div className="flex flex-col gap-5 max-w-[1400px] mx-auto p-1">
       <h1 className="text-2xl font-semibold m-1">주문서</h1>
@@ -205,7 +206,12 @@ export default function Order({ params }: { params: { id: string } }) {
       ) : (
         <>
           {orderData?.data?.product_list?.map((product: OrderResponseData) => (
-            <OrderDetail key={product._id} productData={product} />
+            <OrderDetail
+              key={product?.articleId}
+              articleId={product?.articleId}
+              quantity={product?.quantity}
+              setProductList={setProductList}
+            />
           ))}
         </>
       )}

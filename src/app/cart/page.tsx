@@ -1,7 +1,7 @@
 "use client";
 
 import useGetCart from "@/hooks/useGetCart";
-import CartProductDetail from "../components/cartProductDetail";
+import CartProductDetail from "../components/CartProductDetail";
 import { Button, Checkbox, CheckboxGroup } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -100,6 +100,7 @@ export default function Cart() {
     const selectedItems = items.filter((item) => item.onSelected);
     if (selectedItems.length === 0) return;
     const orderData = selectedItems.map((item) => ({
+      articleId: item.article,
       product: item.product,
       quantity: item.quantity,
     }));

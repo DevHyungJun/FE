@@ -109,8 +109,6 @@ export default function UserImage() {
     });
   };
 
-  console.log(getUserImg?.data?.image);
-
   return (
     <div className="flex items-center justify-center h-[60vh] text-gray-800">
       {getUserImgIsLoading ? (
