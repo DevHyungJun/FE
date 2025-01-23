@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { CiShoppingTag } from "react-icons/ci";
 import useGetCategory from "@/hooks/useGetCategory";
+import ScrollUpButton from "../components/ScrollUpButton";
 
 type AuthCheckResponse = {
   code: number;
@@ -99,6 +100,7 @@ const Products = () => {
           onSelectionChange={handleTabs}
           size="lg"
           color="primary"
+          className="bold"
         >
           <Tab title="전체" key="" />
           {category?.data?.map((category: any) => (
@@ -110,17 +112,17 @@ const Products = () => {
           ))}
         </Tabs>
       </div>
-      <div className="flex items-center gap-2 text-2xl font-semibold m-1">
+      <div className="flex items-center gap-2 text-2xl extra-bold m-1">
         {isSuccess ? (
-          products?.length === 0 ? (
+          products?.length !== 0 ? (
             <>
               <CiShoppingTag />
-              등록된 상품이 없습니다
+              상품 목록
             </>
           ) : (
             <>
               <CiShoppingTag />
-              상품 목록
+              등록된 상품이 없습니다
             </>
           )
         ) : null}
@@ -141,8 +143,8 @@ const Products = () => {
                 width={500}
                 className="rounded-md object-contain max-h-[300px] sm:max-h-[500px]"
               />
-              <div className="font-semibold">
-                <h3 className="text-sm md:text-lg">{product.title}</h3>
+              <div>
+                <h3 className="text-sm md:text-lg bold">{product.title}</h3>
                 <div className="flex justify-between items-center">
                   <p className="text-xs md:text-medium">
                     {formatPrice(product?.product?.price)}
@@ -151,7 +153,7 @@ const Products = () => {
                     {FavoriteShow(product?.like_user_list)}
                   </div>
                 </div>
-                <div className="flex gap-2 text-xs text-gray-500">
+                <div className="flex gap-2 text-xs text-gray-400 light">
                   {product?.like_count !== 0 && (
                     <p className="mt-2">좋아요 {product?.like_count}</p>
                   )}
@@ -170,7 +172,8 @@ const Products = () => {
       <div ref={ref} className="h-10">
         {isLoading && products.length !== 0 && <LoadingSpinner mode="1" />}
       </div>
-      {!hasMore && <div className="bg-blue-500 w-full h-10" />}
+      {!hasMore && <div className="bg-gray-500 w-full h-10" />}
+      <ScrollUpButton />
     </div>
   );
 };

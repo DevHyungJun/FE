@@ -28,20 +28,21 @@ interface EditModeState {
 }
 
 const initialAddressData: AddressData = {
-  receiver_name: '',
-  receiver_phone: '',
-  main_address: '',
-  detail_address: '',
-  zip_code: '',
+  receiver_name: "",
+  receiver_phone: "",
+  main_address: "",
+  detail_address: "",
+  zip_code: "",
   is_default: false,
-  shipping_memo: '',
+  shipping_memo: "",
 };
 
 export const storeAddressData = create<AddressDataState>((set) => ({
   addressData: initialAddressData,
-  setAddressData: (data) => set((state) => ({
-    addressData: { ...state.addressData, ...data }
-  })),
+  setAddressData: (data) =>
+    set((state) => ({
+      addressData: { ...state.addressData, ...data },
+    })),
   resetAddressData: () => set({ addressData: initialAddressData }),
 }));
 

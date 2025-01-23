@@ -109,7 +109,7 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
       });
       return;
     }
-    if (!isDirty) {
+    if (!isDirty || rate === reviewData.data.rate) {
       Swal.fire({
         icon: "error",
         title: "수정된 내용이 없습니다.",
@@ -146,13 +146,13 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
   return (
     <div className="p-1 max-w-[800px] mx-auto">
       <h1 className="text-xl p-3">
-        <span className="font-semibold">{item?.product?.product_name} </span>
+        <span className="extra-bold">{item?.product?.product_name} </span>
         상품평 수정하기
       </h1>
       {isLoading ? (
         <LoadingSpinner mode="1" />
       ) : (
-        <div className="flex-grow p-3 rounded-sm">
+        <div className="flex-grow p-3 border-2 mb-5 rounded-lg">
           <div className="flex gap-3">
             <Link href={`/products/product-detail/${item?._id}`}>
               <Image
@@ -201,7 +201,7 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
             className="hidden"
           />
           <Button
-            className="w-full"
+            className="w-full bold"
             variant="bordered"
             onClick={handleAddImagesClick}
           >
@@ -240,8 +240,8 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
             />
           )}
           <Button
-            className="w-full"
-            color="success"
+            className="w-full bold"
+            color="primary"
             type="submit"
             isLoading={aditReviewIsPending}
           >

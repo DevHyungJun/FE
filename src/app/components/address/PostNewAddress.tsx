@@ -15,13 +15,15 @@ import useNewAddress from "@/hooks/useNewAddress";
 import Swal from "sweetalert2";
 import { storeModalShowstep } from "@/store";
 import { storeAddressData } from "@/store";
+import { useQueryClient } from "@tanstack/react-query";
 
-const PostNewAddress = () => {
+const PostNewAddress = ({ mypage = false }) => {
+  const queryClient = useQueryClient();
   const [selfDeliveryOption, setSelfDeliveryOption] = useState(false);
   const [deliveryMemo, setDeliveryMemo] = useState("");
 
   const { setStep, decrementStep } = storeModalShowstep();
-  const { addressData, setAddressData } = storeAddressData();
+  const { addressData, setAddressData, resetAddressData } = storeAddressData();
 
   const { register, handleSubmit } = useForm({
     defaultValues: addressData,
@@ -78,13 +80,18 @@ const PostNewAddress = () => {
     };
     newAddress(newAddressData, {
       onSuccess: () => {
-        Swal.fire({
-          icon: "success",
-          title: "주소가 성공적으로 추가되었습니다.",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if (mypage) {
+          queryClient.invalidateQueries({ queryKey: ["searchAddress"] });
+        }
+        resetAddressData();
         setStep(1);
+      },
+      onError: () => {
+        Swal.fire({
+          icon: "error",
+          title: "주소 추가 실패",
+          text: "주소를 추가하지 못했습니다.",
+        });
       },
     });
   };
@@ -100,9 +107,11 @@ const PostNewAddress = () => {
           <div className="flex justify-between items-start">
             <h1 className="text-lg font-semibold mb-5">신규 주소 추가</h1>
             <div className="flex items-center gap-2 text-2xl">
-              <button onClick={decrementStep}>
-                <IoArrowBack />
-              </button>
+              {!mypage && (
+                <button onClick={decrementStep}>
+                  <IoArrowBack />
+                </button>
+              )}
               <button onClick={() => setStep(0)}>
                 <IoClose />
               </button>

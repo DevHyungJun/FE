@@ -139,7 +139,9 @@ export default function PostRegister() {
         <LoadingSpinner />
       ) : (
         <div className="p-1 max-w-[800px] mx-auto">
-          <h1>게시글 등록 페이지</h1>
+          <h1 className="flex items-center gap-2 text-2xl extra-bold my-5">
+            게시글 등록
+          </h1>
           <form className="flex flex-col gap-3">
             <Input label="게시글 제목" name="title" ref={titleRef} />
             <Select
@@ -180,7 +182,7 @@ export default function PostRegister() {
               type="button"
               onClick={() => setCategoryShow((prev) => !prev)}
             >
-              <p className="text-sm hover:text-blue-500 font-semibold">
+              <p className="text-sm hover:text-blue-500 bold">
                 원하는 카테고리가 없다면? 등록하기
               </p>
             </button>
@@ -194,7 +196,7 @@ export default function PostRegister() {
                 />
                 <Button
                   type="button"
-                  className="w-1/2"
+                  className="w-1/2 bold"
                   onClick={handlePostCategory}
                   isLoading={postCategoryPending}
                 >
@@ -204,7 +206,7 @@ export default function PostRegister() {
             )}
             {selectedProduct && (
               <div>
-                <p>
+                <p className="light text-center">
                   선택한{" "}
                   {
                     items.find((item: Product) => item._id === selectedProduct)
@@ -236,6 +238,7 @@ export default function PostRegister() {
               type="button"
               color="success"
               onClick={handleAddImagesClick}
+              className="bold"
             >
               제품 상세 이미지 추가
             </Button>
@@ -263,6 +266,7 @@ export default function PostRegister() {
               color="primary"
               onClick={handleSubmit}
               isLoading={newPost.isPending}
+              className="bold"
             >
               등록
             </Button>

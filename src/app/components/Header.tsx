@@ -28,6 +28,7 @@ import { IoPersonOutline, IoPersonAddOutline } from "react-icons/io5";
 import { VscTools } from "react-icons/vsc";
 import useGetCart from "@/hooks/useGetCart";
 import { useQueryClient } from "@tanstack/react-query";
+import useGetUserInfo from "@/hooks/useGetUserInfo";
 
 interface CahcedUserLoggedIn {
   data: {
@@ -41,12 +42,10 @@ const Header = () => {
   const cahcedUserLoggedIn = queryClient.getQueryData<CahcedUserLoggedIn>([
     "authCheck",
   ]);
+  const { data } = useGetUserInfo();
+  const profileImage = data?.data?.profile_image;
   const loginState = cahcedUserLoggedIn?.data?.isLoggedIn;
-  const {
-    data: cartData,
-    isSuccess: cartIsSuccess,
-    isLoading,
-  } = useGetCart(!!loginState);
+  const { data: cartData } = useGetCart(!!loginState);
 
   // 현재 경로 확인
   const pathname = usePathname();
@@ -55,6 +54,7 @@ const Header = () => {
   const isLoginOpen = pathname.startsWith("/login");
   const isSignupOpen = pathname.startsWith("/signup");
   const isCartOpen = pathname.startsWith("/cart");
+  const isMypageOpen = pathname.startsWith("/mypage");
 
   // 메뉴 상태 관리
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -156,17 +156,18 @@ const Header = () => {
         !authCheckIsSuccess || authCheckData?.isLoggedIn === false
           ? "/signup"
           : "/mypage",
-      isOpen: isSignupOpen,
+      isOpen: isSignupOpen || isMypageOpen,
       onclick: handleSignupMypage,
       icon:
         !authCheckIsSuccess || authCheckData?.isLoggedIn === false ? (
           <IoPersonAddOutline className="text-lg" />
         ) : (
           <Image
-            src="/basic_profile.png"
+            src={profileImage ? profileImage : "/basic_profile.png"}
             alt="Profile Image"
             width={20}
             height={20}
+            radius="full"
           />
         ),
     },
@@ -189,7 +190,7 @@ const Header = () => {
         ),
     },
   ];
-
+  console.log(profileImage);
   return (
     <Navbar
       isBordered
@@ -207,7 +208,7 @@ const Header = () => {
         <NavbarBrand>
           <Link href="/" className="flex items-center">
             <AcmeLogo />
-            <p className="font-bold text-inherit">SHOP</p>
+            <p className="extra-bold text-inherit">SHOP</p>
           </Link>
         </NavbarBrand>
       </NavbarContent>
@@ -216,7 +217,7 @@ const Header = () => {
         <NavbarBrand>
           <Link href={"/"} className="flex items-center">
             <AcmeLogo />
-            <p className="font-bold text-inherit">SHOP</p>
+            <p className="extra-bold text-inherit">SHOP</p>
           </Link>
         </NavbarBrand>
         {navbarItems.map((item, index) => (
@@ -244,7 +245,7 @@ const Header = () => {
       <NavbarContent justify="end">
         <NavbarItem
           className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${
-            isLoginOpen && "font-semibold"
+            isLoginOpen && "bold"
           }`}
           onClick={handleLoginLogout}
         >
@@ -262,7 +263,7 @@ const Header = () => {
         </NavbarItem>
         <NavbarItem
           className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${
-            isSignupOpen && "font-semibold"
+            isSignupOpen || isMypageOpen ? "bold" : ""
           }`}
           onClick={handleSignupMypage}
         >
@@ -274,7 +275,7 @@ const Header = () => {
           ) : (
             <div className="flex items-center gap-1">
               <Image
-                src="/basic_profile.png"
+                src={profileImage ? profileImage : "/basic_profile.png"}
                 alt="Profile Image"
                 width={20}
                 height={20}
