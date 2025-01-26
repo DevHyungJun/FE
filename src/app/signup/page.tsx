@@ -245,10 +245,11 @@ const Signup = () => {
         {/* 비밀번호 입력&에러메세지 */}
         <Input
           type="password"
-          label="비밀번호"
+          placeholder="비밀번호"
           variant="underlined"
           required
           isClearable
+          className="font-sans"
           {...register("password", passwordV)}
         />
         <ErrorMessage
@@ -259,10 +260,11 @@ const Signup = () => {
         {/* 비밀번호 확인 입력&에러메세지 */}
         <Input
           type="password"
-          label="비밀번호 확인"
+          placeholder="비밀번호 확인"
           variant="underlined"
           required
           isClearable
+          className="font-sans"
           {...register("passwordConfirm", passwordConfirmV)}
         />
         <ErrorMessage
