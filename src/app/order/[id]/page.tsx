@@ -16,6 +16,7 @@ import Swal from "sweetalert2";
 import useSingleOrderGet from "@/hooks/useSingleOrderGet";
 import OrderDetail from "@/app/components/OrderDetail";
 import useDetail from "@/hooks/useDetail";
+import { storeOrderData } from "@/store";
 
 interface SelectedAddress {
   receiver_name: string;
@@ -59,6 +60,7 @@ export default function Order({ params }: { params: { id: string } }) {
     !!orderData?.data?.product_list[0].articleId
   );
   const firstProductName = firstProductData?.data?.product?.product_name;
+  const { setOrderData, clearOrderData } = storeOrderData();
 
   // 어떻게 결제 이력 API를 NICEPAY 결제가 완료된 시점에 호출하지?
 
@@ -127,6 +129,14 @@ export default function Order({ params }: { params: { id: string } }) {
   const handlePay = () => {
     const { AUTHNICE } = window as any;
 
+    const resultOrderData = orderData?.data?.product_list.map(
+      (product: OrderResponseData) => ({
+        product: product.product,
+        quantity: product.quantity,
+      })
+    );
+    setOrderData(resultOrderData);
+
     AUTHNICE?.requestPay({
       clientId: process.env.NEXT_PUBLIC_NICEPAY_CLIENT_ID,
       method: "card",
@@ -134,8 +144,21 @@ export default function Order({ params }: { params: { id: string } }) {
       amount: resultPrice() + DELIVERY_PRICE,
       goodsName: goodsName(),
       returnUrl: "http://localhost:5000/order-success",
-      fnError: function (result: any) {
-        alert("개발자확인용 : " + result.errorMsg + "");
+      fnError: function (result: { errorMsg: string }) {
+        clearOrderData();
+        if (result.errorMsg.includes("P091")) {
+          Swal.fire({
+            icon: "info",
+            title: "결제 취소",
+            text: "결제가 취소되었습니다.",
+          });
+          return;
+        }
+        Swal.fire({
+          icon: "error",
+          title: "결제 오류",
+          text: result.errorMsg,
+        });
       },
     });
   };

@@ -5,5 +5,6 @@ export default function useGetUserImg() {
   return useQuery({
     queryKey: ["userImg"],
     queryFn: getUserImg,
+    retry: false,
   });
 }

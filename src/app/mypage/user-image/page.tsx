@@ -1,6 +1,5 @@
 "use client";
 
-import useGetUserImg from "@/hooks/useGetUserImg";
 import usePostUserImg from "@/hooks/usePostUserImg";
 import useEditUserImg from "@/hooks/useEditUserImg";
 import useDeleteUserImg from "@/hooks/userDeleteUserImg";
@@ -9,6 +8,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useQueryClient } from "@tanstack/react-query";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import useGetUserInfo from "@/hooks/useGetUserInfo";
 
 interface UserImage {
   file: File | null;
@@ -20,7 +20,8 @@ export default function UserImage() {
     file: null,
     preview: "",
   });
-  const { data: getUserImg, isLoading: getUserImgIsLoading } = useGetUserImg();
+  const { data: getUserInfo, isLoading: getUserInfoIsLoading } =
+    useGetUserInfo();
   const { mutate: postUserImg, isPending: postUserImgIsPending } =
     usePostUserImg();
   const { mutate: editUserImg, isPending: editUserImgIsPending } =
@@ -30,13 +31,13 @@ export default function UserImage() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (getUserImg) {
+    if (getUserInfo?.data?.profile_image) {
       setUserImg({
         file: null,
-        preview: getUserImg.data?.image || "",
+        preview: getUserInfo?.data?.profile_image || "",
       });
     }
-  }, [getUserImg]);
+  }, [getUserInfo?.data?.profile_image]);
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -59,7 +60,8 @@ export default function UserImage() {
       if (result.isConfirmed) {
         deleteUserImg(undefined, {
           onSuccess: () => {
-            queryClient.refetchQueries({ queryKey: ["userImg"] });
+            queryClient.invalidateQueries({ queryKey: ["userImg"] });
+            queryClient.invalidateQueries({ queryKey: ["userInfo"] });
             setUserImg({
               file: null,
               preview: "",
@@ -79,24 +81,23 @@ export default function UserImage() {
   };
 
   const disabledButton = () => {
-    if (userImg.preview === getUserImg?.data?.image) {
-      return true;
-    } else if (userImg.preview === "" || userImg.file === null) {
-      return true;
-    }
-    return false;
+    return (
+      userImg.preview === getUserInfo?.data?.profile_image && !userImg.file
+    );
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const mutateOfPostOrEdit = getUserImg?.data?.image
-      ? editUserImg
-      : postUserImg;
+    const mutateOfPostOrEdit =
+      userImg.preview === getUserInfo?.data?.profile_image
+        ? editUserImg
+        : postUserImg;
     const file = new FormData();
     file.append("image", userImg.file as Blob);
     mutateOfPostOrEdit(file, {
-      onSuccess: (response) => {
+      onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["userImg"] });
+        queryClient.invalidateQueries({ queryKey: ["userInfo"] });
       },
       onError: () => {
         Swal.fire({
@@ -111,7 +112,7 @@ export default function UserImage() {
 
   return (
     <div className="flex items-center justify-center h-[60vh] text-gray-800">
-      {getUserImgIsLoading ? (
+      {getUserInfoIsLoading ? (
         <LoadingSpinner />
       ) : (
         <form
@@ -121,7 +122,9 @@ export default function UserImage() {
           <h1 className="text-2xl extra-bold my-5">프로필 이미지 관리</h1>
           <Image
             src={
-              userImg.preview || getUserImg?.data?.image || "/basic_profile.png"
+              userImg.preview ||
+              getUserInfo?.data?.profile_image ||
+              "/basic_profile.png"
             }
             width={100}
             height={100}
@@ -145,8 +148,11 @@ export default function UserImage() {
               className="w-1/2 text-center bold"
               onClick={handleDelete}
               isLoading={deleteUserImgIsPending}
+              isDisabled={getUserInfo?.data?.profile_image === null}
             >
-              기본 이미지로 변경
+              {getUserInfo?.data?.profile_image === null
+                ? "현재 기본 이미지"
+                : "기본 이미지로 변경"}
             </Button>
           </div>
           <Button

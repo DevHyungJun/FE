@@ -99,7 +99,7 @@ export default function ReviewItem({
       {myPage && !detailIsLoading ? (
         <div className="flex gap-2 items-center bg-gray-50 rounded-md mb-5">
           <Link
-            href={`/products/product-detail/${detail.data._id}`}
+            href={`/products/product-detail/${detail?.data?._id}`}
             className="hover:brightness-70"
           >
             <Image
@@ -112,7 +112,7 @@ export default function ReviewItem({
           </Link>
           <h1 className="bold text-center">
             <Link
-              href={`/products/product-detail/${detail.data._id}`}
+              href={`/products/product-detail/${detail?.data?._id}`}
               className="hover:underline hover:text-blue-500"
             >
               {detail?.data?.product?.product_name}
