@@ -5,5 +5,6 @@ export default function useGetPayment(page: number) {
   return useQuery({
     queryKey: ["getPayment", page],
     queryFn: () => getPayment(page),
+    enabled: !!page,
   });
 }

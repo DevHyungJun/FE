@@ -42,7 +42,7 @@ export default function MyPage() {
       {isLoading ? (
         <LoadingSpinner mode="1" />
       ) : (
-        <div className="flex justify-start w-full items-center gap-4 ml-5">
+        <div className="flex justify-start w-full items-center gap-2 ml-5">
           <Image
             src={profileImage ? profileImage : "/basic_profile.png"}
             alt="Profile Image"
@@ -51,11 +51,8 @@ export default function MyPage() {
             radius="full"
           />
           <div className="space-y-1 text-gray-700">
-            <p className="extra-bold">{data?.data?.email}</p>
-            <p className="text-sm bold">
-              <span className="text-gray-400 light">닉네임:</span>
-              {data?.data?.username}
-            </p>
+            <p className="extra-bold">{data?.data?.username}</p>
+            <p className="text-sm bold">{data?.data?.email}</p>
           </div>
         </div>
       )}

@@ -1,11 +1,13 @@
 "use client";
 
 import useGetPayment from "@/hooks/useGetPayment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import formatPrice from "@/util/formatPrice";
 import Image from "next/image";
 import Link from "next/link";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import ScrollUpButton from "@/app/components/ScrollUpButton";
+import { Button } from "@nextui-org/react";
 
 interface OrderHistoryProduct {
   created_at: string;
@@ -38,18 +40,29 @@ interface OrderHistoryData {
 
 export default function OrderHistory() {
   const [page, setPage] = useState(1);
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<OrderHistoryData[]>([]);
   const { data, isLoading } = useGetPayment(page);
+
+  useEffect(() => {
+    if (data) {
+      setOrders((prev) => [...prev, ...data.data.results]);
+    }
+  }, [data]);
+
+  const handleNextPage = () => {
+    if (!data?.data?.next) return;
+    setPage((prev) => prev + 1);
+  };
 
   return (
     <div className="mx-auto max-w-[800px] text-gray-800">
       <div className="w-full p-5 bg-white rounded-md">
         <h1 className="text-2xl extra-bold my-5">주문조회</h1>
-        {isLoading ? (
+        {page === 1 && isLoading ? (
           <LoadingSpinner />
         ) : (
           <div className="flex flex-col gap-3">
-            {data?.data?.results.map(
+            {orders.map(
               (order: OrderHistoryData) =>
                 order.product_list.length > 0 && (
                   <div key={order._id} className="border-b-2 pb-4 mb-4">
@@ -116,7 +129,18 @@ export default function OrderHistory() {
             )}
           </div>
         )}
+        {data?.data?.next && (
+          <Button
+            className="w-full"
+            color="primary"
+            onClick={handleNextPage}
+            isLoading={page !== 1 && isLoading}
+          >
+            더 보기
+          </Button>
+        )}
       </div>
+      <ScrollUpButton />
     </div>
   );
 }
