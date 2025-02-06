@@ -144,9 +144,10 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   };
 
   const handleRouteOrder = () => {
+    const articleId = data?.data?._id;
     const product = data?.data?.product?._id;
-    if (!product) return;
-    orderMutate([{ product, quantity }], {
+    if (!articleId && !product) return;
+    orderMutate([{ articleId, product, quantity }], {
       onSuccess: (data) => {
         if (data?.data?._id) {
           router.push(`/order/${data?.data?._id}`);

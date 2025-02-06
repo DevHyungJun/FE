@@ -71,17 +71,17 @@ export default function ChatUI() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      text: "안녕하세요! 무엇을 도와드릴까요?",
+      text: "안녕하세요! 저는 AI 챗봇입니다.",
     },
     {
       role: "assistant",
-      text: "저는 챗봇입니다. 무엇이든 물어보세요!",
+      text: "무엇을 도와드릴까요?",
     },
   ]);
   const [userInput, setUserInput] = useState("");
   const [inputDisabled, setInputDisabled] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState(false);
-  const [files, setFiles] = useState([]);
+  const [file, setFile] = useState<FormData | null>(null);
   const [threadId, setThreadId] = useState("");
   const currentMessageTextRef = useRef("");
   const { data: json, isLoading: jsonIsLoading, isSuccess } = useGetJson();
@@ -92,15 +92,6 @@ export default function ChatUI() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  useEffect(() => {
-    if (!isOpen) return;
-    scrollToBottom();
-  }, [isOpen]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   useEffect(() => {
     const createThread = async () => {
@@ -114,30 +105,43 @@ export default function ChatUI() {
   }, []);
 
   useEffect(() => {
+    if (!isOpen) return;
+    scrollToBottom();
+  }, [isOpen]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
     if (isSuccess) {
-      setFiles(json);
+      const jsonBlob = new Blob([JSON.stringify(json)], {
+        type: "application/json",
+      });
+      const file = new File([jsonBlob], "data.json", {
+        type: "application/json",
+      });
+
+      const formData = new FormData();
+      formData.append("file", file);
+      setFile(formData);
     }
   }, [json]);
 
+  useEffect(() => {
+    if (file) {
+      fileUpload();
+    }
+  }, [file]);
+
   // 파일 업로드
   const fileUpload = async () => {
-    const data = new FormData();
-    if (files.length < 0) return;
-    data.append("file", JSON.stringify(files[0]));
+    if (!file) return;
     await fetch("/api/assistants/files", {
       method: "POST",
-      body: data,
+      body: file,
     });
   };
-
-  // 파일 목록 가져오기
-  // const fetchFiles = async () => {
-  //   const resp = await fetch("/api/assistants/files", {
-  //     method: "GET",
-  //   });
-  //   const data = await resp.json();
-  //   setFiles(data);
-  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,12 +157,14 @@ export default function ChatUI() {
         method: "POST",
         body: JSON.stringify({
           content: userInput,
-          jsonData: files,
+          jsonData: file,
         }),
       }
     );
-    const stream = AssistantStream.fromReadableStream(response.body);
-    handleStream(stream);
+    if (response.body) {
+      const stream = AssistantStream.fromReadableStream(response.body);
+      handleStream(stream);
+    }
   };
 
   const handleStream = (stream: AssistantStream) => {
@@ -227,9 +233,8 @@ export default function ChatUI() {
         <div className="bg-white rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
           <div className="p-3 bg-gray-100 flex justify-between items-center rounded-t-lg">
             <h3 className="extra-bold text-gray-600 text-sm sm:text-medium">
-              채팅문의
+              AI 채팅
             </h3>
-            <button onClick={fileUpload}>파일</button>
             <button
               onClick={toggleChat}
               className="text-gray-500 hover:text-gray-900"
@@ -280,7 +285,7 @@ export default function ChatUI() {
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               placeholder="메시지를 입력하세요."
-              disabled={inputDisabled}
+              disabled={inputDisabled || jsonIsLoading}
             />
             <Button
               size="sm"
@@ -288,7 +293,7 @@ export default function ChatUI() {
               className="h-[40px]"
               radius="full"
               type="submit"
-              isLoading={inputDisabled}
+              isLoading={inputDisabled || jsonIsLoading}
               isDisabled={userInput.trim() === ""}
             >
               {!inputDisabled && <FaArrowUpLong className="text-lg" />}

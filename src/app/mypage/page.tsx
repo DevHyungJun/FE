@@ -11,12 +11,12 @@ export default function MyPage() {
   const profileImage = data?.data?.profile_image;
   const links = [
     {
-      href: "/",
+      href: "/mypage/order-history",
       label: "주문내역 조회",
       subLabel: "주문한 상품을 조회합니다.",
     },
     {
-      href: "mypage/edit-password",
+      href: "/mypage/edit-password",
       label: "비밀번호 변경",
       subLabel: "등록된 비밀번호를 변경합니다.",
     },
@@ -31,7 +31,7 @@ export default function MyPage() {
       subLabel: "작성한 리뷰를 수정/삭제합니다.",
     },
     {
-      href: "mypage/delete-account",
+      href: "/mypage/delete-account",
       label: "회원 탈퇴",
       subLabel:
         "쇼핑몰에 등록된 아이디 탈퇴, 탈퇴한 아이디로는 다시 접속하실 수 없습니다.",
@@ -42,7 +42,7 @@ export default function MyPage() {
       {isLoading ? (
         <LoadingSpinner mode="1" />
       ) : (
-        <div className="flex justify-start w-full items-center gap-4 ml-5">
+        <div className="flex justify-start w-full items-center gap-2 ml-5">
           <Image
             src={profileImage ? profileImage : "/basic_profile.png"}
             alt="Profile Image"
@@ -51,11 +51,8 @@ export default function MyPage() {
             radius="full"
           />
           <div className="space-y-1 text-gray-700">
-            <p className="extra-bold">{data?.data?.email}</p>
-            <p className="text-sm bold">
-              <span className="text-gray-400 light">닉네임:</span>
-              {data?.data?.username}
-            </p>
+            <p className="extra-bold">{data?.data?.username}</p>
+            <p className="text-sm bold">{data?.data?.email}</p>
           </div>
         </div>
       )}

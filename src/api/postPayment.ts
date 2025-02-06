@@ -1,16 +1,15 @@
 import axios from "axios";
 
-type OrderData = {
-  articleId: string;
+interface OrderData {
   product: string;
   quantity: number;
-}[];
+}
 
-export default async function order(data: OrderData) {
+export default async function postPayment(orderData: OrderData[]) {
   const response = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}order`,
+    `${process.env.NEXT_PUBLIC_API_URL}payment`,
     {
-      product_list: data,
+      product_list: orderData,
     },
     {
       withCredentials: true,

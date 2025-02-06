@@ -183,7 +183,7 @@ export default function PostRegister() {
               onClick={() => setCategoryShow((prev) => !prev)}
             >
               <p className="text-sm hover:text-blue-500 bold">
-                원하는 카테고리가 없다면? 등록하기
+                {categoryShow ? "숨기기" : "원하는 카테고리가 없다면? 등록하기"}
               </p>
             </button>
             {categoryShow && (

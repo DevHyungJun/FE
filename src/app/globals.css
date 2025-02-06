@@ -33,19 +33,19 @@ body {
 }
 
 .light {
-  font-family: "NanumSquareLight";
+  font-family: "NanumSquareLight", sans-serif;
 }
 
 .regular {
-  font-family: "NanumSquareRegular";
+  font-family: "NanumSquareRegular", sans-serif;
 }
 
 .bold {
-  font-family: "NanumSquareBold";
+  font-family: "NanumSquareBold", sans-serif;
 }
 
 .extra-bold {
-  font-family: "NanumSquareExtraBold";
+  font-family: "NanumSquareExtraBold", sans-serif;
 }
 
 .two-line-ellipsis {

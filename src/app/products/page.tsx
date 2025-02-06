@@ -94,13 +94,17 @@ const Products = () => {
 
   return (
     <div className="max-w-[1200px] mx-auto">
-      <div className="py-1">
+      <div className="py-1 border-b-8 mb-3">
         <Tabs
           variant="underlined"
           onSelectionChange={handleTabs}
           size="lg"
           color="primary"
           className="bold"
+          classNames={{
+            tabList: "flex-wrap",
+            tab: "max-w-[50px]",
+          }}
         >
           <Tab title="전체" key="" />
           {category?.data?.map((category: any) => (
@@ -130,20 +134,19 @@ const Products = () => {
       {isLoading && products.length === 0 ? (
         <LoadingSpinner />
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-10 text-xs md:text-sm p-1">
+        <div className="max-w-[450px] sm:max-w-full mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 text-xs md:text-sm p-1">
           {products.map((product: PostData) => (
             <div
               key={product._id}
-              className="flex flex-col justify-between gap-2 text-sm text-gray-800 p-2 cursor-pointer hover:bg-gray-100 rounded-md max-h-[500px] sm:max-h-[700px] min-h-[300px] sm:min-h-[500px]"
+              className="flex flex-col gap-2 text-sm text-gray-800 cursor-pointer transition-all hover:translate-y-[-10px] rounded-md max-w-[200px] min-h-[200px] sm:max-w-[300px] sm:min-h-[300px] border shadow-sm"
               onClick={() => handleRouteProductDetail(product?._id)}
             >
               <Image
                 src={product?.product?.thumbnail}
                 alt={product?.title}
-                width={500}
-                className="rounded-md object-contain max-h-[300px] sm:max-h-[500px]"
+                className="w-[200px] min-h-[200px] sm:w-[300px] sm:min-h-[300px] rounded-md object-cover"
               />
-              <div>
+              <div className="p-2">
                 <h3 className="text-sm md:text-lg bold">{product.title}</h3>
                 <div className="flex justify-between items-center">
                   <p className="text-xs md:text-medium">

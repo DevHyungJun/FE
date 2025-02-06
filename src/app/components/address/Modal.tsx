@@ -79,7 +79,11 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
         >
           배송지 추가하기
         </Button>
-        {isLoading && <LoadingSpinner />}
+        {isLoading && (
+          <div className="mt-10">
+            <LoadingSpinner mode="1" />
+          </div>
+        )}
         {data?.data.length === 0 && (
           <p className="text-center mt-10 text-gray-600">
             등록된 배송지가 없습니다 배송지를 추가해주세요
