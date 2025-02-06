@@ -46,7 +46,7 @@ const Products = () => {
   });
 
   useEffect(() => {
-    if (inView && hasMore && !isLoading) {
+    if (inView && hasMore && !isLoading && data?.data?.next) {
       setPage((prev) => prev + 1);
     }
   }, [inView, hasMore]);
@@ -175,7 +175,6 @@ const Products = () => {
       <div ref={ref} className="h-10">
         {isLoading && products.length !== 0 && <LoadingSpinner mode="1" />}
       </div>
-      {!hasMore && <div className="bg-gray-500 w-full h-10" />}
       <ScrollUpButton />
     </div>
   );

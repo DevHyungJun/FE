@@ -9,7 +9,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import Link from "next/link";
-import ProductDetail from "../products/product-detail/[id]/page";
 
 interface Item {
   article: string;

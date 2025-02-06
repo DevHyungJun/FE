@@ -1,7 +1,7 @@
 "use client";
 
 import useGetCart from "@/hooks/useGetCart";
-import CartProductDetail from "../components/CartProductDetail";
+import CartProductDetail from "../components/cartProductDetail";
 import { Button, Checkbox, CheckboxGroup } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../components/LoadingSpinner";

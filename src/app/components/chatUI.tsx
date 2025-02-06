@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Image, Textarea } from "@nextui-org/react";
-import { FaRobot } from "react-icons/fa";
 import { FaArrowUpLong } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
 import { AssistantStream } from "openai/lib/AssistantStream";
@@ -66,8 +65,12 @@ const Message = ({ role, text }: { role: string; text: string }) => {
   return null;
 };
 
-export default function ChatUI() {
-  const [isOpen, setIsOpen] = useState(false);
+interface ChatUIProps {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+}
+
+export default function ChatUI({ isOpen, setIsOpen }: ChatUIProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
@@ -217,90 +220,75 @@ export default function ChatUI() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-10">
-      {!isOpen && (
+    <div className="bg-white rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
+      <div className="p-3 bg-gray-100 flex justify-between items-center rounded-t-lg">
+        <h3 className="extra-bold text-gray-600 text-sm sm:text-medium">
+          AI 채팅
+        </h3>
         <button
           onClick={toggleChat}
-          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg
-          hover:animate-wiggle transition-all duration-300 
-          active:scale-95 hover:shadow-xl extra-bold"
+          className="text-gray-500 hover:text-gray-900"
         >
-          채팅 문의 <FaRobot className="text-xl" />
+          <IoIosClose className="text-3xl" />
         </button>
-      )}
+      </div>
 
-      {isOpen && (
-        <div className="bg-white rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
-          <div className="p-3 bg-gray-100 flex justify-between items-center rounded-t-lg">
-            <h3 className="extra-bold text-gray-600 text-sm sm:text-medium">
-              AI 채팅
-            </h3>
-            <button
-              onClick={toggleChat}
-              className="text-gray-500 hover:text-gray-900"
-            >
-              <IoIosClose className="text-3xl" />
-            </button>
-          </div>
-
-          <div className="w-[250px] h-[400px] sm:w-[450px] sm:h-[700px] overflow-y-auto scrollbar-hide">
-            <div className="p-1">
-              <div className="space-y-6 mt-3">
-                {messages.map((msg, index) => (
-                  <Message key={index} role={msg.role} text={msg.text} />
-                ))}
-                <div ref={messagesEndRef} />
-                {loadingMessage && (
-                  <div className="flex items-center justify-start">
-                    <Image
-                      src="/chat-bot.webp"
-                      className="min-w-[30px]"
-                      width={30}
-                      height={30}
-                    />
-                    <div className="text-sm text-blue-600 bg-gray-100 inline p-2 m-1 rounded-md animate-bounce delay-200 bold">
-                      <Markdown className="text-sm sm:text-medium">
-                        답변을 작성중입니다...
-                      </Markdown>
-                    </div>
-                  </div>
-                )}
+      <div className="w-[250px] h-[400px] sm:w-[450px] sm:h-[700px] overflow-y-auto scrollbar-hide">
+        <div className="p-1">
+          <div className="space-y-6 mt-3">
+            {messages.map((msg, index) => (
+              <Message key={index} role={msg.role} text={msg.text} />
+            ))}
+            <div ref={messagesEndRef} />
+            {loadingMessage && (
+              <div className="flex items-center justify-start">
+                <Image
+                  src="/chat-bot.webp"
+                  className="min-w-[30px]"
+                  width={30}
+                  height={30}
+                />
+                <div className="text-sm text-blue-600 bg-gray-100 inline p-2 m-1 rounded-md animate-bounce delay-200 bold">
+                  <Markdown className="text-sm sm:text-medium">
+                    답변을 작성중입니다...
+                  </Markdown>
+                </div>
               </div>
-            </div>
+            )}
           </div>
-
-          <form
-            className="flex items-center gap-1 w-full mx-auto p-2"
-            onSubmit={(data) => {
-              setUserInput("");
-              handleSubmit(data);
-            }}
-          >
-            <Textarea
-              type="text"
-              className="flex-1"
-              radius="full"
-              minRows={1}
-              maxRows={5}
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              placeholder="메시지를 입력하세요."
-              disabled={inputDisabled || jsonIsLoading}
-            />
-            <Button
-              size="sm"
-              color="primary"
-              className="h-[40px]"
-              radius="full"
-              type="submit"
-              isLoading={inputDisabled || jsonIsLoading}
-              isDisabled={userInput.trim() === ""}
-            >
-              {!inputDisabled && <FaArrowUpLong className="text-lg" />}
-            </Button>
-          </form>
         </div>
-      )}
+      </div>
+
+      <form
+        className="flex items-center gap-1 w-full mx-auto p-2"
+        onSubmit={(data) => {
+          setUserInput("");
+          handleSubmit(data);
+        }}
+      >
+        <Textarea
+          type="text"
+          className="flex-1"
+          radius="full"
+          minRows={1}
+          maxRows={5}
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+          placeholder="메시지를 입력하세요."
+          disabled={inputDisabled || jsonIsLoading}
+        />
+        <Button
+          size="sm"
+          color="primary"
+          className="h-[40px]"
+          radius="full"
+          type="submit"
+          isLoading={inputDisabled || jsonIsLoading}
+          isDisabled={userInput.trim() === ""}
+        >
+          {!inputDisabled && <FaArrowUpLong className="text-lg" />}
+        </Button>
+      </form>
     </div>
   );
 }
