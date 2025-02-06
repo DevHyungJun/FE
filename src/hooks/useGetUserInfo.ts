@@ -7,5 +7,6 @@ export default function useGetUserInfo() {
     queryFn: getUserInfo,
     staleTime: 5 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
+    retry: false,
   });
 }

@@ -9,8 +9,9 @@ export default function useLogout() {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      queryClient.setQueryData(['authCheck'], { isLoggedIn: false });
-      queryClient.invalidateQueries({queryKey: ['authCheck']});
+      queryClient.setQueryData(["authCheck"], { isLoggedIn: false });
+      queryClient.invalidateQueries({ queryKey: ["authCheck"] });
+      queryClient.invalidateQueries({ queryKey: ["userInfo"] });
     },
     onError: (error) => {
       Swal.fire({
@@ -19,6 +20,6 @@ export default function useLogout() {
         showConfirmButton: false,
         timer: 1500,
       });
-    }
+    },
   });
 }
