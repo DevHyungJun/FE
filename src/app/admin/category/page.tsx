@@ -1,16 +1,7 @@
 "use client";
 
 import useGetCategory from "@/hooks/useGetCategory";
-import {
-  Button,
-  Input,
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-} from "@nextui-org/react";
+import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import usePostCategory from "@/hooks/usePostCategory";
@@ -41,12 +32,6 @@ export default function Category() {
       { category_name: categoryName },
       {
         onSuccess: () => {
-          Swal.fire({
-            icon: "success",
-            title: "카테고리 등록 성공",
-            showConfirmButton: false,
-            timer: 1500,
-          });
           setCategoryName("");
           queryClient.invalidateQueries({ queryKey: ["category"] });
         },
@@ -57,12 +42,6 @@ export default function Category() {
   const handleDeleteCategory = (categoryId: string) => {
     deleteCategory(categoryId, {
       onSuccess: () => {
-        Swal.fire({
-          icon: "success",
-          title: "카테고리 삭제 성공",
-          showConfirmButton: false,
-          timer: 1500,
-        });
         queryClient.invalidateQueries({ queryKey: ["category"] });
       },
     });

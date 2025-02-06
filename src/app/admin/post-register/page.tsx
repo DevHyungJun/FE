@@ -75,12 +75,6 @@ export default function PostRegister() {
 
     newPost.mutate(formData as any, {
       onSuccess: () => {
-        Swal.fire({
-          icon: "success",
-          title: "상품 등록 성공",
-          showConfirmButton: false,
-          timer: 1500,
-        });
         router.push("/products");
       },
     });
@@ -119,12 +113,6 @@ export default function PostRegister() {
       { category_name: categoryName },
       {
         onSuccess: () => {
-          Swal.fire({
-            icon: "success",
-            title: "카테고리 등록 성공",
-            showConfirmButton: false,
-            timer: 1500,
-          });
           setCategoryShow(false);
           setCategoryName("");
           queryClient.invalidateQueries({ queryKey: ["category"] });

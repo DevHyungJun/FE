@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from "react";
 import useNewItem from "@/hooks/useNewItem";
 import Image from "next/image";
 import { MdCancel } from "react-icons/md";
-import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 
 export default function NewItem() {
@@ -40,12 +39,6 @@ export default function NewItem() {
     });
     newItem.mutate(formData as any, {
       onSuccess: () => {
-        Swal.fire({
-          icon: "success",
-          title: "상품 등록 성공",
-          showConfirmButton: false,
-          timer: 1500,
-        });
         router.push("/admin/item-list");
       },
     });
