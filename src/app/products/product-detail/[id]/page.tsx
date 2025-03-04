@@ -279,15 +279,18 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
                 <>
                   <div className="flex justify-end">
                     <Select
+                      aria-label="정렬"
+                      disallowEmptySelection
                       items={orderingOptions}
                       label="정렬"
                       className="w-[100px] bold"
                       variant="underlined"
                       defaultSelectedKeys={["updatedAt"]}
+                      selectedKeys={[String(orderOption)]}
                       onChange={(e) => setOrderOption(e.target.value)}
                     >
                       {(item) => (
-                        <SelectItem key={item.value} textValue={item.label}>
+                        <SelectItem key={item.value} value={item.label}>
                           {item.label}
                         </SelectItem>
                       )}

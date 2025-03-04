@@ -6,5 +6,6 @@ export default function useGetCart(enabled = true) {
     queryKey: ["cart"],
     queryFn: getCart,
     enabled,
+    retry: false,
   });
 }

@@ -24,11 +24,12 @@ import {
   CiShoppingCart,
   CiShoppingTag,
 } from "react-icons/ci";
-import { IoPersonOutline, IoPersonAddOutline } from "react-icons/io5";
+import { IoPersonAddOutline } from "react-icons/io5";
 import { VscTools } from "react-icons/vsc";
 import useGetCart from "@/hooks/useGetCart";
 import { useQueryClient } from "@tanstack/react-query";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
+import useRecommend from "@/hooks/useRecommend";
 
 interface CahcedUserLoggedIn {
   data: {
@@ -42,7 +43,7 @@ const Header = () => {
   const cahcedUserLoggedIn = queryClient.getQueryData<CahcedUserLoggedIn>([
     "authCheck",
   ]);
-  const { data } = useGetUserInfo();
+  const { data, isSuccess } = useGetUserInfo();
   const profileImage = data?.data?.profile_image;
   const loginState = cahcedUserLoggedIn?.data?.isLoggedIn;
   const { data: cartData } = useGetCart(!!loginState);
@@ -55,6 +56,9 @@ const Header = () => {
   const isSignupOpen = pathname.startsWith("/signup");
   const isCartOpen = pathname.startsWith("/cart");
   const isMypageOpen = pathname.startsWith("/mypage");
+
+  // 추천 상품 상태 관리
+  useRecommend();
 
   // 메뉴 상태 관리
   const [isMenuOpen, setIsMenuOpen] = useState(false);

@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import useAddCart from "@/hooks/useAddCart";
+import RecommendItems from "./RecommendItems";
 
 interface FavoriteProps {
   likeList: PostData[];
@@ -195,42 +196,7 @@ export default function Favorite({
           >
             장바구니 살펴보기
           </button>
-
-          <div className="mt-40 border-t-2">
-            <h2 className="text-lg bold mt-2">이런 상품은 어떠세요?</h2>
-            <div className="flex gap-2 mt-3">
-              <div>
-                <img src="https://via.placeholder.com/150" alt="product" />
-                <p>상품명</p>
-                <p>가격</p>
-              </div>
-              <div>
-                <img src="https://via.placeholder.com/150" alt="product" />
-                <p>상품명</p>
-                <p>가격</p>
-              </div>
-              <div>
-                <img src="https://via.placeholder.com/150" alt="product" />
-                <p>상품명</p>
-                <p>가격</p>
-              </div>
-              <div>
-                <img src="https://via.placeholder.com/150" alt="product" />
-                <p>상품명</p>
-                <p>가격</p>
-              </div>
-              <div>
-                <img src="https://via.placeholder.com/150" alt="product" />
-                <p>상품명</p>
-                <p>가격</p>
-              </div>
-              <div>
-                <img src="https://via.placeholder.com/150" alt="product" />
-                <p>상품명</p>
-                <p>가격</p>
-              </div>
-            </div>
-          </div>
+          <RecommendItems />
           <Link href="/products" className="w-full mt-10" passHref>
             <Button color="primary" className="w-full bold">
               쇼핑 계속하기

@@ -12,6 +12,7 @@ export default function useLogout() {
       queryClient.setQueryData(["authCheck"], { isLoggedIn: false });
       queryClient.invalidateQueries({ queryKey: ["authCheck"] });
       queryClient.invalidateQueries({ queryKey: ["userInfo"] });
+      localStorage.removeItem("productIds");
     },
     onError: (error) => {
       Swal.fire({
