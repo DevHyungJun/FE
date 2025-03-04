@@ -24,7 +24,7 @@ import { useRouter } from "next/navigation";
 import { FaCartPlus } from "react-icons/fa";
 import useAddCart from "@/hooks/useAddCart";
 import useOrder from "@/hooks/useOrder";
-import ReviewItem from "@/app/components/reviewItem";
+import ReviewItem from "@/app/components/ReviewItem1";
 import useGetReview from "@/hooks/useGetReview";
 import Link from "next/link";
 import { Select, SelectItem } from "@nextui-org/select";

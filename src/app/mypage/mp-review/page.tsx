@@ -4,7 +4,7 @@ import useGetUserReview from "@/hooks/useGetUserReview";
 import useAuthCheck from "@/hooks/useAuthCheck";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import { Select, SelectItem } from "@nextui-org/react";
-import ReviewItem from "@/app/components/reviewItem";
+import ReviewItem from "@/app/components/ReviewItem1";
 import { useState } from "react";
 
 export default function MpReview() {
