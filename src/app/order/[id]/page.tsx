@@ -143,7 +143,7 @@ export default function Order({ params }: { params: { id: string } }) {
       orderId: `order-${randomOrderId()}`,
       amount: resultPrice() + DELIVERY_PRICE,
       goodsName: goodsName(),
-      returnUrl: "http://localhost:5000/order-success",
+      returnUrl: "https://any-shop.shop/order-success",
       fnError: function (result: { errorMsg: string }) {
         clearOrderData();
         if (result.errorMsg.includes("P091")) {
