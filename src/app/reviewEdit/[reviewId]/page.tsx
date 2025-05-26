@@ -43,12 +43,7 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
   const [images, setImages] = useState<ImageFile[]>([]);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { isDirty },
-  } = useForm<ReviewEditForm>();
+  const { register, handleSubmit, setValue } = useForm<ReviewEditForm>();
   const { mutate: aditReview, isPending: aditReviewIsPending } =
     useAditReview(reviewId);
 
@@ -109,7 +104,11 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
       });
       return;
     }
-    if (!isDirty || rate === reviewData.data.rate) {
+    if (
+      reviewData.data.title === formData.title &&
+      reviewData.data.content === formData.content &&
+      rate === reviewData.data.rate
+    ) {
       Swal.fire({
         icon: "error",
         title: "수정된 내용이 없습니다.",
@@ -135,9 +134,7 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
 
     aditReview(form as any, {
       onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["reviews"],
-        });
+        queryClient.invalidateQueries({ queryKey: ["reviews"] });
         router.back();
       },
     });

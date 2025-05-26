@@ -8,6 +8,7 @@ import usePostCategory from "@/hooks/usePostCategory";
 import { useQueryClient } from "@tanstack/react-query";
 import useDeleteCategory from "@/hooks/useDeleteCategory";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import useGuestOut from "@/hooks/useGuestOut";
 
 export default function Category() {
   const queryClient = useQueryClient();
@@ -17,7 +18,7 @@ export default function Category() {
     usePostCategory();
   const { mutate: deleteCategory, isPending: deleteCategoryIspending } =
     useDeleteCategory();
-
+  useGuestOut(true);
   const handlePostCategory = () => {
     if (categoryName === "") {
       Swal.fire({
@@ -62,7 +63,7 @@ export default function Category() {
         />
         <Button
           type="button"
-          className="w-1/2 bold"
+          className="w-full bold"
           onClick={handlePostCategory}
           color="primary"
           isLoading={postCategoryIspending}
@@ -84,7 +85,6 @@ export default function Category() {
               <Button
                 className="hover:font-semibold light"
                 color="danger"
-                variant="bordered"
                 onClick={() => handleDeleteCategory(category._id)}
                 isLoading={deleteCategoryIspending}
                 size="sm"

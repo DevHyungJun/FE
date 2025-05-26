@@ -28,6 +28,7 @@ import ReviewItem from "@/app/components/ReviewItem1";
 import useGetReview from "@/hooks/useGetReview";
 import Link from "next/link";
 import { Select, SelectItem } from "@nextui-org/select";
+import ScrollUpButton from "@/app/components/ScrollUpButton";
 
 type ParamsId = { id: string };
 type AuthCheckResponse = {
@@ -95,6 +96,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
       favoriteDeleteMutate(id, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["allProducts"] });
+          queryClient.invalidateQueries({ queryKey: ["productDetail", id] });
           setIsFavorite(false);
         },
         onError: () => {
@@ -109,6 +111,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
       favoritePostMutate(id, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["allProducts"] });
+          queryClient.invalidateQueries({ queryKey: ["productDetail", id] });
           setIsFavorite(true);
         },
         onError: () => {
@@ -171,13 +174,13 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
       },
     });
   };
-
+  console.log(reviewData?.data);
   return (
     <>
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <div className="max-w-[1200px] mx-auto px-1">
+        <div className="max-w-[1200px] mx-auto">
           <div className="flex flex-col md:flex-row justify-between gap-3 md:gap-10">
             <div className="w-full md:w-1/2">
               <Slider {...settings} className="mb-5">
@@ -187,7 +190,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
                       src={img}
                       width="100%"
                       alt={data?.data?.title}
-                      className="mx-auto object-contain max-h-[400px] md:max-h-[600px]"
+                      className="mx-auto object-contain"
                     />
                     <div className="flex justify-end text-gray-500 light text-sm">
                       <p className="bg-gray-100 px-2 py-1 rounded-md">
@@ -243,9 +246,16 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
               </div>
             </div>
           </div>
-          <Tabs variant="underlined" className="bold">
+          <Tabs
+            variant="underlined"
+            className="w-full bold sticky top-[64px] z-20 bg-background/70 backdrop-blur-lg backdrop-saturate-150 border-divider"
+          >
             <Tab key="productDetail" title="정보" textValue="productDetail">
-              <Accordion className="border-y" fullWidth={true}>
+              <Accordion
+                className="border-y"
+                fullWidth={true}
+                defaultExpandedKeys={["detail"]}
+              >
                 <AccordionItem
                   key="detail"
                   textValue="detail"
@@ -267,7 +277,11 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
                 </AccordionItem>
               </Accordion>
             </Tab>
-            <Tab key="review" title="리뷰" textValue="review">
+            <Tab
+              key="review"
+              title={`리뷰 ${reviewData?.data.length || ""}`}
+              textValue="review"
+            >
               <Link href={`/review/${id}`} className="border-t py-3">
                 <Button variant="flat" className="w-full bold">
                   상품평 작성하러 가기
@@ -308,6 +322,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
               )}
             </Tab>
           </Tabs>
+          <ScrollUpButton />
         </div>
       )}
     </>

@@ -15,7 +15,7 @@ import useOrder from "@/hooks/useOrder";
 import { useRouter } from "next/navigation";
 import Favorite from "../components/Favorite";
 import useLikeList from "@/hooks/useLikeList";
-import RecommendItems from "../components/RecommendItems";
+import MostPopular from "../components/MostPopular";
 
 interface CartArticle {
   article: string;
@@ -114,26 +114,24 @@ export default function Cart() {
   };
 
   const cartOrFavoriteStyle =
-    "flex items-center gap-1 text-lg md:text-2xl extra-bold m-1 text-gray-900 border-b-4 p-2 hover:opacity-100";
+    "w-1/2 flex justify-center items-center gap-1 text-medium md:text-xl extra-bold text-gray-900 border-b-2 border-gray-900 p-2 hover:opacity-100";
   return (
-    <div className="flex flex-col gap-5 max-w-[1400px] mx-auto p-1">
-      <div className="flex">
+    <div className="flex flex-col gap-5 max-w-[1280px] mx-auto p-1 overflow-x-hidden">
+      <div className="flex w-full">
         <button
           className={`${
-            cartOrFavorite !== "cart" && "opacity-30 border-none"
+            cartOrFavorite !== "cart" && "opacity-30 border-gray-300"
           } ${cartOrFavoriteStyle}`}
           onClick={() => setCartOrFavorite("cart")}
         >
-          <CiShoppingCart className="text-xl md:text-2xl" />
           장바구니
         </button>
         <button
           className={`${
-            cartOrFavorite !== "favorite" && "opacity-30 border-none"
+            cartOrFavorite !== "favorite" && "opacity-30 border-gray-300"
           } ${cartOrFavoriteStyle}`}
           onClick={() => setCartOrFavorite("favorite")}
         >
-          <IoHeartSharp className="text-xl md:text-2xl text-red-500" />
           좋아요한 상품
         </button>
       </div>
@@ -208,12 +206,7 @@ export default function Cart() {
               >
                 좋아요한 상품 보기
               </button>
-              <RecommendItems />
-              <Link href="/products" className="w-full mt-10" passHref>
-                <Button color="primary" className="w-full bold">
-                  쇼핑 계속하기
-                </Button>
-              </Link>
+              <MostPopular />
             </div>
           )}
         </>

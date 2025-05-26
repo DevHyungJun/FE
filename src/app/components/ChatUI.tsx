@@ -97,6 +97,21 @@ export default function ChatUI({ isOpen, setIsOpen }: ChatUIProps) {
   };
 
   useEffect(() => {
+    if (isOpen) {
+      // 스크롤 막기
+      document.body.style.overflow = "hidden";
+    } else {
+      // 스크롤 허용
+      document.body.style.overflow = "";
+    }
+
+    // 컴포넌트가 unmount될 때도 overflow 원복
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
     const createThread = async () => {
       const res = await fetch(`/api/assistants/threads`, {
         method: "POST",
@@ -218,9 +233,9 @@ export default function ChatUI({ isOpen, setIsOpen }: ChatUIProps) {
       }
     });
   };
-
+  if (!isOpen) return null;
   return (
-    <div className="bg-white rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
+    <div className="bg-white rounded-none sm:rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
       <div className="p-3 bg-gray-100 flex justify-between items-center rounded-t-lg">
         <h3 className="extra-bold text-gray-600 text-sm sm:text-medium">
           AI 채팅
@@ -233,7 +248,7 @@ export default function ChatUI({ isOpen, setIsOpen }: ChatUIProps) {
         </button>
       </div>
 
-      <div className="w-[250px] h-[400px] sm:w-[450px] sm:h-[700px] overflow-y-auto scrollbar-hide">
+      <div className="w-full h-[calc(100vh-180px)] sm:w-[450px] sm:h-[700px] overflow-y-auto scrollbar-hide">
         <div className="p-1">
           <div className="space-y-6 mt-3">
             {messages.map((msg, index) => (

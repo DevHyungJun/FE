@@ -13,6 +13,7 @@ import { Product } from "../../../../types/Product";
 import useGetCategory from "@/hooks/useGetCategory";
 import usePostCategory from "@/hooks/usePostCategory";
 import { useQueryClient } from "@tanstack/react-query";
+import useGuestOut from "@/hooks/useGuestOut";
 
 interface CategoryItems {
   _id: string;
@@ -22,7 +23,7 @@ interface CategoryItems {
 }
 
 export default function PostRegister() {
-  const { data, isLoading, isError, error } = useGetItem(1);
+  const { data, isLoading, isError, error } = useGetItem();
   const [selectedProduct, setSelectedProduct] = useState<string>("");
   const newPost = useNewPost();
   const [images, setImages] = useState<File[]>([]);
@@ -37,8 +38,8 @@ export default function PostRegister() {
   const [categoryShow, setCategoryShow] = useState<boolean>(false);
   const [categoryName, setCategoryName] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-
-  const items = data?.data;
+  useGuestOut(true);
+  const items = data?.pages?.flatMap((page: any) => page.data) ?? [];
   const categoryItems = categroy?.data;
 
   useEffect(() => {
@@ -82,8 +83,36 @@ export default function PostRegister() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files) {
-      setImages((prevImages) => [...prevImages, ...Array.from(files)]);
+    if (!files) return;
+
+    const MAX_SIZE_MB = 5;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+    const validFiles: File[] = [];
+    const oversizedFiles: string[] = [];
+
+    Array.from(files).forEach((file) => {
+      if (file.size > MAX_SIZE_BYTES) {
+        oversizedFiles.push(file.name);
+      } else {
+        validFiles.push(file);
+      }
+    });
+
+    if (oversizedFiles.length > 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "파일 크기 제한 초과",
+        html: `
+        다음 파일은 ${MAX_SIZE_MB}MB를 초과하여 업로드할 수 없습니다:<br/>
+        <strong>${oversizedFiles.join("<br/>")}</strong>
+      `,
+        showConfirmButton: true,
+      });
+    }
+
+    if (validFiles.length > 0) {
+      setImages((prevImages) => [...prevImages, ...validFiles]);
     }
   };
 
@@ -193,24 +222,30 @@ export default function PostRegister() {
               </div>
             )}
             {selectedProduct && (
-              <div>
-                <p className="light text-center">
-                  선택한{" "}
-                  {
-                    items.find((item: Product) => item._id === selectedProduct)
-                      ?.product_name
-                  }{" "}
-                  상품의 미리보기 이미지
-                </p>
+              <div className="flex items-center justify-between bg-gray-50 p-2 rounded-md">
+                <div className="flex flex-col items-center gap-2 sm:flex-row text-gray-500 light text-[12px] sm:text-medium">
+                  <p>
+                    <span className="regular text-gray-800 line-clamp-1 overflow-hidden text-ellipsis">
+                      {
+                        items.find(
+                          (item: Product) => item._id === selectedProduct
+                        )?.product_name
+                      }
+                    </span>
+                  </p>
+                  <p className="light text-[12px] sm:text-medium text-nowrap">
+                    미리보기 이미지
+                  </p>
+                </div>
                 <Image
                   src={
                     items.find((item: Product) => item._id === selectedProduct)
                       ?.thumbnail
                   }
                   alt={selectedProduct}
-                  width={500}
-                  height={500}
-                  className="mx-auto"
+                  width={100}
+                  height={100}
+                  className="bg-white rounded-md object-contain"
                 />
                 <input
                   type="file"
@@ -224,32 +259,40 @@ export default function PostRegister() {
             )}
             <Button
               type="button"
-              color="success"
+              color="default"
               onClick={handleAddImagesClick}
-              className="bold"
+              className={`bold ${
+                selectedProduct
+                  ? ""
+                  : "cursor-not-allowed bg-gray-100 text-gray-300"
+              }`}
+              disabled={!selectedProduct}
             >
               제품 상세 이미지 추가
             </Button>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {previews.map((preview, index) => (
-                <div key={index} className="relative mx-auto">
-                  <Image
-                    src={preview}
-                    alt={`Preview ${index + 1}`}
-                    className="object-cover"
-                    width={500}
-                    height={500}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleImageDelete(index)}
-                    className="absolute top-1 right-1 p-[1px] bg-white rounded-full"
-                  >
-                    <MdCancel className="text-2xl" />
-                  </button>
-                </div>
-              ))}
-            </div>
+            {previews.length !== 0 && (
+              <div className="flex flex-col gap-2 mt-2 bg-gray-50 p-2 rounded-md">
+                <h2 className="text-lg bold">상세 이미지</h2>
+                {previews.map((preview, index) => (
+                  <div key={index} className="relative mx-auto">
+                    <Image
+                      src={preview}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full object-contain rounded-md bg-white"
+                      width={500}
+                      height={500}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleImageDelete(index)}
+                      className="absolute top-1 right-1 p-[1px] bg-white rounded-full"
+                    >
+                      <MdCancel className="text-2xl" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
             <Button
               color="primary"
               onClick={handleSubmit}

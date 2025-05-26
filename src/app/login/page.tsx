@@ -32,7 +32,7 @@ const Login = () => {
         queryClient.invalidateQueries({ queryKey: ["authCheck"] });
         queryClient.invalidateQueries({ queryKey: ["getCart"] });
         queryClient.invalidateQueries({ queryKey: ["userInfo"] });
-        router.push("/");
+        router.replace("/");
       },
       onError: (error) => {
         Swal.fire({
@@ -47,9 +47,9 @@ const Login = () => {
 
   const errorS = "text-sm text-red-500";
   return (
-    <div className="flex items-center justify-center h-[60vh] text-gray-800">
+    <div className="min-h-[calc(100vh-333px)] sm:min-h-[calc(100vh-502px)] md:min-h-[calc(100vh-330px)] flex items-center justify-center text-gray-800">
       <form
-        className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
+        className="flex flex-col w-[500px] mx-auto gap-3 shadow-none p-3 rounded-md sm:shadow-md"
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="flex items-center gap-2 text-2xl extra-bold m-1">

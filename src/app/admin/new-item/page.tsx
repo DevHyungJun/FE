@@ -6,6 +6,7 @@ import useNewItem from "@/hooks/useNewItem";
 import Image from "next/image";
 import { MdCancel } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import useGuestOut from "@/hooks/useGuestOut";
 
 export default function NewItem() {
   const [images, setImages] = useState<File[]>([]);
@@ -13,7 +14,7 @@ export default function NewItem() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const newItem = useNewItem();
   const router = useRouter();
-
+  useGuestOut(true);
   useEffect(() => {
     // 이미지 미리보기 URL 생성
     const objectUrls = images.map((file) => URL.createObjectURL(file));
@@ -58,7 +59,7 @@ export default function NewItem() {
   const handleAddImagesClick = () => fileInputRef.current?.click();
 
   return (
-    <div>
+    <div className="p-1">
       <form
         className="flex flex-col gap-3 max-w-[800px] mx-auto"
         onSubmit={handleSubmit}
@@ -94,32 +95,37 @@ export default function NewItem() {
         />
         <Button
           type="button"
-          color="success"
+          color="default"
           onClick={handleAddImagesClick}
           className="bold"
         >
-          이미지 추가
+          상단(헤더) 이미지 추가
         </Button>
-        <div className="flex flex-wrap gap-2 mt-2">
-          {previews.map((preview, index) => (
-            <div key={index} className="relative mx-auto">
-              <Image
-                src={preview}
-                alt={`Preview ${index + 1}`}
-                className="object-cover"
-                width={500}
-                height={500}
-              />
-              <button
-                type="button"
-                onClick={() => handleImageDelete(index)}
-                className="absolute top-1 right-1 p-[1px] bg-white rounded-full"
-              >
-                <MdCancel className="text-2xl" />
-              </button>
+        {previews.length !== 0 && (
+          <div className="bg-gray-50 rounded-md p-2">
+            <h2 className="text-lg bold">상단(헤더) 이미지</h2>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {previews.map((preview, index) => (
+                <div key={index} className="relative mx-auto">
+                  <Image
+                    src={preview}
+                    alt={`Preview ${index + 1}`}
+                    className="object-cover w-full rounded-md"
+                    width={500}
+                    height={500}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleImageDelete(index)}
+                    className="absolute top-1 right-1 p-[1px] bg-white rounded-full"
+                  >
+                    <MdCancel className="text-2xl" />
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
         <Button type="submit" color="primary" className="bold">
           상품 등록
         </Button>

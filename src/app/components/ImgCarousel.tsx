@@ -16,7 +16,6 @@ export default function ImgCarousel() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // 데모 이미지 정보
   const image = [
     {
       src: "/home_main1.webp",
@@ -31,10 +30,16 @@ export default function ImgCarousel() {
       bg: "#5F9588",
     },
     {
-      src: "/home_main3.webp",
-      miniSrc: "/home_main3_mini.webp",
+      src: "/banner.webp",
+      miniSrc: "/mobileBanner.webp",
       alt: "image3",
-      bg: "#E4E1D7",
+      bg: "#B2C2D1",
+    },
+    {
+      src: "/banner2.webp",
+      miniSrc: "/banner2Mobile.webp",
+      alt: "image4",
+      bg: isMobile ? "#F5EBF3" : "#FAFAFA",
     },
   ];
 

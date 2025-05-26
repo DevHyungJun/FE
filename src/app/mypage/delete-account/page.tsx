@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import useDeleteAccount from "@/hooks/useDeleteAccount";
 import Swal from "sweetalert2";
+import useGuestOut from "@/hooks/useGuestOut";
 
 interface DeleteAccountForm {
   email: string;
@@ -15,7 +16,7 @@ export default function DeleteAccount() {
   const router = useRouter();
   const { register, handleSubmit } = useForm<DeleteAccountForm>();
   const { mutate: deleteAccount, isPending } = useDeleteAccount();
-
+  useGuestOut();
   const handleBack = () => router.back();
 
   const onSubmit = (data: DeleteAccountForm) => {
@@ -31,7 +32,7 @@ export default function DeleteAccount() {
       if (result.isConfirmed) {
         deleteAccount(data, {
           onSuccess: () => {
-            router.push("/");
+            router.replace("/");
           },
           onError: () => {
             Swal.fire({

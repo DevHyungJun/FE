@@ -1,13 +1,14 @@
 "use client";
 
 import useGetItem from "@/hooks/useGetItem";
-import { Image } from "@nextui-org/react";
+import Image from "next/image";
 import formatPrice from "@/util/formatPrice";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-import formatDate from "@/util/formatDate";
+import formatDateNumber from "@/util/formatDateNumber";
 import ScrollUpButton from "@/app/components/ScrollUpButton";
+import useGuestOut from "@/hooks/useGuestOut";
 
 type ItemListType = {
   createdAt: string;
@@ -23,80 +24,54 @@ type ItemListType = {
 };
 
 export default function ItemList() {
-  const [page, setPage] = useState(1);
-  const [products, setProducts] = useState<ItemListType[]>([]);
-  const [hasMore, setHasMore] = useState(true);
-  const { data, isLoading, isError, error, isSuccess } = useGetItem(page);
-
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useGetItem();
+  useGuestOut(true);
   const { ref, inView } = useInView({
     threshold: 0.1,
     rootMargin: "100px",
   });
 
   useEffect(() => {
-    if (inView && hasMore && !isLoading) {
-      setPage((prev) => prev + 1);
+    if (inView && hasNextPage) {
+      fetchNextPage();
     }
-  }, [inView, hasMore]);
+  }, [inView, hasNextPage, fetchNextPage]);
 
-  useEffect(() => {
-    if (data?.data) {
-      const newProducts = data.data.filter(
-        (newProduct: any) =>
-          !products.some(
-            (existingProduct) => existingProduct._id === newProduct._id
-          )
-      );
-
-      if (newProducts.length === 0) {
-        setHasMore(false);
-      } else {
-        setProducts((prevProducts) => [
-          ...prevProducts,
-          ...newProducts.filter(
-            (newProduct: { _id: string }) =>
-              !prevProducts.some(
-                (existingProduct) => existingProduct._id === newProduct._id
-              )
-          ),
-        ]);
-      }
-    }
-  }, [data]);
+  const allProducts = data?.pages?.flatMap((page) => page.data) ?? [];
 
   return (
     <div className="max-w-[1200px] mx-auto">
       <h2 className="flex items-center gap-2 text-2xl extra-bold my-5">
-        {isSuccess
-          ? products?.length === 0
-            ? "등록된 상품이 없습니다"
-            : "관리자 상품 목록"
-          : null}
+        {allProducts?.length === 0
+          ? "등록된 상품이 없습니다"
+          : "관리자 상품 목록"}
       </h2>
-      {isLoading && products.length === 0 ? (
+      {isLoading && allProducts.length === 0 ? (
         <LoadingSpinner />
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-10 text-xs md:text-sm p-1">
-          {products.map((item: ItemListType) => (
+        <div className="sm:max-w-full mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 text-xs md:text-sm p-1">
+          {allProducts.map((item: ItemListType) => (
             <div
-              key={item._id}
-              className="flex flex-col justify-between gap-2 text-sm text-gray-800 p-2 cursor-pointer hover:bg-gray-100 rounded-md max-h-[500px] sm:max-h-[700px]"
+              key={item?._id}
+              className="flex flex-col gap-2 max-w-[200px] md:max-w-[300px] text-sm text-gray-800 mx-auto"
             >
               <Image
-                src={item.thumbnail}
-                alt={item.product_name}
-                width={500}
-                className="rounded-md object-contain max-h-[300px] sm:max-h-[500px]"
+                src={item?.thumbnail}
+                alt={item?.product_name}
+                width={300}
+                height={300}
+                className="w-[200px] h-[200px] md:w-[300px] md:h-[300px] rounded-md object-contain bg-gray-100"
               />
               <div>
-                <p className="bold text-sm md:text-lg">{item.product_name}</p>
-                <p className="text-xs md:text-medium">
-                  {formatPrice(item.price)}
+                <p className="text-xs line-clamp-1 text-ellipsis overflow-hidden px-2">
+                  {item?.product_name}
                 </p>
-                <div className="flex justify-between text-sm light">
-                  <p>{formatDate(item.createdAt)}</p>
+                <p className="bold px-2">{formatPrice(item?.price)}</p>
+                <div className="flex justify-between px-2 text-xs text-gray-400 light">
+                  <p>{formatDateNumber(item?.createdAt)}</p>
                   <p>
-                    <span className="regular">{item.stock_quantity}</span>개의
+                    <span className="regular">{item?.stock_quantity}</span>개의
                     재고
                   </p>
                 </div>
@@ -105,11 +80,10 @@ export default function ItemList() {
           ))}
         </div>
       )}
-      {products?.length === 0 && <div className="h-[90vh]" />}
       <div ref={ref} className="h-10">
-        {isLoading && products.length !== 0 && <LoadingSpinner mode="1" />}
+        {isFetchingNextPage && <LoadingSpinner mode="1" />}
       </div>
-      {!hasMore && <div className="bg-gray-500 w-full h-10" />}
+
       <ScrollUpButton />
     </div>
   );

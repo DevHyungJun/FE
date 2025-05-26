@@ -12,6 +12,7 @@ import EditAddress from "@/app/components/address/EditAddress";
 import DaumPost from "@/app/components/address/DaumPost";
 import { storeAddressData, storeEditMode, storeModalShowstep } from "@/store";
 import { useEffect, useState } from "react";
+import useGuestOut from "@/hooks/useGuestOut";
 
 export default function MpAddress() {
   const queryClient = useQueryClient();
@@ -24,7 +25,7 @@ export default function MpAddress() {
   const sortedData = [...(data?.data || [])].sort(
     (a: any, b: any) => b.is_default - a.is_default
   );
-
+  useGuestOut();
   useEffect(() => {
     // 모달 켜졌을 때 배경 스크롤 막기
     if (step > 0) {

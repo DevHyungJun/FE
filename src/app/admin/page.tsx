@@ -1,8 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { TfiAngleRight } from "react-icons/tfi";
 import { VscTools } from "react-icons/vsc";
+import useGuestOut from "@/hooks/useGuestOut";
 
 const Admin = () => {
+  useGuestOut(true);
   const links = [
     {
       href: "/admin/post-register",
@@ -21,7 +25,7 @@ const Admin = () => {
 
   const LinkStyle = "hover:font-semibold border-b w-full py-2";
   return (
-    <div className="mx-auto max-w-[800px]">
+    <div className="mx-auto max-w-[800px] px-2">
       <h1 className="flex items-center gap-2 text-2xl extra-bold my-5">
         <VscTools />
         관리자 페이지

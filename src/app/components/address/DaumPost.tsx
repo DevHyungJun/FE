@@ -19,12 +19,12 @@ const DaumPost = () => {
   };
 
   return (
-    <div className="fixed p-1 inset-0 flex items-center justify-center z-50">
+    <div className="fixed p-0 sm:p-1 inset-0 flex items-center justify-center z-50">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={() => setStep(0)}
       />
-      <div className="relative overflow-y-auto w-[800px] min-h-[443px] max-h-[600px] p-3 bg-white z-10 rounded-lg">
+      <div className="relative overflow-y-auto w-full sm:w-[800px] h-full rounded-none sm:min-h-[443px] sm:max-h-[600px] p-3 bg-white z-10 sm:rounded-lg">
         <div className="flex justify-end items-center gap-2 mb-5">
           <button>
             <IoArrowBack
@@ -36,10 +36,7 @@ const DaumPost = () => {
             <IoClose className="text-2xl" onClick={decrementStep} />
           </button>
         </div>
-        <DaumPostcodeEmbed
-          onComplete={handleCompleted}
-          style={{ height: "443px" }}
-        />
+        <DaumPostcodeEmbed onComplete={handleCompleted} className="h-auto" />
       </div>
     </div>
   );

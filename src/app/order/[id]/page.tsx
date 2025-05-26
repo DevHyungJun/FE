@@ -62,8 +62,6 @@ export default function Order({ params }: { params: { id: string } }) {
   const firstProductName = firstProductData?.data?.product?.product_name;
   const { setOrderData, clearOrderData } = storeOrderData();
 
-  // 어떻게 결제 이력 API를 NICEPAY 결제가 완료된 시점에 호출하지?
-
   const resultPrice = () => {
     if (productList.length === 0) {
       return 0;
@@ -177,7 +175,7 @@ export default function Order({ params }: { params: { id: string } }) {
 
   return (
     <div className="flex flex-col gap-5 max-w-[1400px] mx-auto p-1">
-      <h1 className="text-2xl font-semibold m-1">주문서</h1>
+      <h1 className="text-2xl font-semibold">주문서</h1>
       <h2 className="text-lg font-semibold">
         주문 상품 {orderData?.data?.product_list.length}개
       </h2>
@@ -216,7 +214,10 @@ export default function Order({ params }: { params: { id: string } }) {
       ) : (
         <div className="border-b p-3 rounded-sm">
           <div className="flex justify-between items-center mb-5">
-            <p>배송지가 선택되지 않았습니다. 배송지를 선택해주세요</p>
+            <div className="text-[14px] flex flex-col gap-1 sm:flex-row sm:text-medium text-gray-600">
+              <p>배송지가 선택되지 않았습니다.</p>
+              <p>배송지를 선택해주세요</p>
+            </div>
             <Button size="sm" variant="flat" onClick={() => setStep(1)}>
               배송지 선택
             </Button>

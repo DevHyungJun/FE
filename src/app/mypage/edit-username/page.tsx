@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import useEditUsername from "@/hooks/useEditUsername";
 import { useQueryClient } from "@tanstack/react-query";
+import useGuestOut from "@/hooks/useGuestOut";
 
 interface EditUserInfoForm {
   username: string;
@@ -20,7 +21,7 @@ export default function EditUsername() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: userInfo, isLoading } = useGetUserInfo();
-
+  useGuestOut();
   const { mutate: editUsername, isPending } = useEditUsername();
 
   const {

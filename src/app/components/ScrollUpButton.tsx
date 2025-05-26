@@ -23,7 +23,7 @@ export default function ScrollUpButton() {
 
   return (
     <div
-      className={`fixed bottom-20 right-4 z-10 w-[50px] h-[50px] bg-gray-100 rounded-full shadow-lg hover:bg-gray-200 transition-opacity duration-300 ${
+      className={`fixed bottom-8 right-4 z-10 w-[35px] h-[35px] sm:w-[50px] sm:h-[50px] bg-gray-100 rounded-full shadow-lg hover:bg-gray-200 transition-opacity duration-300 ${
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >

@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import useAddCart from "@/hooks/useAddCart";
-import RecommendItems from "./RecommendItems";
+import MostPopular from "./MostPopular";
 
 interface FavoriteProps {
   likeList: PostData[];
@@ -196,12 +196,7 @@ export default function Favorite({
           >
             장바구니 살펴보기
           </button>
-          <RecommendItems />
-          <Link href="/products" className="w-full mt-10" passHref>
-            <Button color="primary" className="w-full bold">
-              쇼핑 계속하기
-            </Button>
-          </Link>
+          <MostPopular />
         </div>
       )}
     </>

@@ -10,11 +10,13 @@ import usePostReview from "@/hooks/usePostReview";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ParamsId = { id: string };
 
 export default function Review({ params }: { params: ParamsId }) {
   const { id } = params;
+  const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data, isLoading, isError, error } = useDetail(id);
   const item = data?.data;
@@ -65,9 +67,9 @@ export default function Review({ params }: { params: ParamsId }) {
       });
       return;
     }
-
     mutate(formData as any, {
       onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["reviews", id] });
         router.back();
       },
       onError: () => {
@@ -83,8 +85,10 @@ export default function Review({ params }: { params: ParamsId }) {
 
   return (
     <div className="p-1 max-w-[800px] mx-auto">
-      <h1 className="text-xl p-3">
-        <span className="extra-bold">{item?.product?.product_name} </span>
+      <h1 className="text-lg sm:text-xl p-3 text-center">
+        <span className="extra-bold overflow-hidden line-clamp-1 text-ellipsis">
+          {item?.product?.product_name}{" "}
+        </span>
         상품평 작성하기
       </h1>
       {isLoading ? (

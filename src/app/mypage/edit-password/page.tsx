@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { passwordV, passwordConfirmV } from "@/app/validationRules";
 import { ErrorMessage } from "@hookform/error-message";
 import useEditPassword from "@/hooks/useEditPassword";
+import useGuestOut from "@/hooks/useGuestOut";
 
 interface EditPasswordForm {
   old_password: string;
@@ -26,7 +27,7 @@ export default function EditPassword() {
   });
   const { mutate: editPassword, isPending } = useEditPassword();
   const handleBack = () => router.back();
-
+  useGuestOut();
   const passwordInputObject: {
     label: string;
     validation?: any;
@@ -64,7 +65,7 @@ export default function EditPassword() {
     };
     editPassword(password, {
       onSuccess: () => {
-        router.push("/");
+        router.replace("/");
       },
       onError: () => {
         Swal.fire({
@@ -79,9 +80,9 @@ export default function EditPassword() {
 
   const errorS = "text-red-500 text-sm";
   return (
-    <div className="flex items-center justify-center h-[60vh] text-gray-800">
+    <div className="min-h-[calc(100vh-333px)] sm:min-h-[calc(100vh-502px)] md:min-h-[calc(100vh-330px)] flex items-center justify-center text-gray-800 my-1">
       <form
-        className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
+        className="flex flex-col w-[500px] mx-auto gap-3 shadow-none sm:shadow-md p-3 rounded-md"
         onSubmit={handleSubmit(onSubmit)}
       >
         <h1 className="flex items-center gap-2 text-2xl extra-bold my-5">

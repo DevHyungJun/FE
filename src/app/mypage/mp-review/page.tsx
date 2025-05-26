@@ -3,14 +3,16 @@
 import useGetUserReview from "@/hooks/useGetUserReview";
 import useAuthCheck from "@/hooks/useAuthCheck";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
-import { Select, SelectItem } from "@nextui-org/react";
+import { Select, SelectItem, user } from "@nextui-org/react";
 import ReviewItem from "@/app/components/ReviewItem1";
 import { useState } from "react";
+import useGuestOut from "@/hooks/useGuestOut";
 
 export default function MpReview() {
   const { data: userInfo } = useAuthCheck();
-  const userId = userInfo?.data.userId;
+  const userId = userInfo?.data?.userId;
   const [orderOption, setOrderOption] = useState("updatedAt");
+  useGuestOut();
   const { data: userReview, isLoading } = useGetUserReview(
     userId,
     orderOption,
@@ -34,7 +36,11 @@ export default function MpReview() {
           <LoadingSpinner mode="1" />
         ) : (
           <>
-            <div className="flex justify-end">
+            <div
+              className={`flex justify-end ${
+                userReview?.data.length === 0 && "hidden"
+              }`}
+            >
               <Select
                 items={orderingOptions}
                 label="정렬"

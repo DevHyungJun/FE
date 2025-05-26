@@ -31,10 +31,15 @@ const config: Config = {
             transform: "translateY(0) scale(1)",
           },
         },
+        "hover-up": {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(-8px)" },
+        },
       },
       animation: {
         wiggle: "wiggle 0.3s ease-in-out",
         "slide-up": "slide-up 0.3s ease",
+        "hover-up": "hover-up 0.2s ease-out forwards",
       },
     },
   },

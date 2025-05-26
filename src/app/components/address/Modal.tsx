@@ -59,12 +59,12 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
   };
 
   return (
-    <div className="fixed p-1 inset-0 flex items-center justify-center z-50">
+    <div className="fixed p-0 sm:p-1 inset-0 flex items-center justify-center z-50">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={() => setStep(0)}
       />
-      <div className="relative overflow-y-auto scrollbar-hide w-[800px] min-h-[443px] max-h-[600px] p-3 bg-white z-10 rounded-lg">
+      <div className="relative overflow-y-auto scrollbar-hide w-full rounded-none sm:w-[800px] h-full sm:min-h-[443px] sm:max-h-[600px] p-3 bg-white z-10 sm:rounded-lg">
         <div className="flex justify-between items-start">
           <h1 className="text-lg font-semibold mb-5">배송지 정보</h1>
           <button onClick={() => setStep(0)}>
@@ -85,8 +85,8 @@ const Modal = ({ setSelectedAddress, setEditId }: ModalProps) => {
           </div>
         )}
         {data?.data.length === 0 && (
-          <p className="text-center mt-10 text-gray-600">
-            등록된 배송지가 없습니다 배송지를 추가해주세요
+          <p className="text-center mt-10 text-gray-600 text-[14px] sm:text-medium">
+            등록된 배송지가 없습니다. 배송지를 추가해주세요
           </p>
         )}
         {sortedData?.map((address: any) => (

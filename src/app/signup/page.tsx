@@ -148,9 +148,9 @@ const Signup = () => {
   ];
 
   return (
-    <div className="flex items-center justify-center h-[60vh] text-gray-800">
+    <div className="min-h-[calc(100vh-333px)] sm:min-h-[calc(100vh-502px)] md:min-h-[calc(100vh-330px)] flex items-center justify-center text-gray-800">
       <form
-        className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
+        className="flex flex-col w-[500px] mx-auto gap-3 shadow-none p-3 rounded-md sm:shadow-md"
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="flex items-center gap-2 text-2xl extra-bold m-1">
@@ -179,11 +179,13 @@ const Signup = () => {
             전송
           </Button>
         </div>
-        <ErrorMessage
-          errors={errors}
-          name="email"
-          render={({ message }) => <p className={errorS}>{message}</p>}
-        />
+        <div className="h-[20px]">
+          <ErrorMessage
+            errors={errors}
+            name="email"
+            render={({ message }) => <p className={errorS}>{message}</p>}
+          />
+        </div>
         {/* 이메일 인증입력&확인&에러메세지 */}
         <div className={formInDiv}>
           <Input
@@ -212,11 +214,13 @@ const Signup = () => {
             인증시간이 만료되었습니다. 다시 인증해주세요.
           </p>
         )}
-        <ErrorMessage
-          errors={errors}
-          name="emailConfirm"
-          render={({ message }) => <p className={errorS}>{message}</p>}
-        />
+        <div className="h-[20px]">
+          <ErrorMessage
+            errors={errors}
+            name="emailConfirm"
+            render={({ message }) => <p className={errorS}>{message}</p>}
+          />
+        </div>
         {/* 유저이름 입력&중복확인&에러메세지 */}
         <div className={formInDiv}>
           <Input
@@ -237,11 +241,13 @@ const Signup = () => {
             중복확인
           </Button>
         </div>
-        <ErrorMessage
-          errors={errors}
-          name="username"
-          render={({ message }) => <p className={errorS}>{message}</p>}
-        />
+        <div className="h-[20px]">
+          <ErrorMessage
+            errors={errors}
+            name="username"
+            render={({ message }) => <p className={errorS}>{message}</p>}
+          />
+        </div>
         {/* 비밀번호 입력&에러메세지 */}
         <Input
           type="password"
@@ -252,11 +258,13 @@ const Signup = () => {
           className="font-sans"
           {...register("password", passwordV)}
         />
-        <ErrorMessage
-          errors={errors}
-          name="password"
-          render={({ message }) => <p className={errorS}>{message}</p>}
-        />
+        <div className="h-[20px]">
+          <ErrorMessage
+            errors={errors}
+            name="password"
+            render={({ message }) => <p className={errorS}>{message}</p>}
+          />
+        </div>
         {/* 비밀번호 확인 입력&에러메세지 */}
         <Input
           type="password"
@@ -267,11 +275,13 @@ const Signup = () => {
           className="font-sans"
           {...register("passwordConfirm", passwordConfirmV)}
         />
-        <ErrorMessage
-          errors={errors}
-          name="passwordConfirm"
-          render={({ message }) => <p className={errorS}>{message}</p>}
-        />
+        <div className="h-[20px]">
+          <ErrorMessage
+            errors={errors}
+            name="passwordConfirm"
+            render={({ message }) => <p className={errorS}>{message}</p>}
+          />
+        </div>
         <div className="flex gap-2 mb-5 bold">
           <div
             className={`flex items-center border ${

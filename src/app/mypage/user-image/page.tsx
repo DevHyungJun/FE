@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import { useQueryClient } from "@tanstack/react-query";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
+import useGuestOut from "@/hooks/useGuestOut";
 
 interface UserImage {
   file: File | null;
@@ -29,7 +30,7 @@ export default function UserImage() {
   const { mutate: deleteUserImg, isPending: deleteUserImgIsPending } =
     useDeleteUserImg();
   const queryClient = useQueryClient();
-
+  useGuestOut();
   useEffect(() => {
     if (getUserInfo?.data?.profile_image) {
       setUserImg({

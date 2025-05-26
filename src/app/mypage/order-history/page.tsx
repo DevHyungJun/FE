@@ -8,6 +8,7 @@ import Link from "next/link";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import ScrollUpButton from "@/app/components/ScrollUpButton";
 import { Button } from "@nextui-org/react";
+import useGuestOut from "@/hooks/useGuestOut";
 
 interface OrderHistoryProduct {
   created_at: string;
@@ -42,7 +43,7 @@ export default function OrderHistory() {
   const [page, setPage] = useState(1);
   const [orders, setOrders] = useState<OrderHistoryData[]>([]);
   const { data, isLoading } = useGetPayment(page);
-
+  useGuestOut();
   useEffect(() => {
     if (data) {
       setOrders((prev) => [...prev, ...data.data.results]);
@@ -58,6 +59,13 @@ export default function OrderHistory() {
     <div className="mx-auto max-w-[800px] text-gray-800">
       <div className="w-full p-5 bg-white rounded-md">
         <h1 className="text-2xl extra-bold my-5">주문조회</h1>
+        {data?.data?.results.length === 0 && (
+          <div className="flex justify-center">
+            <p className="text-center text-gray-500 bold py-10">
+              주문 내역이 없습니다.
+            </p>
+          </div>
+        )}
         {page === 1 && isLoading ? (
           <LoadingSpinner />
         ) : (
@@ -106,7 +114,6 @@ export default function OrderHistory() {
                           </p>
                         </div>
                       ))}
-
                       <div className="flex justify-end">
                         <p className="text-gray-500">
                           총 주문가격:{" "}
@@ -129,6 +136,7 @@ export default function OrderHistory() {
             )}
           </div>
         )}
+
         {data?.data?.next && (
           <Button
             className="w-full"

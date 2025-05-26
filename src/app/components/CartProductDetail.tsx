@@ -65,6 +65,7 @@ export default function CartProductDetail({
         <Link href={`/products/product-detail/${productData?.data?._id}`}>
           <Image
             width={100}
+            height={100}
             alt="product image"
             src={productData?.data?.product?.thumbnail}
             className="rounded-md object-contain bg-gray-100"

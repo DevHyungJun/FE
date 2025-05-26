@@ -5,9 +5,11 @@ import Link from "next/link";
 import { TfiAngleRight } from "react-icons/tfi";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import LoadingSpinner from "../components/LoadingSpinner";
+import useGuestOut from "@/hooks/useGuestOut";
 
 export default function MyPage() {
   const { data, isLoading } = useGetUserInfo();
+  useGuestOut();
   const profileImage = data?.data?.profile_image;
   const links = [
     {
@@ -38,7 +40,7 @@ export default function MyPage() {
     },
   ];
   return (
-    <div className="max-w-[800px] mx-auto flex flex-col items-center gap-3 text-lg p-3 mt-5 text-gray-900">
+    <div className="max-w-[800px] mx-auto flex flex-col items-center gap-3 text-lg p-3 text-gray-900">
       {isLoading ? (
         <LoadingSpinner mode="1" />
       ) : (
