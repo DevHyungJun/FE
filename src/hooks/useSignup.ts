@@ -10,23 +10,16 @@ export default function useSignup() {
   return useMutation({
     mutationFn: (signupData: SignupData) => signup(signupData),
     onSuccess: () => {
-      Swal.fire({
-        title: '회원가입 성공',
-        text: '로그인을 진행해주세요.',
-        icon: 'success',
-        showConfirmButton: false,
-        timer: 1000,
-      });
-      router.push('/login');
+      router.push("/login");
     },
     onError: (error: any) => {
       Swal.fire({
-        title: '회원가입 실패',
+        title: "회원가입 실패",
         text: error.message,
-        icon: 'error',
+        icon: "error",
         showConfirmButton: false,
         timer: 1000,
       });
     },
   });
-};
+}

@@ -31,7 +31,8 @@ const Login = () => {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["authCheck"] });
         queryClient.invalidateQueries({ queryKey: ["getCart"] });
-        router.back();
+        queryClient.invalidateQueries({ queryKey: ["userInfo"] });
+        router.replace("/");
       },
       onError: (error) => {
         Swal.fire({
@@ -46,12 +47,12 @@ const Login = () => {
 
   const errorS = "text-sm text-red-500";
   return (
-    <div className="flex items-center justify-center h-[60vh] text-gray-800">
+    <div className="min-h-[calc(100vh-333px)] sm:min-h-[calc(100vh-502px)] md:min-h-[calc(100vh-330px)] flex items-center justify-center text-gray-800">
       <form
-        className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
+        className="flex flex-col w-[500px] mx-auto gap-3 shadow-none p-3 rounded-md sm:shadow-md"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="flex items-center gap-2 text-2xl font-semibold m-1">
+        <div className="flex items-center gap-2 text-2xl extra-bold m-1">
           <CiLogin />
           로그인
         </div>
@@ -60,6 +61,7 @@ const Login = () => {
           label="이메일을 입력해주세요"
           variant="underlined"
           required
+          isClearable
           {...register("email", emailV)}
         />
         <ErrorMessage
@@ -69,8 +71,10 @@ const Login = () => {
         />
         <Input
           type="password"
-          label="비밀번호를 입력해주세요"
+          placeholder="비밀번호를 입력해주세요"
           variant="underlined"
+          isClearable
+          className="font-sans"
           {...register("password", passwordV)}
         />
         <ErrorMessage
@@ -83,12 +87,17 @@ const Login = () => {
             <p>계정이 없으신가요?</p>
             <Link
               href="/signup"
-              className="ml-1 font-semibold hover:text-blue-500"
+              className="ml-1 extra-bold hover:text-blue-500"
             >
               회원가입
             </Link>
           </div>
-          <Button type="submit" color="primary" isLoading={login.isPending}>
+          <Button
+            type="submit"
+            color="primary"
+            isLoading={login.isPending}
+            className="bold"
+          >
             로그인
           </Button>
         </div>

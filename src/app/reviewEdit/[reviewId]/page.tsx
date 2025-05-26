@@ -43,20 +43,27 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
   const [images, setImages] = useState<ImageFile[]>([]);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { isDirty },
-  } = useForm<ReviewEditForm>();
+  const { register, handleSubmit, setValue } = useForm<ReviewEditForm>();
   const { mutate: aditReview, isPending: aditReviewIsPending } =
     useAditReview(reviewId);
 
-  const fetchImageAsFile = async (url: string) => {
-    const response = await fetch(url, { mode: "no-cors" });
-    const blob = await response.blob();
-    const file = new File([blob], "image.jpg", { type: blob.type });
-    setImages(() => [{ file: file, url: url, id: Date.now() }]);
+  const initializeImages = async (imageUrls: string[]) => {
+    setImages([]);
+
+    const newImages = await Promise.all(
+      imageUrls.map(async (url) => {
+        const response = await fetch(url, { mode: "no-cors" });
+        const blob = await response.blob();
+        const file = new File([blob], "image.jpg", { type: blob.type });
+        return {
+          file: file,
+          url: url,
+          id: Date.now() + Math.random(),
+        };
+      })
+    );
+
+    setImages(newImages);
   };
 
   useEffect(() => {
@@ -64,9 +71,7 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
       setRate(reviewData.data.rate);
       setValue("title", reviewData.data.title);
       setValue("content", reviewData.data.content);
-      reviewData.data.images?.forEach((image: string) => {
-        fetchImageAsFile(image);
-      });
+      initializeImages(reviewData.data.images);
     }
   }, [reviewData]);
 
@@ -99,7 +104,11 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
       });
       return;
     }
-    if (!isDirty) {
+    if (
+      reviewData.data.title === formData.title &&
+      reviewData.data.content === formData.content &&
+      rate === reviewData.data.rate
+    ) {
       Swal.fire({
         icon: "error",
         title: "수정된 내용이 없습니다.",
@@ -112,12 +121,20 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
     form.append("title", formData.title);
     form.append("content", formData.content);
     form.append("rate", rate.toString());
-    images.forEach((image) => form.append("images", image.file));
+    const areImagesEqual =
+      reviewData.data.images.length === images.length &&
+      reviewData.data.images.every(
+        (url: string, index: number) => url === images[index].url
+      );
+    if (!areImagesEqual) {
+      images.forEach((image) => {
+        form.append("images", image.file);
+      });
+    }
+
     aditReview(form as any, {
       onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["reviews"],
-        });
+        queryClient.invalidateQueries({ queryKey: ["reviews"] });
         router.back();
       },
     });
@@ -126,13 +143,13 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
   return (
     <div className="p-1 max-w-[800px] mx-auto">
       <h1 className="text-xl p-3">
-        <span className="font-semibold">{item?.product?.product_name} </span>
+        <span className="extra-bold">{item?.product?.product_name} </span>
         상품평 수정하기
       </h1>
       {isLoading ? (
         <LoadingSpinner mode="1" />
       ) : (
-        <div className="flex-grow p-3 rounded-sm">
+        <div className="flex-grow p-3 border-2 mb-5 rounded-lg">
           <div className="flex gap-3">
             <Link href={`/products/product-detail/${item?._id}`}>
               <Image
@@ -181,13 +198,13 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
             className="hidden"
           />
           <Button
-            className="w-full"
+            className="w-full bold"
             variant="bordered"
             onClick={handleAddImagesClick}
           >
             상품평 이미지 추가
           </Button>
-          {images.map((image, index) => (
+          {images.map((image) => (
             <div
               key={image.id}
               className="flex justify-center relative mx-auto"
@@ -220,8 +237,8 @@ export default function ReviewEdit({ params }: { params: ParamsreviewId }) {
             />
           )}
           <Button
-            className="w-full"
-            color="success"
+            className="w-full bold"
+            color="primary"
             type="submit"
             isLoading={aditReviewIsPending}
           >

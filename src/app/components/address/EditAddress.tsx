@@ -17,12 +17,20 @@ import { storeModalShowstep, storeAddressData } from "@/store";
 import { useQueryClient } from "@tanstack/react-query";
 import { Controller } from "react-hook-form";
 
-export default function EditAddress({ editId }: { editId: string }) {
+interface EditAddressProps {
+  editId: string;
+  mypage?: boolean;
+}
+
+export default function EditAddress({
+  editId,
+  mypage = false,
+}: EditAddressProps) {
   const [selfDeliveryOption, setSelfDeliveryOption] = useState(false);
   const [deliveryMemo, setDeliveryMemo] = useState("");
 
   const { setStep } = storeModalShowstep();
-  const { addressData, setAddressData } = storeAddressData();
+  const { addressData, setAddressData, resetAddressData } = storeAddressData();
   const queryClient = useQueryClient();
   const data = queryClient.getQueryData(["searchAddress"]);
   const { mutate: editAddress } = useEditAddress();
@@ -70,6 +78,36 @@ export default function EditAddress({ editId }: { editId: string }) {
     setAddressData({ [e.target.name]: e.target.value });
   };
 
+  const onSubmit = (data: any) => {
+    const newAddressData = {
+      ...data,
+      is_default: addressData.is_default,
+      main_address: addressData.main_address,
+      detail_address: data.detail_address,
+      zip_code: addressData.zip_code,
+      shipping_memo: selfDeliveryOption
+        ? deliveryMemo
+        : addressData.shipping_memo,
+    };
+    editAddress(
+      { newAddressData, editId },
+      {
+        onSuccess: () => {
+          resetAddressData();
+          setStep(1);
+          queryClient.invalidateQueries({ queryKey: ["searchAddress"] });
+        },
+        onError: () => {
+          Swal.fire({
+            icon: "error",
+            title: "주소 수정 실패",
+            text: "주소를 수정하지 못했습니다.",
+          });
+        },
+      }
+    );
+  };
+
   const handleSelectChanges = (value: string) => {
     const selectedOption = selectDeliveryOption.find(
       (option) => option.id.toString() === value
@@ -90,55 +128,22 @@ export default function EditAddress({ editId }: { editId: string }) {
     setAddressData({ is_default: updatedDefault });
   };
 
-  const onSubmit = (data: any) => {
-    const newAddressData = {
-      ...data,
-      is_default: addressData.is_default,
-      main_address: addressData.main_address,
-      detail_address: data.detail_address,
-      zip_code: addressData.zip_code,
-      shipping_memo: selfDeliveryOption
-        ? deliveryMemo
-        : addressData.shipping_memo,
-    };
-    editAddress(
-      { newAddressData, editId },
-      {
-        onSuccess: () => {
-          Swal.fire({
-            icon: "success",
-            title: "주소가 성공적으로 수정되었습니다.",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          setStep(1);
-          queryClient.invalidateQueries({ queryKey: ["searchAddress"] });
-        },
-        onError: () => {
-          Swal.fire({
-            icon: "error",
-            title: "주소 수정 실패",
-            text: "주소를 수정하지 못했습니다.",
-          });
-        },
-      }
-    );
-  };
-
   return (
-    <div className="fixed p-1 inset-0 flex items-center justify-center z-50">
+    <div className="fixed p-0 sm:p-1 inset-0 flex items-center justify-center z-50">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={() => setStep(0)}
       />
-      <div className="relative overflow-y-auto w-[800px] min-h-[443px] max-h-[600px] p-3 bg-white z-10 rounded-lg">
+      <div className="relative overflow-y-auto w-full sm:w-[800px] h-full rounded-none sm:min-h-[443px] sm:max-h-[600px] p-3 bg-white z-10 sm:rounded-lg">
         <div className="flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <h1 className="text-lg font-semibold mb-5">주소 수정</h1>
             <div className="flex items-center gap-2 text-2xl">
-              <button onClick={() => setStep(1)}>
-                <IoArrowBack />
-              </button>
+              {!mypage && (
+                <button onClick={() => setStep(1)}>
+                  <IoArrowBack />
+                </button>
+              )}
               <button onClick={() => setStep(0)}>
                 <IoClose />
               </button>
@@ -214,7 +219,7 @@ export default function EditAddress({ editId }: { editId: string }) {
                 >
                   {selectDeliveryOption.map((option) => (
                     <SelectItem
-                      key={option.id}
+                      key={option.id.toString()}
                       value={option.id}
                       textValue={option.name}
                     >

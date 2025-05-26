@@ -15,13 +15,15 @@ import useNewAddress from "@/hooks/useNewAddress";
 import Swal from "sweetalert2";
 import { storeModalShowstep } from "@/store";
 import { storeAddressData } from "@/store";
+import { useQueryClient } from "@tanstack/react-query";
 
-const PostNewAddress = () => {
+const PostNewAddress = ({ mypage = false }) => {
+  const queryClient = useQueryClient();
   const [selfDeliveryOption, setSelfDeliveryOption] = useState(false);
   const [deliveryMemo, setDeliveryMemo] = useState("");
 
   const { setStep, decrementStep } = storeModalShowstep();
-  const { addressData, setAddressData } = storeAddressData();
+  const { addressData, setAddressData, resetAddressData } = storeAddressData();
 
   const { register, handleSubmit } = useForm({
     defaultValues: addressData,
@@ -78,31 +80,38 @@ const PostNewAddress = () => {
     };
     newAddress(newAddressData, {
       onSuccess: () => {
-        Swal.fire({
-          icon: "success",
-          title: "주소가 성공적으로 추가되었습니다.",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if (mypage) {
+          queryClient.invalidateQueries({ queryKey: ["searchAddress"] });
+        }
+        resetAddressData();
         setStep(1);
+      },
+      onError: () => {
+        Swal.fire({
+          icon: "error",
+          title: "주소 추가 실패",
+          text: "주소를 추가하지 못했습니다.",
+        });
       },
     });
   };
 
   return (
-    <div className="fixed p-1 inset-0 flex items-center justify-center z-50">
+    <div className="fixed p-0 sm:p-1 inset-0 flex items-center justify-center z-50">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={() => setStep(0)}
       />
-      <div className="relative overflow-y-auto w-[800px] min-h-[443px] max-h-[600px] p-3 bg-white z-10 rounded-lg">
+      <div className="relative overflow-y-auto w-full sm:w-[800px] rounded-none h-full sm:min-h-[443px] sm:max-h-[600px] p-3 bg-white z-10 sm:rounded-lg">
         <div className="flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <h1 className="text-lg font-semibold mb-5">신규 주소 추가</h1>
             <div className="flex items-center gap-2 text-2xl">
-              <button onClick={decrementStep}>
-                <IoArrowBack />
-              </button>
+              {!mypage && (
+                <button onClick={decrementStep}>
+                  <IoArrowBack />
+                </button>
+              )}
               <button onClick={() => setStep(0)}>
                 <IoClose />
               </button>

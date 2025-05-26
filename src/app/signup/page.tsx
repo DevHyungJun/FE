@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useForm } from "react-hook-form";
 import {
   usernameV,
@@ -18,6 +18,7 @@ import useSignup from "@/hooks/useSignup";
 import { useCallback, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { IoPersonAddOutline } from "react-icons/io5";
+import { IoMdMan, IoMdWoman } from "react-icons/io";
 
 const Signup = () => {
   const {
@@ -35,6 +36,8 @@ const Signup = () => {
   const [countdown, setCountdown] = useState<number | null>(null);
   // 인증시간 만료 메세지 여부
   const [expriedMessage, setExpriedMessage] = useState(false);
+  const [gender, setGender] = useState("");
+  const [generation, setGeneration] = useState("");
 
   // 커스텀 훅 사용
   const sendMail = useSendMail();
@@ -106,27 +109,51 @@ const Signup = () => {
 
   // 회원가입 요청
   const onSubmit = (formData: SignupForm) => {
-    if (!confirmMail.isSuccess || !usernameCheck.isSuccess) {
+    if (
+      !confirmMail.isSuccess ||
+      !usernameCheck.isSuccess ||
+      gender === "" ||
+      generation === ""
+    ) {
       Swal.fire({
         icon: "error",
         title: "회원가입 실패",
-        text: "이메일 인증과 유저이름 중복확인을 완료해주세요.",
+        text: "모든 항목을 입력해주세요.",
       });
       return;
     }
     const { email, password, username } = formData;
-    signup.mutate({ email, password, username });
+    signup.mutate({
+      email,
+      password,
+      username,
+      gender,
+      generation: Number(generation),
+    });
   };
 
   const formInDiv = "flex items-end gap-1";
   const errorS = "text-sm text-red-500";
+
+  const generations = [
+    { key: 10, label: "10대" },
+    { key: 20, label: "20대" },
+    { key: 30, label: "30대" },
+    { key: 40, label: "40대" },
+    { key: 50, label: "50대" },
+    { key: 60, label: "60대" },
+    { key: 70, label: "70대" },
+    { key: 80, label: "80대" },
+    { key: 90, label: "90대" },
+  ];
+
   return (
-    <div className="flex items-center justify-center h-[60vh] text-gray-800">
+    <div className="min-h-[calc(100vh-333px)] sm:min-h-[calc(100vh-502px)] md:min-h-[calc(100vh-330px)] flex items-center justify-center text-gray-800">
       <form
-        className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
+        className="flex flex-col w-[500px] mx-auto gap-3 shadow-none p-3 rounded-md sm:shadow-md"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="flex items-center gap-2 text-2xl font-semibold m-1">
+        <div className="flex items-center gap-2 text-2xl extra-bold m-1">
           <IoPersonAddOutline />
           회원가입
         </div>
@@ -137,6 +164,7 @@ const Signup = () => {
             label="이메일"
             variant="underlined"
             required
+            isClearable
             {...register("email", emailV)}
             isDisabled={confirmMail.isSuccess}
           />
@@ -146,15 +174,18 @@ const Signup = () => {
             onClick={handleSendMail}
             isLoading={sendMail.isPending}
             isDisabled={confirmMail.isSuccess}
+            className="bold"
           >
             전송
           </Button>
         </div>
-        <ErrorMessage
-          errors={errors}
-          name="email"
-          render={({ message }) => <p className={errorS}>{message}</p>}
-        />
+        <div className="h-[20px]">
+          <ErrorMessage
+            errors={errors}
+            name="email"
+            render={({ message }) => <p className={errorS}>{message}</p>}
+          />
+        </div>
         {/* 이메일 인증입력&확인&에러메세지 */}
         <div className={formInDiv}>
           <Input
@@ -162,6 +193,7 @@ const Signup = () => {
             label="이메일 인증"
             variant="underlined"
             required
+            isClearable
             {...register("emailConfirm", emailConfirmV)}
             isDisabled={confirmMail.isSuccess}
           />
@@ -172,6 +204,7 @@ const Signup = () => {
             onClick={handleMailConfirm}
             isLoading={confirmMail.isPending}
             isDisabled={confirmMail.isSuccess}
+            className="bold"
           >
             인증
           </Button>
@@ -181,11 +214,13 @@ const Signup = () => {
             인증시간이 만료되었습니다. 다시 인증해주세요.
           </p>
         )}
-        <ErrorMessage
-          errors={errors}
-          name="emailConfirm"
-          render={({ message }) => <p className={errorS}>{message}</p>}
-        />
+        <div className="h-[20px]">
+          <ErrorMessage
+            errors={errors}
+            name="emailConfirm"
+            render={({ message }) => <p className={errorS}>{message}</p>}
+          />
+        </div>
         {/* 유저이름 입력&중복확인&에러메세지 */}
         <div className={formInDiv}>
           <Input
@@ -193,6 +228,7 @@ const Signup = () => {
             label="유저이름"
             variant="underlined"
             required
+            isClearable
             {...register("username", usernameV)}
           />
           <Button
@@ -200,44 +236,93 @@ const Signup = () => {
             size="sm"
             isLoading={usernameCheck.isPending}
             onClick={handleUsernameCheck}
+            className="bold"
           >
             중복확인
           </Button>
         </div>
-        <ErrorMessage
-          errors={errors}
-          name="username"
-          render={({ message }) => <p className={errorS}>{message}</p>}
-        />
+        <div className="h-[20px]">
+          <ErrorMessage
+            errors={errors}
+            name="username"
+            render={({ message }) => <p className={errorS}>{message}</p>}
+          />
+        </div>
         {/* 비밀번호 입력&에러메세지 */}
         <Input
           type="password"
-          label="비밀번호"
+          placeholder="비밀번호"
           variant="underlined"
           required
+          isClearable
+          className="font-sans"
           {...register("password", passwordV)}
         />
-        <ErrorMessage
-          errors={errors}
-          name="password"
-          render={({ message }) => <p className={errorS}>{message}</p>}
-        />
+        <div className="h-[20px]">
+          <ErrorMessage
+            errors={errors}
+            name="password"
+            render={({ message }) => <p className={errorS}>{message}</p>}
+          />
+        </div>
         {/* 비밀번호 확인 입력&에러메세지 */}
         <Input
           type="password"
-          label="비밀번호 확인"
+          placeholder="비밀번호 확인"
           variant="underlined"
           required
+          isClearable
+          className="font-sans"
           {...register("passwordConfirm", passwordConfirmV)}
         />
-        <ErrorMessage
-          errors={errors}
-          name="passwordConfirm"
-          render={({ message }) => <p className={errorS}>{message}</p>}
-        />
+        <div className="h-[20px]">
+          <ErrorMessage
+            errors={errors}
+            name="passwordConfirm"
+            render={({ message }) => <p className={errorS}>{message}</p>}
+          />
+        </div>
+        <div className="flex gap-2 mb-5 bold">
+          <div
+            className={`flex items-center border ${
+              gender === "man" && "bg-blue-100"
+            } p-2 rounded-md text-gray-900 select-none cursor-pointer`}
+            onClick={() => setGender("man")}
+          >
+            남성
+            <IoMdMan className="text-2xl text-blue-500" />
+          </div>
+          <div
+            className={`flex items-center border ${
+              gender === "woman" && "bg-pink-100"
+            } p-2 rounded-md text-gray-900 select-none cursor-pointer`}
+            onClick={() => setGender("woman")}
+          >
+            여성 <IoMdWoman className="text-2xl text-pink-500" />
+          </div>
+        </div>
+        <Select
+          label="연령대"
+          placeholder="고객님의 연령대를 선택해주세요"
+          className="w-[50%]"
+          selectedKeys={[generation]}
+          onChange={(e) => setGeneration(e.target.value)}
+          variant="underlined"
+        >
+          {generations.map((gen) => (
+            <SelectItem key={gen.key} value={gen.key}>
+              {gen.label}
+            </SelectItem>
+          ))}
+        </Select>
         {/* 회원가입 버튼 */}
         <div className="flex justify-end">
-          <Button type="submit" color="primary" isLoading={signup.isPending}>
+          <Button
+            type="submit"
+            color="primary"
+            isLoading={signup.isPending}
+            className="bold"
+          >
             회원가입
           </Button>
         </div>

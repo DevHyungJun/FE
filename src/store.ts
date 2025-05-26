@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface ModalShowstepState {
   step: number;
@@ -27,21 +28,27 @@ interface EditModeState {
   setEditMode: (editMode: boolean) => void;
 }
 
+interface OrderData {
+  product: string;
+  quantity: number;
+}
+
 const initialAddressData: AddressData = {
-  receiver_name: '',
-  receiver_phone: '',
-  main_address: '',
-  detail_address: '',
-  zip_code: '',
+  receiver_name: "",
+  receiver_phone: "",
+  main_address: "",
+  detail_address: "",
+  zip_code: "",
   is_default: false,
-  shipping_memo: '',
+  shipping_memo: "",
 };
 
 export const storeAddressData = create<AddressDataState>((set) => ({
   addressData: initialAddressData,
-  setAddressData: (data) => set((state) => ({
-    addressData: { ...state.addressData, ...data }
-  })),
+  setAddressData: (data) =>
+    set((state) => ({
+      addressData: { ...state.addressData, ...data },
+    })),
   resetAddressData: () => set({ addressData: initialAddressData }),
 }));
 
@@ -55,3 +62,19 @@ export const storeEditMode = create<EditModeState>((set) => ({
   editMode: false,
   setEditMode: (editMode) => set({ editMode }),
 }));
+
+export const storeOrderData = create<{
+  orderData: OrderData[];
+  setOrderData: (data: OrderData[]) => void;
+  clearOrderData: () => void;
+}>()(
+  persist(
+    (set) => ({
+      orderData: [],
+      setOrderData: (data: OrderData[]) =>
+        set((state) => ({ orderData: [...state.orderData, ...data] })),
+      clearOrderData: () => set({ orderData: [] }),
+    }),
+    { name: "orderData" }
+  )
+);

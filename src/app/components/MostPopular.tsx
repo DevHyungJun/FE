@@ -1,120 +1,131 @@
-'use client';
+"use client";
 
-import { Image } from "@nextui-org/react";
-import { useEffect, useState } from "react";
-import Slider from "react-slick";
+import Image from "next/image";
 import formatPrice from "@/util/formatPrice";
+import useAllProducts from "@/hooks/useAllProducts";
+import { PostData } from "../../../types/Product";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
+import { FaAnglesLeft } from "react-icons/fa6";
+import { FaAnglesRight } from "react-icons/fa6";
+import Link from "next/link";
+import { InfiniteProductPostResponse } from "../../../types/allProducts";
+import { UseInfiniteQueryResult } from "@tanstack/react-query";
 
 export default function MostPopular() {
-    // 화면 width가 800px 이하라면 모바일로 판단
-    const [isMobile, setIsMobile] = useState(false);
-    // 화면 width가 변경될 때마다 모바일 여부 확인
-    useEffect(()=> {
-      const checkMobile = () => setIsMobile(window.innerWidth < 570);
-      checkMobile();
-      window.addEventListener('resize', checkMobile);
-      return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+  const router = useRouter();
+  const { data } = useAllProducts("", 5) as UseInfiniteQueryResult<
+    InfiniteProductPostResponse,
+    Error
+  >;
+  const scrollItem = useRef<HTMLDivElement>(null);
+  const scrollAnimationRef = useRef<number | null>(null);
 
-  // 데모 인기 상품 정보
-  const mostPopularProducts = [
-    {
-      src: '/mostPopular_img1.webp',
-      alt: 'image1',
-      brand: 'Nike',
-      Ename: 'Nike x Peaceminusone Air Force 1 Low Para-Noise 3.0 Black and Multicolor',
-      Kname: '나이키 x 피스마이너스원 에어포스 1 로우 파라노이즈 3.0 블랙 앤 멀티컬러',
-      price: 303000,
-    },
-    {
-      src: '/mostPopular_img2.webp',
-      alt: 'image2',
-      brand: 'Adidas',
-      Ename: 'Adidas Waffle Beckenbauer Track Top Wonder White - KR Sizing',
-      Kname: '아디다스 와플 베큰바워 트랙 탑 원더 화이트 - KR 사이즈',
-      price: 130000,
-    },
-    {
-      src: '/mostPopular_img3.webp',
-      alt: 'image3',
-      brand: 'Nike',
-      Ename: "Nike Air Force 1 '07 WB Flax'",
-      Kname: "나이키 에어포스 1 '07 WB 플랙스'",
-      price: 150000,
-    },
-    {
-      src: '/mostPopular_img4.webp',
-      alt: 'image4',
-      brand: 'Apple',
-      Ename: 'Apple AirPods Max Silver (Korean Ver.)',
-      Kname: '애플 에어팟 맥스 실버 (국내 정식 발매 제품)',
-      price: 600000,
-    },
-    {
-      src: '/mostPopular_img5.webp',
-      alt: 'image5',
-      brand: 'Asics',
-      Ename: 'Asics Gel-Kayano 14 Cream Black',
-      Kname: '아식스 젤 카야노 14 크림 블랙',
-      price: 206000,
-    },
-  ];
+  const handleRouteProductDetail = (productID: string) =>
+    router.push(`products/product-detail/${productID}`);
 
-  const settings = {
-    dots: false,
-    arrows: false,
-    infinite: false,
-    speed: 250,
-    slidesToScroll: isMobile ? 2.5 : 0,
-    slidesToShow: isMobile ? 2.5 : mostPopularProducts.length,
-    draggable: isMobile ? true : false,
+  const handleClickScroll = (direction: "left" | "right") => {
+    if (!scrollItem.current) return;
+    if (direction === "left") {
+      scrollItem.current.scrollLeft -= 250;
+    } else {
+      scrollItem.current.scrollLeft += 250;
+    }
+  };
+
+  const startScrolling = (direction: "left" | "right") => {
+    const scroll = () => {
+      if (!scrollItem.current) return;
+
+      if (direction === "left") {
+        scrollItem.current.scrollLeft -= 250; // 적은 양으로 부드럽게
+      } else {
+        scrollItem.current.scrollLeft += 250;
+      }
+
+      scrollAnimationRef.current = requestAnimationFrame(scroll);
+    };
+
+    scroll();
+  };
+
+  const stopScrolling = () => {
+    if (!scrollAnimationRef.current) return;
+    cancelAnimationFrame(scrollAnimationRef.current);
+    scrollAnimationRef.current = null;
   };
 
   return (
     <>
-      <div className="flex flex-col max-w-[1200px] gap-3 mx-auto mt-10 p-1">
-        <div className="flex flex-col pl-1">
-          <h2 className="font-semibold">
-            Most Popular
-          </h2>
-          <p className="text-sm text-gray-500">
-            인기 상품
-          </p>
-        </div>
-        <div>
-          <Slider {...settings}>
-            {mostPopularProducts.map(product => (
-              <div key={product.price}
-                className="flex flex-col justify-between gap-2 w-[300px] text-sm text-gray-800 p-1 cursor-pointer">
-                <Image
-                  src={product.src}
-                  alt={product.alt}
-                  width={300}
-                  className="bg-gray-100 rounded-md"
-                />
-                <p className="font-semibold">
-                  {product.brand}
+      <div className="flex flex-col w-full gap-5 mt-10 p-1 scrollbar-hide">
+        <div
+          ref={scrollItem}
+          className="flex gap-1 w-full mx-auto overflow-x-scroll scrollbar-hide scroll-smooth"
+        >
+          {data?.pages[0]?.data?.results.map((product: PostData) => (
+            <div
+              key={product._id}
+              className="flex flex-col gap-2 w-[250px] min-w-[250px] text-sm text-gray-800 cursor-pointer hover:animate-hover-up hover:shadow-md rounded-md"
+              onClick={() => handleRouteProductDetail(product?._id)}
+            >
+              <Image
+                src={product?.product?.thumbnail}
+                alt={product?.title}
+                width={250}
+                height={250}
+                className="w-[250px] h-[250px] rounded-md object-contain bg-gray-100"
+              />
+              <div className="p-2">
+                <p className="text-xs line-clamp-1 text-ellipsis overflow-hidden">
+                  {product.title}
                 </p>
-                <p className="text-xs two-line-ellipsis h-[32px]">
-                  {product.Ename}
-                </p>
-                <div>
-                  <p className="font-semibold">
-                    {formatPrice(product.price)}
-                  </p>
-                  <p className="text-[11px] text-gray-400">
-                    즉시 구매가
-                  </p>
+                <div className="flex justify-between items-center">
+                  <p className="bold">{formatPrice(product.product.price)}</p>
+                </div>
+                <div className="flex gap-2 text-xs text-gray-400 light h-[16px]">
+                  {product?.like_count !== 0 && (
+                    <p>좋아요 {product?.like_count}</p>
+                  )}
+                  {product?.comment_list.length !== 0 && (
+                    <p>상품평 {product?.comment_list.length}</p>
+                  )}
                 </div>
               </div>
-            ))}
-          </Slider>
+            </div>
+          ))}
         </div>
       </div>
-      <div className="flex justify-center mt-5">
-        <button className="border px-8 py-2.5 rounded-xl text-sm text-gray-600 hover:bg-gray-100">
-          더보기
+      <div className="justify-center items-center hidden sm:flex xl:hidden">
+        <button
+          onMouseDown={() => startScrolling("left")}
+          onMouseUp={stopScrolling}
+          onMouseLeave={stopScrolling}
+          onTouchStart={() => startScrolling("left")}
+          onTouchEnd={stopScrolling}
+          onTouchCancel={stopScrolling}
+          onClick={() => handleClickScroll("left")}
+        >
+          <FaAnglesLeft className="text-xl text-gray-300 hover:text-gray-700" />
         </button>
+        <div className="bg-gray-300 h-[3px] rounded-xl w-10"></div>
+        <button
+          onMouseDown={() => startScrolling("right")}
+          onMouseUp={stopScrolling}
+          onMouseLeave={stopScrolling}
+          onTouchStart={() => startScrolling("right")}
+          onTouchEnd={stopScrolling}
+          onTouchCancel={stopScrolling}
+          onClick={() => handleClickScroll("right")}
+        >
+          <FaAnglesRight className="text-xl text-gray-300 hover:text-gray-700" />
+        </button>
+      </div>
+      <div className="flex justify-center my-5">
+        <Link href="/products">
+          <button className="border px-8 py-2.5 rounded-xl text-sm text-gray-600 hover:bg-gray-100">
+            전체 상품 보기
+          </button>
+        </Link>
       </div>
     </>
   );

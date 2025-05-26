@@ -2,15 +2,19 @@ import { logout } from "@/api/logout";
 import { useMutation } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 export default function useLogout() {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      queryClient.setQueryData(['authCheck'], { isLoggedIn: false });
-      queryClient.invalidateQueries({queryKey: ['authCheck']});
+      queryClient.setQueryData(["authCheck"], { isLoggedIn: false });
+      queryClient.invalidateQueries({ queryKey: ["authCheck"] });
+      queryClient.invalidateQueries({ queryKey: ["userInfo"] });
+      router.replace("/");
     },
     onError: (error) => {
       Swal.fire({
@@ -19,6 +23,6 @@ export default function useLogout() {
         showConfirmButton: false,
         timer: 1500,
       });
-    }
+    },
   });
 }

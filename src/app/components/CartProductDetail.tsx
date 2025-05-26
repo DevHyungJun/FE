@@ -10,37 +10,46 @@ import { useEffect } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import Link from "next/link";
 
-type CartProductDetailProps = {
-  articleId: string;
-  setPrices: any;
+interface Item {
+  article: string;
+  product: string;
   quantity: number;
-};
+  price: number;
+  onSelected: boolean;
+}
+
+interface CartProductDetailProps {
+  item: Item;
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+}
 
 export default function CartProductDetail({
-  articleId,
-  setPrices,
-  quantity,
+  item,
+  setItems,
 }: CartProductDetailProps) {
   const {
     data: productData,
     isSuccess: productIsSuccess,
     isPending,
-  } = useDetail(articleId, !!articleId);
+  } = useDetail(item.article, !!item.article);
   const { mutate: removeMutate } = useRemoveCart();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    setPrices((prev: any) => {
-      if (productIsSuccess) {
-        const totalItemPrice = productData?.data?.product?.price * quantity;
-        const updatedPrices = prev.filter(
-          (item: { id: string }) => item.id !== articleId
-        ); // 동일 ID 항목 제거
-        return [...updatedPrices, { id: articleId, price: totalItemPrice }];
-      }
-      return prev;
+    if (!productIsSuccess) return;
+    setItems((prev) => {
+      return prev.map((prevItem) => {
+        if (prevItem.article === item.article) {
+          return {
+            ...prevItem,
+            price: productData?.data?.product?.price * item.quantity || 0,
+            product: productData?.data?.product?._id,
+          };
+        }
+        return prevItem;
+      });
     });
-  }, [productIsSuccess, quantity]);
+  }, [productIsSuccess]);
 
   const handleCartItemRemove = (id: string) => {
     removeMutate(id, {
@@ -56,6 +65,7 @@ export default function CartProductDetail({
         <Link href={`/products/product-detail/${productData?.data?._id}`}>
           <Image
             width={100}
+            height={100}
             alt="product image"
             src={productData?.data?.product?.thumbnail}
             className="rounded-md object-contain bg-gray-100"
@@ -82,11 +92,12 @@ export default function CartProductDetail({
                   <IoIosClose />
                 </button>
               </div>
-              <p className="text-gray-500">
-                {formatPrice(productData?.data?.product?.price)} / {quantity}개
+              <p className="text-gray-500 light">
+                {formatPrice(productData?.data?.product?.price)} /{" "}
+                {item.quantity}개
               </p>
-              <p className="font-semibold">
-                {formatPrice(productData?.data?.product?.price * quantity)}
+              <p className="bold">
+                {formatPrice(productData?.data?.product?.price * item.quantity)}
               </p>
             </>
           )}

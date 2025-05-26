@@ -24,10 +24,11 @@ import { useRouter } from "next/navigation";
 import { FaCartPlus } from "react-icons/fa";
 import useAddCart from "@/hooks/useAddCart";
 import useOrder from "@/hooks/useOrder";
-import ReviewItem from "@/app/components/reviewItem";
+import ReviewItem from "@/app/components/ReviewItem1";
 import useGetReview from "@/hooks/useGetReview";
 import Link from "next/link";
-import { Select, SelectSection, SelectItem } from "@nextui-org/select";
+import { Select, SelectItem } from "@nextui-org/select";
+import ScrollUpButton from "@/app/components/ScrollUpButton";
 
 type ParamsId = { id: string };
 type AuthCheckResponse = {
@@ -46,7 +47,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   const { id } = params;
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { data, isLoading, isError, error } = useDetail(id);
+  const { data, isLoading } = useDetail(id);
   const { mutate: favoritePostMutate } = useFavoritePost();
   const { mutate: favoriteDeleteMutate } = useFavoriteDelete();
   const [quantity, setQuantity] = useState(1);
@@ -55,7 +56,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   const cachedData = queryClient.getQueryData<AuthCheckResponse>(["authCheck"]);
   const isLoggedIn = cachedData?.data?.isLoggedIn;
   const { mutate: addCartMutate } = useAddCart();
-  const { mutate: orderMutate } = useOrder();
+  const { mutate: orderMutate, isPending: orderIsPending } = useOrder();
   const [orderOption, setOrderOption] = useState("updatedAt");
   const { data: reviewData, isLoading: reviewLoading } = useGetReview(
     id,
@@ -95,6 +96,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
       favoriteDeleteMutate(id, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["allProducts"] });
+          queryClient.invalidateQueries({ queryKey: ["productDetail", id] });
           setIsFavorite(false);
         },
         onError: () => {
@@ -109,6 +111,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
       favoritePostMutate(id, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["allProducts"] });
+          queryClient.invalidateQueries({ queryKey: ["productDetail", id] });
           setIsFavorite(true);
         },
         onError: () => {
@@ -144,9 +147,14 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   };
 
   const handleRouteOrder = () => {
-    orderMutate([{ product: id, quantity }], {
+    const articleId = data?.data?._id;
+    const product = data?.data?.product?._id;
+    if (!articleId && !product) return;
+    orderMutate([{ articleId, product, quantity }], {
       onSuccess: (data) => {
-        router.push(`/order/${data?.data?._id}`);
+        if (data?.data?._id) {
+          router.push(`/order/${data?.data?._id}`);
+        }
       },
     });
   };
@@ -166,13 +174,13 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
       },
     });
   };
-
+  console.log(reviewData?.data);
   return (
     <>
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <div className="max-w-[1200px] mx-auto px-1">
+        <div className="max-w-[1200px] mx-auto">
           <div className="flex flex-col md:flex-row justify-between gap-3 md:gap-10">
             <div className="w-full md:w-1/2">
               <Slider {...settings} className="mb-5">
@@ -182,17 +190,22 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
                       src={img}
                       width="100%"
                       alt={data?.data?.title}
-                      className="mx-auto object-contain max-h-[400px] md:max-h-[600px]"
+                      className="mx-auto object-contain"
                     />
+                    <div className="flex justify-end text-gray-500 light text-sm">
+                      <p className="bg-gray-100 px-2 py-1 rounded-md">
+                        {i + 1} / {data?.data?.product.images.length}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </Slider>
             </div>
             <div className="w-full md:w-1/2 flex flex-col items-center gap-3 pt-0 md:pt-32">
-              <h2 className="text-center text-xl font-semibold text-gray-800">
+              <h2 className="text-center text-xl extra-bold text-gray-800">
                 {data?.data?.title}
               </h2>
-              <p className="text-md font-semibold">
+              <p className="text-md bold">
                 {formatPrice(data?.data?.product?.price)}
               </p>
               <div className="flex gap-3 items-center rounded-sm">
@@ -213,8 +226,9 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
               <div className="flex-col md:flex items-center gap-1">
                 <Button
                   color="primary"
-                  className="w-[300px] text-xs md:text-medium mt-2"
+                  className="w-[300px] text-xs md:text-medium mt-2 bold"
                   onClick={handleRouteOrder}
+                  isLoading={orderIsPending}
                 >
                   구매하기
                 </Button>
@@ -232,18 +246,23 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
               </div>
             </div>
           </div>
-          <Tabs variant="underlined">
+          <Tabs
+            variant="underlined"
+            className="w-full bold sticky top-[64px] z-20 bg-background/70 backdrop-blur-lg backdrop-saturate-150 border-divider"
+          >
             <Tab key="productDetail" title="정보" textValue="productDetail">
-              <Accordion className="border-y" fullWidth={true}>
+              <Accordion
+                className="border-y"
+                fullWidth={true}
+                defaultExpandedKeys={["detail"]}
+              >
                 <AccordionItem
                   key="detail"
                   textValue="detail"
-                  startContent={
-                    <div className="font-semibold">제품 상세 정보 보기</div>
-                  }
+                  startContent={<div className="bold">제품 상세 정보 보기</div>}
                 >
                   <div className="flex flex-col max-w-[900px] mx-auto items-center mt-10">
-                    <p className="text-xs md:text-medium text-gray-500 mb-5">
+                    <p className="text-xs md:text-medium text-gray-500 mb-5 light">
                       {formatDate(data?.data?.createdAt)}에 등록된 상품입니다.
                     </p>
                     {data?.data?.detail_images.map((img: string, i: number) => (
@@ -258,9 +277,13 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
                 </AccordionItem>
               </Accordion>
             </Tab>
-            <Tab key="review" title="리뷰" textValue="review">
+            <Tab
+              key="review"
+              title={`리뷰 ${reviewData?.data.length || ""}`}
+              textValue="review"
+            >
               <Link href={`/review/${id}`} className="border-t py-3">
-                <Button variant="flat" className="w-full">
+                <Button variant="flat" className="w-full bold">
                   상품평 작성하러 가기
                 </Button>
               </Link>
@@ -270,15 +293,18 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
                 <>
                   <div className="flex justify-end">
                     <Select
+                      aria-label="정렬"
+                      disallowEmptySelection
                       items={orderingOptions}
                       label="정렬"
-                      className="w-[100px]"
+                      className="w-[100px] bold"
                       variant="underlined"
                       defaultSelectedKeys={["updatedAt"]}
+                      selectedKeys={[String(orderOption)]}
                       onChange={(e) => setOrderOption(e.target.value)}
                     >
                       {(item) => (
-                        <SelectItem key={item.value} textValue={item.label}>
+                        <SelectItem key={item.value} value={item.label}>
                           {item.label}
                         </SelectItem>
                       )}
@@ -290,12 +316,13 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
                 </>
               )}
               {reviewData?.data?.length === 0 && (
-                <p className="text-center text-gray-500 py-10">
+                <p className="text-center text-gray-500 py-10 bold">
                   등록된 상품평이 없습니다.
                 </p>
               )}
             </Tab>
           </Tabs>
+          <ScrollUpButton />
         </div>
       )}
     </>

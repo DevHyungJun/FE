@@ -1,6 +1,7 @@
 "use client";
 
-import { Image, Tabs, Tab } from "@nextui-org/react";
+import { Tabs, Tab } from "@nextui-org/react";
+import Image from "next/image";
 import useAllProducts from "@/hooks/useAllProducts";
 import { useRouter } from "next/navigation";
 import formatPrice from "@/util/formatPrice";
@@ -12,6 +13,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { CiShoppingTag } from "react-icons/ci";
 import useGetCategory from "@/hooks/useGetCategory";
+import ScrollUpButton from "../components/ScrollUpButton";
+import { InfiniteProductPostResponse } from "../../../types/allProducts";
+import { UseInfiniteQueryResult } from "@tanstack/react-query";
 
 type AuthCheckResponse = {
   code: number;
@@ -28,52 +32,24 @@ type AuthCheckResponse = {
 const Products = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [page, setPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const { data, isLoading, error, isSuccess } = useAllProducts(
-    page,
-    selectedCategory
-  );
-  const [products, setProducts] = useState<PostData[]>([]);
-  const [hasMore, setHasMore] = useState(true);
   const cachedData = queryClient.getQueryData<AuthCheckResponse>(["authCheck"]);
   const userId = cachedData?.data?.userId;
+
+  const [selectedCategory, setSelectedCategory] = useState("");
   const { data: category } = useGetCategory();
-  const { ref, inView } = useInView({
-    threshold: 0.1,
-    rootMargin: "100px",
-  });
+  const { ref, inView } = useInView({ threshold: 0.1, rootMargin: "100px" });
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useAllProducts(selectedCategory) as UseInfiniteQueryResult<
+      InfiniteProductPostResponse,
+      Error
+    >;
 
   useEffect(() => {
-    if (inView && hasMore && !isLoading) {
-      setPage((prev) => prev + 1);
+    if (inView && hasNextPage) {
+      fetchNextPage();
     }
-  }, [inView, hasMore]);
-
-  useEffect(() => {
-    if (data?.data?.results) {
-      const newProducts = data.data.results.filter(
-        (newProduct: any) =>
-          !products.some(
-            (existingProduct) => existingProduct._id === newProduct._id
-          )
-      );
-
-      if (newProducts.length === 0) {
-        setHasMore(false);
-      } else {
-        setProducts((prevProducts) => [
-          ...prevProducts,
-          ...newProducts.filter(
-            (newProduct: { _id: string }) =>
-              !prevProducts.some(
-                (existingProduct) => existingProduct._id === newProduct._id
-              )
-          ),
-        ]);
-      }
-    }
-  }, [data]);
+  }, [inView, hasNextPage, fetchNextPage]);
 
   const handleRouteProductDetail = (productID: string) =>
     router.push(`products/product-detail/${productID}`);
@@ -86,14 +62,13 @@ const Products = () => {
 
   const handleTabs = (key: React.Key) => {
     setSelectedCategory(key as string);
-    setProducts([]);
-    setPage(1);
-    setHasMore(true);
   };
+
+  const allProducts = data?.pages?.flatMap((page) => page.data.results) ?? [];
 
   return (
     <div className="max-w-[1200px] mx-auto">
-      <div className="py-1">
+      <div className="sticky top-[64px] z-20 py-1 mb-3 overflow-x-scroll scrollbar-hide border-b bg-background/70 backdrop-blur-lg backdrop-saturate-150 border-divider">
         <Tabs
           variant="underlined"
           onSelectionChange={handleTabs}
@@ -110,55 +85,51 @@ const Products = () => {
           ))}
         </Tabs>
       </div>
-      <div className="flex items-center gap-2 text-2xl font-semibold m-1">
-        {isSuccess ? (
-          products?.length === 0 ? (
-            <>
-              <CiShoppingTag />
-              등록된 상품이 없습니다
-            </>
-          ) : (
-            <>
-              <CiShoppingTag />
-              상품 목록
-            </>
-          )
-        ) : null}
+
+      <div className="flex items-center gap-2 text-medium sm:text-xl extra-bold m-1">
+        {!isLoading && (
+          <>
+            <CiShoppingTag />
+            {data?.pages[0]?.data?.counts + "개의 상품 목록"}
+          </>
+        )}
       </div>
-      {isLoading && products.length === 0 ? (
+
+      {isLoading && allProducts.length === 0 ? (
         <LoadingSpinner />
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-10 text-xs md:text-sm p-1">
-          {products.map((product: PostData) => (
+        <div className="sm:max-w-full mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 text-xs md:text-sm p-1">
+          {allProducts.map((product: PostData) => (
             <div
               key={product._id}
-              className="flex flex-col justify-between gap-2 text-sm text-gray-800 p-2 cursor-pointer hover:bg-gray-100 rounded-md max-h-[500px] sm:max-h-[700px] min-h-[300px] sm:min-h-[500px]"
-              onClick={() => handleRouteProductDetail(product?._id)}
+              className="flex flex-col gap-2 max-w-[200px] md:max-w-[300px] text-sm text-gray-800 cursor-pointer mx-auto hover:animate-hover-up hover:shadow-md rounded-md"
+              onClick={() => handleRouteProductDetail(product._id)}
             >
               <Image
-                src={product?.product?.thumbnail}
-                alt={product?.title}
-                width={500}
-                className="rounded-md object-contain max-h-[300px] sm:max-h-[500px]"
+                src={product.product.thumbnail}
+                alt={product.title}
+                width={300}
+                height={300}
+                className="w-[200px] h-[200px] md:w-[300px] md:h-[300px] rounded-md object-contain bg-gray-100"
               />
-              <div className="font-semibold">
-                <h3 className="text-sm md:text-lg">{product.title}</h3>
+              <div className="px-2 pb-2">
+                <p className="text-xs sm:text-sm line-clamp-1">
+                  {product.title}
+                </p>
                 <div className="flex justify-between items-center">
-                  <p className="text-xs md:text-medium">
-                    {formatPrice(product?.product?.price)}
+                  <p className="bold text-xs sm:text-sm">
+                    {formatPrice(product.product.price)}
                   </p>
                   <div className="flex gap-1 text-lg text-red-500">
-                    {FavoriteShow(product?.like_user_list)}
+                    {FavoriteShow(product.like_user_list)}
                   </div>
                 </div>
-                <div className="flex gap-2 text-xs text-gray-500">
-                  {product?.like_count !== 0 && (
-                    <p className="mt-2">좋아요 {product?.like_count}</p>
+                <div className="flex gap-2 text-xs text-gray-400 light h-[16px]">
+                  {product.like_count !== 0 && (
+                    <p>좋아요 {product.like_count}</p>
                   )}
-                  {product?.comment_list.length !== 0 && (
-                    <p className="mt-2">
-                      상품평 {product?.comment_list.length}
-                    </p>
+                  {product.comment_list.length !== 0 && (
+                    <p>상품평 {product.comment_list.length}</p>
                   )}
                 </div>
               </div>
@@ -166,11 +137,12 @@ const Products = () => {
           ))}
         </div>
       )}
-      {products?.length === 0 && <div className="h-[90vh]" />}
+
       <div ref={ref} className="h-10">
-        {isLoading && products.length !== 0 && <LoadingSpinner mode="1" />}
+        {isFetchingNextPage && <LoadingSpinner mode="1" />}
       </div>
-      {!hasMore && <div className="bg-blue-500 w-full h-10" />}
+
+      <ScrollUpButton />
     </div>
   );
 };
