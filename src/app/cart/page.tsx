@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import Favorite from "../components/Favorite";
 import useLikeList from "@/hooks/useLikeList";
 import MostPopular from "../components/MostPopular";
+import useGuestOut from "@/hooks/useGuestOut";
 
 interface CartArticle {
   article: string;
@@ -39,6 +40,7 @@ export default function Cart() {
   const { mutate: orderMutate, isPending: orderIsPending } = useOrder();
   const [cartOrFavorite, setCartOrFavorite] = useState("cart");
   const { data: likeList, isLoading: likeLoading } = useLikeList();
+  useGuestOut();
 
   useEffect(() => {
     if (cartData) {

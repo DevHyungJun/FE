@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { AcmeLogo } from "../../../public/AcmeLogo";
+import useAuthCheck from "@/hooks/useAuthCheck";
 
 const Footer = () => {
+  const { data } = useAuthCheck();
   const footerObj = [
     {
       title: "새로운 아이템의 발견",
@@ -42,12 +46,16 @@ const Footer = () => {
           <Link href="/products" className="md:hover:text-[#D6D5D6]">
             제품
           </Link>
-          <Link href="/cart" className="md:hover:text-[#D6D5D6]">
-            장바구니
-          </Link>
-          <Link href="/mypage" className="md:hover:text-[#D6D5D6]">
-            마이페이지
-          </Link>
+          {data && (
+            <>
+              <Link href="/cart" className="md:hover:text-[#D6D5D6]">
+                장바구니
+              </Link>
+              <Link href="/mypage" className="md:hover:text-[#D6D5D6]">
+                마이페이지
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
