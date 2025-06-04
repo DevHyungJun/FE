@@ -174,7 +174,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
       },
     });
   };
-  console.log(reviewData?.data);
+
   return (
     <>
       {isLoading ? (
@@ -282,7 +282,10 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
               title={`리뷰 ${reviewData?.data.length || ""}`}
               textValue="review"
             >
-              <Link href={`/review/${id}`} className="border-t py-3">
+              <Link
+                href={cachedData ? `/review/${id}` : "/login"}
+                className="border-t py-3"
+              >
                 <Button variant="flat" className="w-full bold">
                   상품평 작성하러 가기
                 </Button>

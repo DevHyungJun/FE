@@ -20,7 +20,6 @@ const Admin = () => {
       label: "카테고리 관리",
       subLabel: "카테고리 생성, 삭제",
     },
-    { href: "/admin/item-order", label: "주문하기", subLabel: "상품 주문" },
   ];
 
   const LinkStyle = "hover:font-semibold border-b w-full py-2";
