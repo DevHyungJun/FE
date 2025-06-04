@@ -93,7 +93,8 @@ export default function ReviewItem({
       },
     });
   };
-
+  console.log(catchedUserId?.data?.userId);
+  console.log(review?.user);
   return (
     <div className="border-b py-3">
       {myPage && !detailIsLoading ? (
@@ -151,9 +152,11 @@ export default function ReviewItem({
           </div>
           <div className="flex-grow" />
           <div className="flex justify-end flex-grow relative">
-            <button onClick={showMenu}>
-              <BsThreeDots className="text-lg" />
-            </button>
+            {catchedUserId?.data?.userId === review?.user && (
+              <button onClick={showMenu}>
+                <BsThreeDots className="text-lg" />
+              </button>
+            )}
             {menu && (
               <div
                 className="fixed inset-0 z-10"
