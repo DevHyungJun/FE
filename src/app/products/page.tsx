@@ -101,35 +101,35 @@ const Products = () => {
         <div className="sm:max-w-full mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 text-xs md:text-sm p-1">
           {allProducts.map((product: PostData) => (
             <div
-              key={product._id}
+              key={product?._id}
               className="flex flex-col gap-2 max-w-[200px] md:max-w-[300px] text-sm text-gray-800 cursor-pointer mx-auto hover:animate-hover-up hover:shadow-md rounded-md"
               onClick={() => handleRouteProductDetail(product._id)}
             >
               <Image
-                src={product.product.thumbnail}
-                alt={product.title}
+                src={product?.product?.thumbnail}
+                alt={product?.title}
                 width={300}
                 height={300}
                 className="w-[200px] h-[200px] md:w-[300px] md:h-[300px] rounded-md object-contain bg-gray-100"
               />
               <div className="px-2 pb-2">
                 <p className="text-xs sm:text-sm line-clamp-1">
-                  {product.title}
+                  {product?.title}
                 </p>
                 <div className="flex justify-between items-center">
                   <p className="bold text-xs sm:text-sm">
-                    {formatPrice(product.product.price)}
+                    {formatPrice(product?.product?.price)}
                   </p>
                   <div className="flex gap-1 text-lg text-red-500">
-                    {FavoriteShow(product.like_user_list)}
+                    {FavoriteShow(product?.like_user_list)}
                   </div>
                 </div>
                 <div className="flex gap-2 text-xs text-gray-400 light h-[16px]">
-                  {product.like_count !== 0 && (
-                    <p>좋아요 {product.like_count}</p>
+                  {product?.like_count !== 0 && (
+                    <p>좋아요 {product?.like_count}</p>
                   )}
-                  {product.comment_list.length !== 0 && (
-                    <p>상품평 {product.comment_list.length}</p>
+                  {product?.comment_list.length !== 0 && (
+                    <p>상품평 {product?.comment_list?.length}</p>
                   )}
                 </div>
               </div>
