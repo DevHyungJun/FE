@@ -80,7 +80,7 @@ export default function MostPopular() {
                   {product.title}
                 </p>
                 <div className="flex justify-between items-center">
-                  <p className="bold">{formatPrice(product.product.price)}</p>
+                  <p className="bold">{formatPrice(product?.product?.price)}</p>
                 </div>
                 <div className="flex gap-2 text-xs text-gray-400 light h-[16px]">
                   {product?.like_count !== 0 && (
