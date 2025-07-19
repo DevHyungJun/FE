@@ -78,3 +78,13 @@ export const storeOrderData = create<{
     { name: "orderData" }
   )
 );
+
+export const chatUIState = create<{
+  chatUI: boolean;
+  setChatUI: () => void;
+  clearChatUI: () => void;
+}>((set) => ({
+  chatUI: false,
+  setChatUI: () => set({ chatUI: true }),
+  clearChatUI: () => set({ chatUI: false }),
+}));

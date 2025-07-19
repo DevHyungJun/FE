@@ -6,6 +6,7 @@ import { FaArrowUpLong } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
 import Markdown from "react-markdown";
 import useChat from "./useChat";
+import { chatUIState } from "@/store";
 
 const CHAT_BOT_IMAGE = "/chat-bot.webp";
 const USER_DEFAULT_IMAGE = "/basic_profile.png";
@@ -205,6 +206,7 @@ export default function ChatUI({
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }) {
+  const { setChatUI, clearChatUI } = chatUIState();
   const {
     messages,
     userInput,
@@ -217,13 +219,22 @@ export default function ChatUI({
     jsonIsLoading,
   } = useChat(isOpen);
 
+  // 모달 열기/닫기 시 전역 상태 업데이트
+  const handleOpen = () => {
+    setIsOpen(true);
+    setChatUI();
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    clearChatUI();
+  };
+
   if (!isOpen) return null;
   return (
-    <div className="bg-gray-50 rounded-none sm:rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
-      <ChatHeader onClose={() => setIsOpen(false)} />
-      <div
-        className={`w-full sm:w-[450px] h-[600px] overflow-y-auto scrollbar-hide`}
-      >
+    <div className="fixed inset-0 w-screen h-screen z-[9999] bg-white sm:static sm:w-[450px] sm:h-[700px] sm:z-auto sm:rounded-lg sm:shadow-lg sm:border sm:border-gray-200 animate-slide-up origin-bottom pb-1">
+      <ChatHeader onClose={handleClose} />
+      <div className="w-full h-[calc(100vh-56px)] sm:h-[600px] sm:w-full overflow-y-auto scrollbar-hide">
         <ChatMessages
           messages={messages}
           loadingMessage={loadingMessage}
@@ -238,7 +249,7 @@ export default function ChatUI({
           setUserInput("");
           handleSubmit(e);
         }}
-        onClose={() => setIsOpen(false)}
+        onClose={handleClose}
         inputDisabled={inputDisabled || jsonIsLoading}
         isLoading={inputDisabled || jsonIsLoading}
       />

@@ -3,10 +3,15 @@
 import React, { useState } from "react";
 import { FaRobot } from "react-icons/fa";
 import ChatUI from "./ChatUI";
+import { chatUIState } from "@/store";
 
 export default function ChatUIButton() {
   const [isOpen, setIsOpen] = useState(false);
-  const toggleChat = () => setIsOpen(!isOpen);
+  const { setChatUI } = chatUIState();
+  const toggleChat = () => {
+    setIsOpen(!isOpen);
+    setChatUI();
+  };
 
   return (
     <div
@@ -19,7 +24,7 @@ export default function ChatUIButton() {
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="text-[12px] md:text-[16px] p-2 sm:text-[14px] flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white sm:p-3 rounded-full shadow-lg
+          className="text-[14px] md:text-[16px] p-2 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white sm:p-3 rounded-full shadow-lg
           hover:animate-wiggle transition-all duration-300 
           active:scale-95 hover:shadow-xl extra-bold"
         >

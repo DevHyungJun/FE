@@ -29,6 +29,7 @@ import { VscTools } from "react-icons/vsc";
 import useGetCart from "@/hooks/useGetCart";
 import { useQueryClient } from "@tanstack/react-query";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
+import { chatUIState } from "@/store";
 
 interface CahcedUserLoggedIn {
   data: {
@@ -66,6 +67,7 @@ const Header = () => {
 
   const isAdmin = authCheckData?.data?.role === "admin";
   const isLoggedIn = authCheckData?.data?.isLoggedIn;
+  const { chatUI } = chatUIState();
 
   // 데스크탑 메뉴 항목
   const navbarItems = [
@@ -190,6 +192,107 @@ const Header = () => {
         ),
     },
   ];
+
+  if (chatUI) {
+    return (
+      <div className="hidden sm:block">
+        <Navbar
+          isBordered
+          isMenuOpen={isMenuOpen}
+          onMenuOpenChange={setIsMenuOpen}
+          className={`${isMenuOpen ? "bg-gray-50" : ""}text-gray-800`}
+        >
+          <NavbarContent className="sm:hidden" justify="start">
+            <NavbarMenuToggle
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            />
+          </NavbarContent>
+
+          <NavbarContent className="sm:hidden pr-3" justify="center">
+            <NavbarBrand>
+              <Link href="/" className="flex items-center">
+                <AcmeLogo />
+                <p className="extra-bold text-inherit">SHOP</p>
+              </Link>
+            </NavbarBrand>
+          </NavbarContent>
+
+          <NavbarContent className="hidden sm:flex gap-4" justify="center">
+            <NavbarBrand>
+              <Link href={"/"} className="flex items-center">
+                <AcmeLogo />
+                <p className="extra-bold text-inherit">SHOP</p>
+              </Link>
+            </NavbarBrand>
+            {navbarItems.map((item, index) => (
+              <NavbarItem
+                key={`${item}-${index}`}
+                isActive={item.isActive}
+                className={`hover:text-blue-500 text-sm ${
+                  item.label === "관리자" && !isAdmin ? "hidden" : ""
+                } ${item.label === "장바구니" && !isLoggedIn ? "hidden" : ""}`}
+              >
+                <Link href={item.href}>
+                  {item.icon ? (
+                    <div className="flex items-center gap-1">
+                      {item.icon}
+                      {item.label}
+                    </div>
+                  ) : (
+                    item.label
+                  )}
+                </Link>
+              </NavbarItem>
+            ))}
+          </NavbarContent>
+
+          <NavbarContent justify="end">
+            <NavbarItem
+              className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${
+                isLoginOpen && "bold"
+              }`}
+              onClick={handleLoginLogout}
+            >
+              {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? (
+                <div className="flex items-center gap-1">
+                  <CiLogin className="text-lg" />
+                  로그인
+                </div>
+              ) : (
+                <div className="flex items-center gap-1">
+                  <CiLogout className="text-lg" />
+                  로그아웃
+                </div>
+              )}
+            </NavbarItem>
+            <NavbarItem
+              className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${
+                isSignupOpen || isMypageOpen ? "bold" : ""
+              }`}
+              onClick={handleSignupMypage}
+            >
+              {!authCheckIsSuccess || authCheckData?.isLoggedIn === false ? (
+                <div className="flex items-center gap-1">
+                  <IoPersonAddOutline className="text-lg" />
+                  회원가입
+                </div>
+              ) : (
+                <div className="flex items-center gap-1">
+                  <Image
+                    src={profileImage ? profileImage : "/basic_profile.png"}
+                    alt="Profile Image"
+                    width={20}
+                    height={20}
+                  />
+                  마이페이지
+                </div>
+              )}
+            </NavbarItem>
+          </NavbarContent>
+        </Navbar>
+      </div>
+    );
+  }
 
   return (
     <Navbar
