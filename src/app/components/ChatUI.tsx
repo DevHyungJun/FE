@@ -1,27 +1,48 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { Button, Image, Textarea } from "@nextui-org/react";
 import { FaArrowUpLong } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
-import { AssistantStream } from "openai/lib/AssistantStream";
 import Markdown from "react-markdown";
-import useGetJson from "@/hooks/useGetJson";
-import useGetUserInfo from "@/hooks/useGetUserInfo";
+import useChat from "./useChat";
 
-interface ChatMessage {
-  role: "user" | "assistant" | "code";
-  text: string;
+const CHAT_BOT_IMAGE = "/chat-bot.webp";
+const USER_DEFAULT_IMAGE = "/basic_profile.png";
+const CHAT_HEIGHT = {
+  mobile: "calc(100vh-180px)",
+  desktop: "700px",
+};
+
+// ChatHeader: 상단 헤더
+function ChatHeader({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="p-7 sm:p-3 bg-white sm:bg-gray-100 flex justify-between items-center rounded-t-lg">
+      <h3 className="hidden sm:block extra-bold text-gray-600 text-sm sm:text-medium">
+        AI 채팅
+      </h3>
+      <button onClick={onClose} className="text-gray-500 hover:text-gray-900">
+        <IoIosClose className="hidden sm:block text-3xl" />
+      </button>
+    </div>
+  );
 }
 
-const Message = ({ role, text }: { role: string; text: string }) => {
-  const { data } = useGetUserInfo();
-  const profileImage = data?.data?.profile_image;
+// ChatMessage: 메시지 단일 렌더링
+function ChatMessage({
+  role,
+  text,
+  profileImage,
+}: {
+  role: string;
+  text: string;
+  profileImage?: string;
+}) {
   if (role === "user") {
     return (
       <div className="flex items-center justify-end">
         <Image
-          src={profileImage ? profileImage : "/basic_profile.png"}
+          src={profileImage || USER_DEFAULT_IMAGE}
           className="min-w-[30px]"
           width={30}
           height={30}
@@ -32,12 +53,11 @@ const Message = ({ role, text }: { role: string; text: string }) => {
       </div>
     );
   }
-
   if (role === "assistant") {
     return (
       <div className="flex items-center justify-start">
         <Image
-          src="/chat-bot.webp"
+          src={CHAT_BOT_IMAGE}
           className="min-w-[30px]"
           width={30}
           height={30}
@@ -48,7 +68,6 @@ const Message = ({ role, text }: { role: string; text: string }) => {
       </div>
     );
   }
-
   if (role === "code") {
     return (
       <div className="bg-gray-100 p-4 rounded-md">
@@ -61,249 +80,172 @@ const Message = ({ role, text }: { role: string; text: string }) => {
       </div>
     );
   }
-
   return null;
-};
-
-interface ChatUIProps {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
 }
 
-export default function ChatUI({ isOpen, setIsOpen }: ChatUIProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "assistant",
-      text: "안녕하세요! 저는 AI 챗봇입니다.",
-    },
-    {
-      role: "assistant",
-      text: "무엇을 도와드릴까요?",
-    },
-  ]);
-  const [userInput, setUserInput] = useState("");
-  const [inputDisabled, setInputDisabled] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState(false);
-  const [file, setFile] = useState<FormData | null>(null);
-  const [threadId, setThreadId] = useState("");
-  const currentMessageTextRef = useRef("");
-  const { data: json, isLoading: jsonIsLoading, isSuccess } = useGetJson();
-
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const toggleChat = () => setIsOpen(!isOpen);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    if (isOpen) {
-      // 스크롤 막기
-      document.body.style.overflow = "hidden";
-    } else {
-      // 스크롤 허용
-      document.body.style.overflow = "";
-    }
-
-    // 컴포넌트가 unmount될 때도 overflow 원복
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
-  useEffect(() => {
-    const createThread = async () => {
-      const res = await fetch(`/api/assistants/threads`, {
-        method: "POST",
-      });
-      const data = await res.json();
-      setThreadId(data.threadId);
-    };
-    createThread();
-  }, []);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    scrollToBottom();
-  }, [isOpen]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      const jsonBlob = new Blob([JSON.stringify(json)], {
-        type: "application/json",
-      });
-      const file = new File([jsonBlob], "data.json", {
-        type: "application/json",
-      });
-
-      const formData = new FormData();
-      formData.append("file", file);
-      setFile(formData);
-    }
-  }, [json]);
-
-  useEffect(() => {
-    if (file) {
-      fileUpload();
-    }
-  }, [file]);
-
-  // 파일 업로드
-  const fileUpload = async () => {
-    if (!file) return;
-    await fetch("/api/assistants/files", {
-      method: "POST",
-      body: file,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setInputDisabled(true);
-    setLoadingMessage(true);
-    if (!userInput.trim() || !threadId) return;
-    currentMessageTextRef.current = "";
-    setMessages((prev) => [...prev, { role: "user", text: userInput }]);
-
-    const response = await fetch(
-      `/api/assistants/threads/${threadId}/messages`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          content: userInput,
-          jsonData: file,
-        }),
-      }
-    );
-    if (response.body) {
-      const stream = AssistantStream.fromReadableStream(response.body);
-      handleStream(stream);
-    }
-  };
-
-  const handleStream = (stream: AssistantStream) => {
-    // 텍스트 응답을 시작할 때 발생
-    stream.on("textCreated", () => {
-      setMessages((prev) => [...prev, { role: "assistant", text: "" }]);
-    });
-
-    // 응답 텍스트를 생성하는 동안 계속해서 발생
-    stream.on("textDelta", (delta) => {
-      if (delta.value != null) {
-        setLoadingMessage(false);
-        currentMessageTextRef.current += delta.value;
-        setMessages((prev) => {
-          const newMessages = [...prev];
-          const lastMessage = newMessages[newMessages.length - 1];
-          lastMessage.text = currentMessageTextRef.current;
-          return newMessages;
-        });
-      }
-    });
-
-    // 코드 실행이나 도구 사용을 시작할 때 발생(예: 데이터 분석, 계산, 차트 생성)
-    stream.on("toolCallCreated", (toolCall) => {
-      if (toolCall.type === "code_interpreter") {
-        setMessages((prev) => [...prev, { role: "code", text: "" }]);
-      }
-    });
-
-    // 코드 실행 결과나 도구 사용의 진행 상황이 전달될 때 발생
-    stream.on("toolCallDelta", (delta, snapshot) => {
-      if (delta.type === "code_interpreter" && delta.code_interpreter?.input) {
-        setMessages((prev) => {
-          const newMessages = [...prev];
-          const lastMessage = newMessages[newMessages.length - 1];
-          if (delta.code_interpreter?.input) {
-            lastMessage.text += delta.code_interpreter.input;
-          }
-          return newMessages;
-        });
-      }
-    });
-
-    // 전체 응답이 완료되었을 때 발생
-    stream.on("event", (event) => {
-      if (event.event === "thread.run.completed") {
-        setInputDisabled(false);
-      }
-    });
-  };
-  if (!isOpen) return null;
+// ChatMessages: 메시지 리스트 및 스크롤 관리
+function ChatMessages({
+  messages,
+  loadingMessage,
+  profileImage,
+  messagesEndRef,
+}: {
+  messages: { role: string; text: string }[];
+  loadingMessage: boolean;
+  profileImage?: string;
+  messagesEndRef: React.RefObject<HTMLDivElement>;
+}) {
   return (
-    <div className="bg-white rounded-none sm:rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
-      <div className="p-3 bg-gray-100 flex justify-between items-center rounded-t-lg">
-        <h3 className="extra-bold text-gray-600 text-sm sm:text-medium">
-          AI 채팅
-        </h3>
-        <button
-          onClick={toggleChat}
-          className="text-gray-500 hover:text-gray-900"
-        >
-          <IoIosClose className="text-3xl" />
-        </button>
-      </div>
-
-      <div className="w-full h-[calc(100vh-180px)] sm:w-[450px] sm:h-[700px] overflow-y-auto scrollbar-hide">
-        <div className="p-1">
-          <div className="space-y-6 mt-3">
-            {messages.map((msg, index) => (
-              <Message key={index} role={msg.role} text={msg.text} />
-            ))}
-            <div ref={messagesEndRef} />
-            {loadingMessage && (
-              <div className="flex items-center justify-start">
-                <Image
-                  src="/chat-bot.webp"
-                  className="min-w-[30px]"
-                  width={30}
-                  height={30}
-                />
-                <div className="text-sm text-blue-600 bg-gray-100 inline p-2 m-1 rounded-md animate-bounce delay-200 bold">
-                  <Markdown className="text-sm sm:text-medium">
-                    답변을 작성중입니다...
-                  </Markdown>
-                </div>
-              </div>
-            )}
+    <div className="p-1">
+      <div className="space-y-6 mt-3">
+        {messages.map((msg, index) => (
+          <ChatMessage
+            key={index}
+            role={msg.role}
+            text={msg.text}
+            profileImage={profileImage}
+          />
+        ))}
+        <div ref={messagesEndRef} />
+        {loadingMessage && (
+          <div className="flex items-center justify-start">
+            <Image
+              src={CHAT_BOT_IMAGE}
+              className="min-w-[30px]"
+              width={30}
+              height={30}
+            />
+            <div className="text-sm text-blue-600 bg-gray-100 inline p-2 m-1 rounded-md animate-bounce delay-200 bold">
+              <Markdown className="text-sm sm:text-medium">
+                답변을 작성중입니다...
+              </Markdown>
+            </div>
           </div>
-        </div>
+        )}
       </div>
+    </div>
+  );
+}
 
-      <form
-        className="flex items-center gap-1 w-full mx-auto p-2"
-        onSubmit={(data) => {
-          setUserInput("");
-          handleSubmit(data);
-        }}
-      >
-        <Textarea
-          type="text"
-          className="flex-1"
+// ChatInputForm: 입력창 및 전송 버튼
+function ChatInputForm({
+  userInput,
+  setUserInput,
+  onSubmit,
+  inputDisabled,
+  isLoading,
+  onClose,
+}: {
+  userInput: string;
+  setUserInput: (v: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  inputDisabled: boolean;
+  isLoading: boolean;
+  onClose: () => void;
+}) {
+  // 엔터 전송, 쉬프트+엔터 줄바꿈 핸들러
+  const handleKeyDown = (e: React.KeyboardEvent<any>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      // form submit 트리거
+      const form = e.currentTarget.form;
+      if (form) {
+        const submitEvent = new Event("submit", {
+          cancelable: true,
+          bubbles: true,
+        });
+        form.dispatchEvent(submitEvent);
+      }
+    }
+  };
+  return (
+    <form
+      className="flex items-center gap-1 w-full mx-auto p-2"
+      onSubmit={onSubmit}
+    >
+      <Textarea
+        type="text"
+        className="flex-1"
+        radius="full"
+        minRows={1}
+        maxRows={5}
+        value={userInput}
+        onChange={(e) => setUserInput(e.target.value)}
+        placeholder="메시지를 입력하세요."
+        disabled={inputDisabled}
+        onKeyDown={handleKeyDown}
+      />
+      <div className="flex gap-1">
+        <Button
+          size="sm"
+          color="danger"
+          className="flex justify-center h-[40px] sm:hidden"
           radius="full"
-          minRows={1}
-          maxRows={5}
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          placeholder="메시지를 입력하세요."
-          disabled={inputDisabled || jsonIsLoading}
-        />
+          onClick={onClose}
+        >
+          <IoIosClose className="text-4xl" />
+        </Button>
         <Button
           size="sm"
           color="primary"
           className="h-[40px]"
           radius="full"
           type="submit"
-          isLoading={inputDisabled || jsonIsLoading}
+          isLoading={isLoading}
           isDisabled={userInput.trim() === ""}
         >
           {!inputDisabled && <FaArrowUpLong className="text-lg" />}
         </Button>
-      </form>
+      </div>
+    </form>
+  );
+}
+
+// 메인 ChatUI 컨테이너
+export default function ChatUI({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+}) {
+  const {
+    messages,
+    userInput,
+    setUserInput,
+    inputDisabled,
+    loadingMessage,
+    handleSubmit,
+    messagesEndRef,
+    profileImage,
+    jsonIsLoading,
+  } = useChat(isOpen);
+
+  if (!isOpen) return null;
+  return (
+    <div className="bg-white rounded-none sm:rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
+      <ChatHeader onClose={() => setIsOpen(false)} />
+      <div
+        className={`w-full h-[${CHAT_HEIGHT.mobile}] sm:w-[450px] sm:h-[${CHAT_HEIGHT.desktop}] overflow-y-auto scrollbar-hide`}
+      >
+        <ChatMessages
+          messages={messages}
+          loadingMessage={loadingMessage}
+          profileImage={profileImage}
+          messagesEndRef={messagesEndRef}
+        />
+      </div>
+      <ChatInputForm
+        userInput={userInput}
+        setUserInput={setUserInput}
+        onSubmit={(e) => {
+          setUserInput("");
+          handleSubmit(e);
+        }}
+        onClose={() => setIsOpen(false)}
+        inputDisabled={inputDisabled || jsonIsLoading}
+        isLoading={inputDisabled || jsonIsLoading}
+      />
     </div>
   );
 }
