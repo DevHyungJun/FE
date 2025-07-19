@@ -156,10 +156,7 @@ function ChatInputForm({
     }
   };
   return (
-    <form
-      className="absolute bottom-1 flex items-center gap-1 w-full mx-auto p-2"
-      onSubmit={onSubmit}
-    >
+    <form className="flex items-center gap-1 w-full" onSubmit={onSubmit}>
       <Textarea
         type="text"
         className="flex-1"
@@ -232,9 +229,9 @@ export default function ChatUI({
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 w-screen h-screen z-[9999] bg-white sm:static sm:w-[450px] sm:h-[calc(100vh-100px)] sm:z-auto sm:rounded-lg sm:shadow-lg sm:border sm:border-gray-200 animate-slide-up origin-bottom pb-1">
+    <div className="fixed inset-0 w-screen h-screen z-[9999] bg-white sm:static sm:w-[450px] sm:h-[75vh] sm:z-[9999] sm:rounded-lg sm:shadow-lg sm:border sm:border-gray-200 animate-slide-up origin-bottom flex flex-col">
       <ChatHeader onClose={handleClose} />
-      <div className="w-full h-[calc(100vh-56px)] sm:h-[600px] sm:w-full overflow-y-auto scrollbar-hide">
+      <div className="flex-1 overflow-y-auto scrollbar-hide">
         <ChatMessages
           messages={messages}
           loadingMessage={loadingMessage}
@@ -242,17 +239,19 @@ export default function ChatUI({
           messagesEndRef={messagesEndRef}
         />
       </div>
-      <ChatInputForm
-        userInput={userInput}
-        setUserInput={setUserInput}
-        onSubmit={(e) => {
-          setUserInput("");
-          handleSubmit(e);
-        }}
-        onClose={handleClose}
-        inputDisabled={inputDisabled || jsonIsLoading}
-        isLoading={inputDisabled || jsonIsLoading}
-      />
+      <div className="flex-shrink-0 p-2 bg-white border-t border-gray-200">
+        <ChatInputForm
+          userInput={userInput}
+          setUserInput={setUserInput}
+          onSubmit={(e) => {
+            setUserInput("");
+            handleSubmit(e);
+          }}
+          onClose={handleClose}
+          inputDisabled={inputDisabled || jsonIsLoading}
+          isLoading={inputDisabled || jsonIsLoading}
+        />
+      </div>
     </div>
   );
 }
