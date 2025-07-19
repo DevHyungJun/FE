@@ -17,7 +17,7 @@ const CHAT_HEIGHT = {
 // ChatHeader: 상단 헤더
 function ChatHeader({ onClose }: { onClose: () => void }) {
   return (
-    <div className="p-7 sm:p-3 bg-white sm:bg-gray-100 flex justify-between items-center rounded-t-lg">
+    <div className="p-7 bg-white sm:bg-gray-100 flex justify-between items-center rounded-t-lg">
       <h3 className="hidden sm:block extra-bold text-gray-600 text-sm sm:text-medium">
         AI 채팅
       </h3>
@@ -160,7 +160,7 @@ function ChatInputForm({
   };
   return (
     <form
-      className="flex items-center w-full mx-auto p-1 sm:p-2"
+      className="flex items-center gap-1 w-full mx-auto p-2"
       onSubmit={onSubmit}
     >
       <Textarea
@@ -175,11 +175,11 @@ function ChatInputForm({
         disabled={inputDisabled}
         onKeyDown={handleKeyDown}
       />
-      <div className="flex">
+      <div className="flex gap-1">
         <Button
           size="sm"
           color="danger"
-          className="flex justify-center h-[40px] w-[40px] sm:hidden"
+          className="flex justify-center h-[40px] sm:hidden"
           radius="full"
           onClick={onClose}
         >
@@ -188,7 +188,7 @@ function ChatInputForm({
         <Button
           size="sm"
           color="primary"
-          className="h-[40px] w-[40px]"
+          className="h-[40px]"
           radius="full"
           type="submit"
           isLoading={isLoading}
@@ -223,7 +223,7 @@ export default function ChatUI({
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 w-screen h-screen z-[9999] bg-white sm:static sm:w-auto sm:h-auto sm:rounded-lg sm:shadow-lg sm:border sm:border-gray-200 animate-slide-up origin-bottom pb-1">
+    <div className="bg-white rounded-none sm:rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
       <ChatHeader onClose={() => setIsOpen(false)} />
       <div
         className={`w-full h-[${CHAT_HEIGHT.mobile}] sm:w-[450px] sm:h-[${CHAT_HEIGHT.desktop}] overflow-y-auto scrollbar-hide`}
