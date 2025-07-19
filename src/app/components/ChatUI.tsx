@@ -160,7 +160,7 @@ function ChatInputForm({
   };
   return (
     <form
-      className="flex items-center gap-1 w-full mx-auto p-2"
+      className="flex items-center w-full mx-auto p-1 sm:p-2"
       onSubmit={onSubmit}
     >
       <Textarea
@@ -175,11 +175,11 @@ function ChatInputForm({
         disabled={inputDisabled}
         onKeyDown={handleKeyDown}
       />
-      <div className="flex gap-1">
+      <div className="flex">
         <Button
           size="sm"
           color="danger"
-          className="flex justify-center h-[40px] sm:hidden"
+          className="flex justify-center h-[40px] w-[40px] sm:hidden"
           radius="full"
           onClick={onClose}
         >
@@ -188,7 +188,7 @@ function ChatInputForm({
         <Button
           size="sm"
           color="primary"
-          className="h-[40px]"
+          className="h-[40px] w-[40px]"
           radius="full"
           type="submit"
           isLoading={isLoading}
@@ -223,7 +223,7 @@ export default function ChatUI({
 
   if (!isOpen) return null;
   return (
-    <div className="bg-white rounded-none sm:rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
+    <div className="fixed inset-0 w-screen h-screen z-[9999] bg-white sm:static sm:w-auto sm:h-auto sm:rounded-lg sm:shadow-lg sm:border sm:border-gray-200 animate-slide-up origin-bottom pb-1">
       <ChatHeader onClose={() => setIsOpen(false)} />
       <div
         className={`w-full h-[${CHAT_HEIGHT.mobile}] sm:w-[450px] sm:h-[${CHAT_HEIGHT.desktop}] overflow-y-auto scrollbar-hide`}
