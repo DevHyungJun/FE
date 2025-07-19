@@ -157,7 +157,7 @@ function ChatInputForm({
   };
   return (
     <form
-      className="flex items-center gap-1 w-full mx-auto p-2"
+      className="absolute bottom-1 flex items-center gap-1 w-full mx-auto p-2"
       onSubmit={onSubmit}
     >
       <Textarea
@@ -232,7 +232,7 @@ export default function ChatUI({
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 w-screen h-screen z-[9999] bg-white sm:static sm:w-[450px] sm:h-[700px] sm:z-auto sm:rounded-lg sm:shadow-lg sm:border sm:border-gray-200 animate-slide-up origin-bottom pb-1">
+    <div className="fixed inset-0 w-screen h-screen z-[9999] bg-white sm:static sm:w-[450px] sm:h-[calc(100vh-100px)] sm:z-auto sm:rounded-lg sm:shadow-lg sm:border sm:border-gray-200 animate-slide-up origin-bottom pb-1">
       <ChatHeader onClose={handleClose} />
       <div className="w-full h-[calc(100vh-56px)] sm:h-[600px] sm:w-full overflow-y-auto scrollbar-hide">
         <ChatMessages
