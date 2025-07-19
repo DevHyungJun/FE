@@ -9,20 +9,16 @@ import useChat from "./useChat";
 
 const CHAT_BOT_IMAGE = "/chat-bot.webp";
 const USER_DEFAULT_IMAGE = "/basic_profile.png";
-const CHAT_HEIGHT = {
-  mobile: "calc(100vh-180px)",
-  desktop: "700px",
-};
 
 // ChatHeader: 상단 헤더
 function ChatHeader({ onClose }: { onClose: () => void }) {
   return (
-    <div className="p-7 bg-white sm:bg-gray-100 flex justify-between items-center rounded-t-lg">
-      <h3 className="hidden sm:block extra-bold text-gray-600 text-sm sm:text-medium">
+    <div className="hidden p-3 bg-white sm:bg-gray-100 sm:flex justify-between items-center rounded-t-lg">
+      <h3 className="extra-bold text-gray-600 text-sm sm:text-medium">
         AI 채팅
       </h3>
       <button onClick={onClose} className="text-gray-500 hover:text-gray-900">
-        <IoIosClose className="hidden sm:block text-3xl" />
+        <IoIosClose className="text-3xl" />
       </button>
     </div>
   );
@@ -223,10 +219,10 @@ export default function ChatUI({
 
   if (!isOpen) return null;
   return (
-    <div className="bg-white rounded-none sm:rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
+    <div className="bg-gray-50 rounded-none sm:rounded-lg shadow-lg border border-gray-200 animate-slide-up origin-bottom pb-1">
       <ChatHeader onClose={() => setIsOpen(false)} />
       <div
-        className={`w-full h-[${CHAT_HEIGHT.mobile}] sm:w-[450px] sm:h-[${CHAT_HEIGHT.desktop}] overflow-y-auto scrollbar-hide`}
+        className={`w-full sm:w-[450px] h-[600px] overflow-y-auto scrollbar-hide`}
       >
         <ChatMessages
           messages={messages}
