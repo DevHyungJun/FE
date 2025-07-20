@@ -239,7 +239,7 @@ export default function ChatUI({
           messagesEndRef={messagesEndRef}
         />
       </div>
-      <div className="flex-shrink-0 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-white border-t border-gray-200">
+      <div className="flex-shrink-0 p-2 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-white border-t border-gray-200">
         <ChatInputForm
           userInput={userInput}
           setUserInput={setUserInput}
