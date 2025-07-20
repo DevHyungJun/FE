@@ -20,7 +20,6 @@ export default function ChatUIButton() {
 
   return (
     <>
-      {/* 데스크탑에서만 표시되는 오버레이 */}
       {chatUI && (
         <div
           className="hidden sm:block fixed inset-0 bg-black bg-opacity-50 z-[9998]"
