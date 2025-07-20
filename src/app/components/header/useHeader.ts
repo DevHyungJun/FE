@@ -1,0 +1,187 @@
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import useAuthCheck from "@/hooks/useAuthCheck";
+import useLogout from "@/hooks/useLogout";
+import useGetCart from "@/hooks/useGetCart";
+import useGetUserInfo from "@/hooks/useGetUserInfo";
+import { chatUIState } from "@/store";
+
+interface CahcedUserLoggedIn {
+  data: {
+    isLoggedIn: boolean;
+  };
+}
+
+interface NavbarItem {
+  label: string;
+  href: string;
+  isActive: boolean;
+  iconType: string;
+  badgeCount?: number;
+}
+
+interface MenuItem {
+  label: string;
+  href: string;
+  isOpen: boolean;
+  iconType: string;
+  badgeCount?: number;
+  onclick?: () => void;
+}
+
+export default function useHeader() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // 데이터 가져오기
+  const cahcedUserLoggedIn = queryClient.getQueryData<CahcedUserLoggedIn>([
+    "authCheck",
+  ]);
+  const { data, isSuccess } = useGetUserInfo();
+  const profileImage = data?.data?.profile_image;
+  const loginState = cahcedUserLoggedIn?.data?.isLoggedIn;
+  const { data: cartData } = useGetCart(!!loginState);
+  const { data: authCheckData, isSuccess: authCheckIsSuccess } = useAuthCheck();
+  const { mutate: logout } = useLogout();
+  const { chatUI } = chatUIState();
+
+  // 경로 확인
+  const isAdminOpen = pathname.startsWith("/admin");
+  const isProductOpen = pathname.startsWith("/products");
+  const isLoginOpen = pathname.startsWith("/login");
+  const isSignupOpen = pathname.startsWith("/signup");
+  const isCartOpen = pathname.startsWith("/cart");
+  const isMypageOpen = pathname.startsWith("/mypage");
+
+  // 권한 확인
+  const isAdmin = authCheckData?.data?.role === "admin";
+  const isLoggedIn = authCheckData?.data?.isLoggedIn;
+
+  // 핸들러 함수들
+  const handleLoginLogout = () => {
+    if (!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
+      router.push("/login");
+      return;
+    }
+    logout();
+  };
+
+  const handleSignupMypage = () => {
+    if (!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
+      router.push("/signup");
+      return;
+    }
+    router.push("/mypage");
+  };
+
+  // 데스크탑 메뉴 항목
+  const navbarItems: NavbarItem[] = [
+    {
+      label: "제품",
+      href: "/products",
+      isActive: isProductOpen,
+      iconType: "shopping-tag",
+    },
+    {
+      label: "장바구니",
+      href: "/cart",
+      iconType: "shopping-cart",
+      badgeCount: cartData?.article_list.length,
+      isActive: isCartOpen,
+    },
+    {
+      label: "관리자",
+      href: "/admin",
+      isActive: isAdminOpen,
+      iconType: "tools",
+    },
+  ];
+
+  // 모바일 메뉴 항목
+  const menuItems: MenuItem[] = [
+    {
+      label: "제품",
+      href: "/products",
+      isOpen: isProductOpen,
+      iconType: "shopping-tag",
+    },
+    {
+      label: "장바구니",
+      href: "/cart",
+      iconType: "shopping-cart",
+      badgeCount: cartData?.article_list.length,
+      isOpen: isCartOpen,
+    },
+    {
+      label: "관리자",
+      href: "/admin",
+      isOpen: isAdminOpen,
+      iconType: "tools",
+    },
+    {
+      label:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
+          ? "회원가입"
+          : "마이페이지",
+      href:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
+          ? "/signup"
+          : "/mypage",
+      isOpen: isSignupOpen || isMypageOpen,
+      onclick: handleSignupMypage,
+      iconType:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
+          ? "person-add"
+          : "profile",
+    },
+    {
+      label:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
+          ? "로그인"
+          : "로그아웃",
+      href:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
+          ? "/login"
+          : "#",
+      isOpen: isLoginOpen,
+      onclick: handleLoginLogout,
+      iconType:
+        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
+          ? "login"
+          : "logout",
+    },
+  ];
+
+  return {
+    // 상태
+    isMenuOpen,
+    setIsMenuOpen,
+    chatUI,
+
+    // 데이터
+    profileImage,
+    authCheckIsSuccess,
+    authCheckData,
+
+    // 경로 상태
+    isLoginOpen,
+    isSignupOpen,
+    isMypageOpen,
+
+    // 권한
+    isAdmin,
+    isLoggedIn,
+
+    // 메뉴 항목
+    navbarItems,
+    menuItems,
+
+    // 핸들러
+    handleLoginLogout,
+    handleSignupMypage,
+  };
+}
