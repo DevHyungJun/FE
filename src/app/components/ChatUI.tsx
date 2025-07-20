@@ -229,7 +229,7 @@ export default function ChatUI({
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 w-screen h-screen z-[9999] bg-white sm:static sm:w-[450px] sm:h-[75vh] sm:z-[9999] sm:rounded-lg sm:shadow-lg sm:border sm:border-gray-200 animate-slide-up origin-bottom flex flex-col">
+    <div className="fixed inset-0 w-screen h-[100dvh] z-[9999] bg-white sm:static sm:w-[450px] sm:h-[75vh] sm:z-[9999] sm:rounded-lg sm:shadow-lg sm:border sm:border-gray-200 animate-slide-up origin-bottom flex flex-col">
       <ChatHeader onClose={handleClose} />
       <div className="flex-1 overflow-y-auto scrollbar-hide">
         <ChatMessages
@@ -239,7 +239,7 @@ export default function ChatUI({
           messagesEndRef={messagesEndRef}
         />
       </div>
-      <div className="flex-shrink-0 p-2 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-white border-t border-gray-200">
+      <div className="flex-shrink-0 p-2 bg-white border-t border-gray-200">
         <ChatInputForm
           userInput={userInput}
           setUserInput={setUserInput}
