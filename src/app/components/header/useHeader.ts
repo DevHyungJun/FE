@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import useAuthCheck from "@/hooks/useAuthCheck";
@@ -47,6 +47,12 @@ export default function useHeader() {
   // 권한 확인
   const isAdmin = authCheckIsSuccess && authCheckData?.data?.role === "admin";
   const isLoggedIn = authCheckIsSuccess && authCheckData?.data?.isLoggedIn;
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      alert(isLoggedIn);
+    }
+  }, [isLoggedIn]);
 
   // 핸들러 함수들
   const handleLoginLogout = () => {

@@ -32,6 +32,7 @@ const Login = () => {
         queryClient.invalidateQueries({ queryKey: ["authCheck"] });
         queryClient.invalidateQueries({ queryKey: ["getCart"] });
         queryClient.invalidateQueries({ queryKey: ["userInfo"] });
+        queryClient.setQueryData(["authCheck"], { isLoggedIn: true });
         router.replace("/");
       },
       onError: (error) => {
