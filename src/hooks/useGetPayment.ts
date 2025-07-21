@@ -1,10 +1,16 @@
+import { useInfiniteQuery } from "@tanstack/react-query";
 import getPayment from "@/api/getPayment";
-import { useQuery } from "@tanstack/react-query";
 
-export default function useGetPayment(page: number) {
-  return useQuery({
-    queryKey: ["getPayment", page],
-    queryFn: () => getPayment(page),
-    enabled: !!page,
+export default function useGetPayment() {
+  return useInfiniteQuery({
+    queryKey: ["payment"],
+    queryFn: ({ pageParam = 1 }) => getPayment(pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.data.next) {
+        return allPages.length + 1;
+      }
+      return undefined;
+    },
   });
 }
