@@ -6,39 +6,13 @@ import { TfiAngleRight } from "react-icons/tfi";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import LoadingSpinner from "../components/LoadingSpinner";
 import useGuestOut from "@/hooks/useGuestOut";
+import { links } from "@/constants/mypage";
 
 export default function MyPage() {
   const { data, isLoading } = useGetUserInfo();
   useGuestOut();
   const profileImage = data?.data?.profile_image;
-  const links = [
-    {
-      href: "/mypage/order-history",
-      label: "주문내역 조회",
-      subLabel: "주문한 상품을 조회합니다.",
-    },
-    {
-      href: "/mypage/edit-password",
-      label: "비밀번호 변경",
-      subLabel: "등록된 비밀번호를 변경합니다.",
-    },
-    {
-      href: "/mypage/mp-address",
-      label: "배송지 관리",
-      subLabel: "등록된 배송지를 삭제/수정합니다.",
-    },
-    {
-      href: `/mypage/mp-review`,
-      label: "리뷰 관리",
-      subLabel: "작성한 리뷰를 수정/삭제합니다.",
-    },
-    {
-      href: "/mypage/delete-account",
-      label: "회원 탈퇴",
-      subLabel:
-        "쇼핑몰에 등록된 아이디 탈퇴, 탈퇴한 아이디로는 다시 접속하실 수 없습니다.",
-    },
-  ];
+
   return (
     <div className="max-w-[800px] mx-auto flex flex-col items-center gap-3 text-lg p-3 text-gray-900">
       {isLoading ? (
@@ -51,6 +25,7 @@ export default function MyPage() {
             width={50}
             height={50}
             radius="full"
+            className="object-cover"
           />
           <div className="space-y-1 text-gray-700">
             <p className="extra-bold">{data?.data?.username}</p>

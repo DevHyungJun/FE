@@ -1,88 +1,32 @@
 "use client";
 
 import { Button, Input } from "@nextui-org/react";
-import { useForm } from "react-hook-form";
-import { usernameV } from "@/app/validationRules";
-import { ErrorMessage } from "@hookform/error-message";
-import useGetUserInfo from "@/hooks/useGetUserInfo";
-import { useEffect } from "react";
-import LoadingSpinner from "@/app/components/LoadingSpinner";
-import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
-import useEditUsername from "@/hooks/useEditUsername";
-import { useQueryClient } from "@tanstack/react-query";
 import useGuestOut from "@/hooks/useGuestOut";
+import useEditUsernameForm from "./hooks/useEditUsernameForm";
+import { usernameV } from "@/app/validationRules";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
+import FormErrorMessage from "@/app/signup/components/FormErrorMessage";
 
-interface EditUserInfoForm {
-  username: string;
-}
-
-export default function EditUsername() {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const { data: userInfo, isLoading } = useGetUserInfo();
+export default function EditUsernamePage() {
   useGuestOut();
-  const { mutate: editUsername, isPending } = useEditUsername();
 
   const {
+    isUserLoading,
+    isSubmitting,
     register,
     handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<EditUserInfoForm>({
-    mode: "onChange",
-    reValidateMode: "onChange",
-  });
+    errors,
+    handleBack,
+  } = useEditUsernameForm();
 
-  useEffect(() => {
-    if (userInfo?.data) {
-      setValue("username", userInfo.data.username);
-    }
-  }, [userInfo]);
-
-  const handleBack = () => router.back();
-
-  const onSubmit = (data: EditUserInfoForm) => {
-    if (userInfo?.data?.username === data.username) {
-      Swal.fire({
-        title: "닉네임이 변경되지 않았습니다.",
-        icon: "warning",
-        showConfirmButton: false,
-        timer: 1000,
-      });
-      return;
-    }
-    editUsername(data.username, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["authCheck"] });
-        router.push("/login");
-        Swal.fire({
-          title: "닉네임이 변경되었습니다. 다시 로그인해주세요.",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 1000,
-        });
-      },
-      onError: (error) => {
-        Swal.fire({
-          title: "닉네임 변경에 실패했습니다, 다시 시도해주세요.",
-          icon: "error",
-          showConfirmButton: false,
-          timer: 1000,
-        });
-      },
-    });
-  };
-
-  const errorS = "text-sm text-red-500";
   return (
     <div className="flex items-center justify-center h-[60vh] text-gray-800">
-      {isLoading ? (
+      {isUserLoading ? (
         <LoadingSpinner />
       ) : (
         <form
           className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit}
         >
           <h1 className="flex items-center gap-2 text-2xl extra-bold my-5">
             닉네임 변경
@@ -93,14 +37,14 @@ export default function EditUsername() {
           <Input
             label="변경할 닉네임을 입력해주세요"
             variant="underlined"
-            required
+            isRequired
             isClearable
             {...register("username", usernameV)}
           />
-          <ErrorMessage
+          <FormErrorMessage
             errors={errors}
             name="username"
-            render={({ message }) => <p className={errorS}>{message}</p>}
+            errorS="text-sm text-red-500"
           />
           <div className="w-full flex gap-1 mt-5">
             <Button className="w-1/2 bold" onClick={handleBack}>
@@ -110,7 +54,7 @@ export default function EditUsername() {
               className="w-1/2 bold"
               color="primary"
               type="submit"
-              isLoading={isPending}
+              isLoading={isSubmitting}
             >
               변경
             </Button>
