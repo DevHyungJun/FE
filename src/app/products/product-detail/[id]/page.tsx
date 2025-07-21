@@ -16,7 +16,7 @@ import useAuthCheck from "@/hooks/useAuthCheck";
 import ProductImageSlider from "./components/ProductImageSlider";
 import ProductInfo from "./components/ProductInfo";
 import ProductTabs from "./components/ProductTabs";
-import { ORDERING_OPTIONS, MIN_QUANTITY } from "@/constants/productDetail";
+import { ORDERING_OPTIONS, MIN_QUANTITY } from "@/constants/review";
 
 type ParamsId = { id: string };
 

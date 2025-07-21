@@ -1,10 +1,11 @@
 "use client";
+
 import React from "react";
 import Link from "next/link";
-import { Button, Select, SelectItem } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
-import ReviewItem from "@/app/components/ReviewItem1";
-import { ORDERING_OPTIONS } from "@/constants/productDetail";
+import ReviewItem from "@/app/components/ReviewItem";
+import ReviewOrderSelect from "@/app/components/review/ReviewOrderSelect";
 
 interface ProductReviewTabProps {
   id: string;
@@ -37,25 +38,11 @@ export default function ProductReviewTab({
         <LoadingSpinner mode="1" />
       ) : (
         <>
-          <div className="flex justify-end">
-            <Select
-              aria-label="정렬"
-              disallowEmptySelection
-              items={ORDERING_OPTIONS}
-              label="정렬"
-              className="w-[100px] bold"
-              variant="underlined"
-              defaultSelectedKeys={["updatedAt"]}
-              selectedKeys={[String(orderOption)]}
-              onChange={(e) => setOrderOption(e.target.value)}
-            >
-              {(item) => (
-                <SelectItem key={item.value} value={item.label}>
-                  {item.label}
-                </SelectItem>
-              )}
-            </Select>
-          </div>
+          <ReviewOrderSelect
+            orderOption={orderOption}
+            setOrderOption={setOrderOption}
+            userReview={reviewData}
+          />
           {reviewData?.data?.map((reviewItem: any) => (
             <ReviewItem key={reviewItem._id} review={reviewItem} />
           ))}

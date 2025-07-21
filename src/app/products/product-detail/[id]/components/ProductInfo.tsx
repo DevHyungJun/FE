@@ -4,7 +4,7 @@ import { FiMinus, FiPlus } from "react-icons/fi";
 import { FaCartPlus } from "react-icons/fa";
 import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
 import formatPrice from "@/util/formatPrice";
-import { MIN_QUANTITY, MAX_QUANTITY } from "@/constants/productDetail";
+import { MIN_QUANTITY, MAX_QUANTITY } from "@/constants/review";
 import Swal from "sweetalert2";
 
 interface ProductInfoProps {
