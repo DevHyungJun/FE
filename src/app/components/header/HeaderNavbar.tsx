@@ -63,7 +63,7 @@ export default function HeaderNavbar({
       isBordered
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
-      className={`${isMenuOpen ? "bg-gray-50" : ""}text-gray-800`}
+      className={`${isMenuOpen && "bg-gray-50"}text-gray-800`}
     >
       <NavbarContent className="sm:hidden">
         <NavbarMenuToggle
