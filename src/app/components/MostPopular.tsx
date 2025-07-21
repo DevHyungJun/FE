@@ -30,7 +30,7 @@ export default function MostPopular() {
         >
           {data &&
             data?.pages[0]?.data?.results.map((product: PostData) => (
-              <ProductCard key={product._id} product={product} />
+              <ProductCard key={product._id} product={product} mode="fixed" />
             ))}
         </div>
       </div>
