@@ -3,7 +3,7 @@
 import useDetail from "@/hooks/useDetail";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import useGetSingleReview from "@/hooks/useGetSingleReview";
-import ProductInfo from "./components/ProductInfo";
+import ProductInfo from "@/app/components/review/ProductInfo";
 import ReviewEditForm from "./components/ReviewEditForm";
 
 type ParamsReviewId = {

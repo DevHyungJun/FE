@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Input, Textarea } from "@nextui-org/react";
-import ImagePreview from "./ImagePreview";
+import ImagePreview from "@/app/components/review/ImagePreview";
 import Rate from "@/app/components/Rate";
 import { useReviewEditForm } from "./useReviewEditForm";
 import { SingleReview } from "@/types/review";
