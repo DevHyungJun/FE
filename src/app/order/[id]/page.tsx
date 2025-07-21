@@ -1,11 +1,11 @@
 "use client";
 
 import { useOrderPage } from "./hooks/useOrderPage";
-import AddressModals from "./components/AddressModals";
 import AddressSection from "./components/AddressSection";
 import OrderItems from "./components/OrderItems";
 import PaymentSummary from "./components/PaymentSummary";
 import PaymentButton from "./components/PaymentButton";
+import AddressModals from "@/app/components/address/AddressModals";
 
 export default function Order({ params }: { params: { id: string } }) {
   const { id } = params;
