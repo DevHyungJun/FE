@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import { Accordion, AccordionItem, Image } from "@nextui-org/react";
 import formatDate from "@/util/formatDate";
