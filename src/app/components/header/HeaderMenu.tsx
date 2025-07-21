@@ -72,8 +72,10 @@ export default function HeaderMenu({
         <NavbarMenuItem
           key={`${item}-${index}`}
           className={`hover:text-blue-500 ${
-            item.label === "관리자" && !isAdmin ? "hidden" : ""
-          }${item.label === "장바구니" && !isLoggedIn ? "hidden" : ""}`}
+            item.label === "관리자" && !Boolean(isAdmin) ? "hidden" : ""
+          }${
+            item.label === "장바구니" && !Boolean(isLoggedIn) ? "hidden" : ""
+          }`}
           isActive={item.isOpen}
         >
           <Link

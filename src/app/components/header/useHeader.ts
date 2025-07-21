@@ -45,12 +45,12 @@ export default function useHeader() {
   const isMypageOpen = pathname.startsWith("/mypage");
 
   // 권한 확인
-  const isAdmin = authCheckData?.data?.role === "admin";
-  const isLoggedIn = authCheckData?.data?.isLoggedIn;
+  const isAdmin = authCheckIsSuccess && authCheckData?.data?.role === "admin";
+  const isLoggedIn = authCheckIsSuccess && authCheckData?.data?.isLoggedIn;
 
   // 핸들러 함수들
   const handleLoginLogout = () => {
-    if (!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
+    if (!isLoggedIn) {
       router.push("/login");
       return;
     }
@@ -58,7 +58,7 @@ export default function useHeader() {
   };
 
   const handleSignupMypage = () => {
-    if (!authCheckIsSuccess || authCheckData?.isLoggedIn === false) {
+    if (!isLoggedIn) {
       router.push("/signup");
       return;
     }
@@ -110,36 +110,18 @@ export default function useHeader() {
       iconType: "tools",
     },
     {
-      label:
-        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
-          ? "회원가입"
-          : "마이페이지",
-      href:
-        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
-          ? "/signup"
-          : "/mypage",
+      label: !isLoggedIn ? "회원가입" : "마이페이지",
+      href: !isLoggedIn ? "/signup" : "/mypage",
       isOpen: isSignupOpen || isMypageOpen,
       onclick: handleSignupMypage,
-      iconType:
-        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
-          ? "person-add"
-          : "profile",
+      iconType: !isLoggedIn ? "person-add" : "profile",
     },
     {
-      label:
-        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
-          ? "로그인"
-          : "로그아웃",
-      href:
-        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
-          ? "/login"
-          : "#",
+      label: !isLoggedIn ? "로그인" : "로그아웃",
+      href: !isLoggedIn ? "/login" : "#",
       isOpen: isLoginOpen,
       onclick: handleLoginLogout,
-      iconType:
-        !authCheckIsSuccess || authCheckData?.isLoggedIn === false
-          ? "login"
-          : "logout",
+      iconType: !isLoggedIn ? "login" : "logout",
     },
   ];
 

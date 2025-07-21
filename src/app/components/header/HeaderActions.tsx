@@ -7,11 +7,10 @@ interface HeaderActionsProps {
   isLoginOpen: boolean;
   isSignupOpen: boolean;
   isMypageOpen: boolean;
-  authCheckIsSuccess: boolean;
-  authCheckData: any;
   profileImage?: string;
   handleLoginLogout: () => void;
   handleSignupMypage: () => void;
+  isLoggedIn: boolean;
 }
 
 const getIconComponent = (iconType: string, className: string = "text-lg") => {
@@ -31,23 +30,20 @@ export default function HeaderActions({
   isLoginOpen,
   isSignupOpen,
   isMypageOpen,
-  authCheckIsSuccess,
-  authCheckData,
   profileImage,
   handleLoginLogout,
   handleSignupMypage,
+  isLoggedIn,
 }: HeaderActionsProps) {
-  const isLoggedIn = authCheckIsSuccess && authCheckData?.isLoggedIn !== false;
-
   return (
     <NavbarContent justify="end">
       <NavbarItem
         className={`hidden sm:flex cursor-pointer text-sm hover:text-blue-500 ${
-          isLoginOpen && "bold"
+          isLoginOpen ? "bold" : ""
         }`}
         onClick={handleLoginLogout}
       >
-        {!isLoggedIn ? (
+        {!Boolean(isLoggedIn) ? (
           <div className="flex items-center gap-1">
             {getIconComponent("login")}
             로그인
@@ -65,7 +61,7 @@ export default function HeaderActions({
         }`}
         onClick={handleSignupMypage}
       >
-        {!isLoggedIn ? (
+        {!Boolean(isLoggedIn) ? (
           <div className="flex items-center gap-1">
             {getIconComponent("person-add")}
             회원가입

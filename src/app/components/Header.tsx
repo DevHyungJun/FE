@@ -15,8 +15,6 @@ const Header = () => {
     setIsMenuOpen,
     chatUI,
     profileImage,
-    authCheckIsSuccess,
-    authCheckData,
     isLoginOpen,
     isSignupOpen,
     isMypageOpen,
@@ -48,8 +46,7 @@ const Header = () => {
             isLoginOpen={isLoginOpen}
             isSignupOpen={isSignupOpen}
             isMypageOpen={isMypageOpen}
-            authCheckIsSuccess={authCheckIsSuccess}
-            authCheckData={authCheckData}
+            isLoggedIn={isLoggedIn}
             profileImage={profileImage}
             handleLoginLogout={handleLoginLogout}
             handleSignupMypage={handleSignupMypage}
@@ -78,11 +75,10 @@ const Header = () => {
         isLoginOpen={isLoginOpen}
         isSignupOpen={isSignupOpen}
         isMypageOpen={isMypageOpen}
-        authCheckIsSuccess={authCheckIsSuccess}
-        authCheckData={authCheckData}
         profileImage={profileImage}
         handleLoginLogout={handleLoginLogout}
         handleSignupMypage={handleSignupMypage}
+        isLoggedIn={isLoggedIn}
       />
       <HeaderMenu
         menuItems={menuItems}

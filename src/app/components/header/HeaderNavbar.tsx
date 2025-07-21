@@ -92,8 +92,10 @@ export default function HeaderNavbar({
             key={`${item}-${index}`}
             isActive={item.isActive}
             className={`hover:text-blue-500 text-sm ${
-              item.label === "관리자" && !isAdmin ? "hidden" : ""
-            } ${item.label === "장바구니" && !isLoggedIn ? "hidden" : ""}`}
+              item.label === "관리자" && !Boolean(isAdmin) ? "hidden" : ""
+            }${
+              item.label === "장바구니" && !Boolean(isLoggedIn) ? " hidden" : ""
+            }`}
           >
             <Link href={item.href}>
               <div className="flex items-center gap-1">
