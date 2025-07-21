@@ -16,16 +16,12 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginForm>();
-
-  // 로그인 요청
   const login = useLogin();
-
-  // 로그인 폼 제출
   const onSubmit = (formData: LoginForm) => login.mutate(formData);
 
   const errorS = "text-sm text-red-500";
   return (
-    <div className="min-h-[calc(100vh-333px)] sm:min-h-[calc(100vh-502px)] md:min-h-[calc(100vh-330px)] flex items-center justify-center text-gray-800">
+    <div className="min-h-[calc(100vh-269px)] sm:min-h-[calc(100vh-502px)] md:min-h-[calc(100vh-330px)] flex items-center justify-center text-gray-800">
       <form
         className="flex flex-col w-[500px] mx-auto gap-3 shadow-none p-3 rounded-md sm:shadow-md"
         onSubmit={handleSubmit(onSubmit)}
