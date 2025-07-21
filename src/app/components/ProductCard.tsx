@@ -1,6 +1,6 @@
 import Image from "next/image";
 import formatPrice from "@/util/formatPrice";
-import { PostData } from "../../../types/Product";
+import { PostData } from "@/types/Product";
 import { useRouter } from "next/navigation";
 
 interface ProductCardProps {

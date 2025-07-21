@@ -1,6 +1,6 @@
 import login from "@/api/login";
 import { useMutation } from "@tanstack/react-query";
-import { Login } from "../../types/login";
+import { Login } from "@/types/login";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";

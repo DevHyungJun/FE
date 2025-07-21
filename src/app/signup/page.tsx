@@ -9,7 +9,7 @@ import {
   passwordV,
   passwordConfirmV,
 } from "../validationRules";
-import { SignupForm } from "../../../types/signupForm";
+import { SignupForm } from "@/types/signupForm";
 import useSendMail from "@/hooks/useSendMail";
 import useConfirmMail from "@/hooks/useConfirmMail";
 import useUsernameCheck from "@/hooks/useUsernameCheck";

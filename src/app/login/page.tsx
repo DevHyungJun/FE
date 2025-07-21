@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { passwordV, emailV } from "../validationRules";
 import { ErrorMessage } from "@hookform/error-message";
-import { LoginForm } from "../../../types/loginForm";
+import { LoginForm } from "@/types/loginForm";
 import useLogin from "@/hooks/useLogin";
 import { CiLogin } from "react-icons/ci";
 

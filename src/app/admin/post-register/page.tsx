@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 import { MdCancel } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
-import { Product } from "../../../../types/Product";
+import { Product } from "@/types/Product";
 import useGetCategory from "@/hooks/useGetCategory";
 import usePostCategory from "@/hooks/usePostCategory";
 import { useQueryClient } from "@tanstack/react-query";

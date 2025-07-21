@@ -1,6 +1,6 @@
 import allProducts from "@/api/allProducts";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
-import { ProductPostResponse } from "../../types/allProducts";
+import { ProductPostResponse } from "@/types/allProducts";
 import { UseInfiniteQueryResult } from "@tanstack/react-query";
 
 export default function useAllProducts(

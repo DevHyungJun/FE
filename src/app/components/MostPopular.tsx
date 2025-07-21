@@ -1,15 +1,15 @@
 "use client";
 
 import useAllProducts from "@/hooks/useAllProducts";
-import { PostData } from "../../../types/Product";
-import { FaAnglesLeft } from "react-icons/fa6";
-import { FaAnglesRight } from "react-icons/fa6";
-import Link from "next/link";
-import { InfiniteProductPostResponse } from "../../../types/allProducts";
-import { UseInfiniteQueryResult } from "@tanstack/react-query";
-import { useHorizontalScroll } from "@/hooks/useHorizontalScroll";
 import ProductCard from "./ProductCard";
+import { PostData } from "@/types/Product";
+import { useHorizontalScroll } from "@/hooks/useHorizontalScroll";
+import LoadingSpinner from "./LoadingSpinner";
+import { InfiniteProductPostResponse } from "@/types/allProducts";
 import ScrollButton from "./ScrollButton";
+import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
+import Link from "next/link";
+import { UseInfiniteQueryResult } from "@tanstack/react-query";
 
 const SCROLL_AMOUNT = 250;
 

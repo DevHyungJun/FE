@@ -1,8 +1,8 @@
 "use client";
 
+import Rate from "@/app/components/Rate";
 import Image from "next/image";
-import { Rate } from "antd";
-import formatDate from "@/util/formatDate";
+import formatDateToYMD from "@/util/formatDateToYMD";
 
 interface ReviewHeaderProps {
   author: string;
@@ -26,16 +26,14 @@ export default function ReviewHeader({
       <div className="text-sm space-y-1">
         <div className="flex items-center gap-2">
           <p className="bold">{author}</p>
-          <p className="text-gray-400 text-xs light">{formatDate(updatedAt)}</p>
+          <p className="text-gray-400 text-xs light">
+            {formatDateToYMD(updatedAt)}
+          </p>
         </div>
-        <Rate
-          value={rate}
-          disabled
-          style={{
-            fontSize: "12px",
-          }}
-        />
-        <span className="ml-1 text-[14px]">{rate}</span>
+        <div className="flex items-center">
+          <Rate value={rate} disabled size={12} />
+          <span className="ml-1 text-[14px]">{rate}</span>
+        </div>
       </div>
     </div>
   );

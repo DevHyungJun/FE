@@ -1,6 +1,6 @@
 import signup from "@/api/signup";
 import { useMutation } from "@tanstack/react-query";
-import { SignupData } from "../../types/signup";
+import { SignupData } from "@/types/signup";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 

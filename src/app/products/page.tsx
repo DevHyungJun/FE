@@ -4,12 +4,12 @@ import { Tabs, Tab } from "@nextui-org/react";
 import useAllProducts from "@/hooks/useAllProducts";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useEffect, useState } from "react";
-import { PostData } from "../../../types/Product";
+import { PostData } from "@/types/Product";
 import { useInView } from "react-intersection-observer";
 import { CiShoppingTag } from "react-icons/ci";
 import useGetCategory from "@/hooks/useGetCategory";
 import ScrollUpButton from "../components/ScrollUpButton";
-import { InfiniteProductPostResponse } from "../../../types/allProducts";
+import { InfiniteProductPostResponse } from "@/types/allProducts";
 import { UseInfiniteQueryResult } from "@tanstack/react-query";
 import ProductCard from "../components/ProductCard";
 

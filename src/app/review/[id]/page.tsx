@@ -3,7 +3,7 @@
 import useDetail from "@/hooks/useDetail";
 import { Button, Image, Input, Textarea } from "@nextui-org/react";
 import Link from "next/link";
-import { Rate } from "antd";
+import Rate from "@/app/components/Rate";
 import { useEffect, useRef, useState } from "react";
 import { MdCancel } from "react-icons/md";
 import usePostReview from "@/hooks/usePostReview";
@@ -167,15 +167,7 @@ export default function Review({ params }: { params: ParamsId }) {
           </div>
         ))}
         {!isLoading && (
-          <Rate
-            value={rate}
-            onChange={(value) => setRate(value)}
-            style={{
-              fontSize: "32px",
-              textAlign: "right",
-              width: "100%",
-            }}
-          />
+          <Rate value={rate} onChange={(value) => setRate(value)} />
         )}
         <Button
           className="w-full bold"

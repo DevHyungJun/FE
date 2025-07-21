@@ -1,5 +1,5 @@
 import { Button, Image } from "@nextui-org/react";
-import { PostData } from "../../../types/Product";
+import { PostData } from "@/types/Product";
 import Link from "next/link";
 import formatPrice from "@/util/formatPrice";
 import { IoIosClose } from "react-icons/io";
