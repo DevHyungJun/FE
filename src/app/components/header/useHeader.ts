@@ -110,17 +110,15 @@ export default function useHeader() {
       iconType: "tools",
     },
     {
-      label:
-        !authCheckIsSuccess || !Boolean(isLoggedIn) ? "회원가입" : "마이페이지",
-      href: !authCheckIsSuccess || !Boolean(isLoggedIn) ? "/signup" : "/mypage",
+      label: !Boolean(isLoggedIn) ? "회원가입" : "마이페이지",
+      href: !Boolean(isLoggedIn) ? "/signup" : "/mypage",
       isOpen: isSignupOpen || isMypageOpen,
       onclick: handleSignupMypage,
       iconType: !isLoggedIn ? "person-add" : "profile",
     },
     {
-      label:
-        !authCheckIsSuccess || !Boolean(isLoggedIn) ? "로그인" : "로그아웃",
-      href: !authCheckIsSuccess || !Boolean(isLoggedIn) ? "/login" : "#",
+      label: !Boolean(isLoggedIn) ? "로그인" : "로그아웃",
+      href: !Boolean(isLoggedIn) ? "/login" : "#",
       isOpen: isLoginOpen,
       onclick: handleLoginLogout,
       iconType: !Boolean(isLoggedIn) ? "login" : "logout",
