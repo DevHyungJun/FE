@@ -29,19 +29,9 @@ import useGetReview from "@/hooks/useGetReview";
 import Link from "next/link";
 import { Select, SelectItem } from "@nextui-org/select";
 import ScrollUpButton from "@/app/components/ScrollUpButton";
+import useAuthCheck from "@/hooks/useAuthCheck";
 
 type ParamsId = { id: string };
-type AuthCheckResponse = {
-  code: number;
-  data: {
-    email: string;
-    isLoggedIn: boolean;
-    role: string;
-    userId: string;
-    username: string;
-    message: string;
-  };
-};
 
 export default function ProductDetail({ params }: { params: ParamsId }) {
   const { id } = params;
@@ -53,8 +43,8 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
   const [quantity, setQuantity] = useState(1);
   const [onlyOneImage, setOnlyOneImage] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  const cachedData = queryClient.getQueryData<AuthCheckResponse>(["authCheck"]);
-  const isLoggedIn = cachedData?.data?.isLoggedIn;
+  const { data: authCheckData } = useAuthCheck();
+  const isLoggedIn = authCheckData?.data?.isLoggedIn;
   const { mutate: addCartMutate } = useAddCart();
   const { mutate: orderMutate, isPending: orderIsPending } = useOrder();
   const [orderOption, setOrderOption] = useState("updatedAt");
@@ -77,7 +67,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
     }
 
     if (!isLoggedIn) return;
-    if (data?.data?.like_user_list.includes(cachedData?.data?.userId)) {
+    if (data?.data?.like_user_list.includes(authCheckData?.data?.userId)) {
       setIsFavorite(true);
     }
   }, [data]);
@@ -283,7 +273,7 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
               textValue="review"
             >
               <Link
-                href={cachedData ? `/review/${id}` : "/login"}
+                href={authCheckData ? `/review/${id}` : "/login"}
                 className="border-t py-3"
               >
                 <Button variant="flat" className="w-full bold">

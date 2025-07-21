@@ -1,18 +1,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
 import useAuthCheck from "@/hooks/useAuthCheck";
 import useLogout from "@/hooks/useLogout";
 import useGetCart from "@/hooks/useGetCart";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { chatUIState } from "@/store";
-
-interface CahcedUserLoggedIn {
-  data: {
-    isLoggedIn: boolean;
-  };
-}
 
 interface NavbarItem {
   label: string;
@@ -33,18 +26,12 @@ interface MenuItem {
 
 export default function useHeader() {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // 데이터 가져오기
-  const cahcedUserLoggedIn = queryClient.getQueryData<CahcedUserLoggedIn>([
-    "authCheck",
-  ]);
   const { data, isSuccess } = useGetUserInfo();
   const profileImage = data?.data?.profile_image;
-  const loginState = cahcedUserLoggedIn?.data?.isLoggedIn;
-  const { data: cartData } = useGetCart(!!loginState);
+  const { data: cartData } = useGetCart(!!isSuccess);
   const { data: authCheckData, isSuccess: authCheckIsSuccess } = useAuthCheck();
   const { mutate: logout } = useLogout();
   const { chatUI } = chatUIState();

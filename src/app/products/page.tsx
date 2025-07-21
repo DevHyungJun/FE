@@ -9,31 +9,18 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import { useEffect, useState } from "react";
 import { PostData } from "../../../types/Product";
 import { IoHeartSharp } from "react-icons/io5";
-import { useQueryClient } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { CiShoppingTag } from "react-icons/ci";
 import useGetCategory from "@/hooks/useGetCategory";
 import ScrollUpButton from "../components/ScrollUpButton";
 import { InfiniteProductPostResponse } from "../../../types/allProducts";
 import { UseInfiniteQueryResult } from "@tanstack/react-query";
-
-type AuthCheckResponse = {
-  code: number;
-  data: {
-    email: string;
-    isLoggedIn: boolean;
-    role: string;
-    userId: string;
-    username: string;
-    message: string;
-  };
-};
+import useAuthCheck from "@/hooks/useAuthCheck";
 
 const Products = () => {
   const router = useRouter();
-  const queryClient = useQueryClient();
-  const cachedData = queryClient.getQueryData<AuthCheckResponse>(["authCheck"]);
-  const userId = cachedData?.data?.userId;
+  const { data: authCheckData } = useAuthCheck();
+  const userId = authCheckData?.data?.userId;
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const { data: category } = useGetCategory();
