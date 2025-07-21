@@ -9,13 +9,8 @@ import { ErrorMessage } from "@hookform/error-message";
 import { LoginForm } from "../../../types/loginForm";
 import useLogin from "@/hooks/useLogin";
 import { CiLogin } from "react-icons/ci";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
 
 const Login = () => {
-  const queryClient = useQueryClient();
-  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -26,25 +21,7 @@ const Login = () => {
   const login = useLogin();
 
   // 로그인 폼 제출
-  const onSubmit = (formData: LoginForm) =>
-    login.mutate(formData, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["authCheck"] });
-        queryClient.invalidateQueries({ queryKey: ["getCart"] });
-        queryClient.invalidateQueries({ queryKey: ["userInfo"] });
-        queryClient.setQueryData(["authCheck"], { isLoggedIn: true });
-        router.replace("/");
-      },
-      onError: (error) => {
-        Swal.fire({
-          title: "로그인 실패",
-          text: "이메일 또는 비밀번호가 일치하지 않습니다.",
-          icon: "error",
-          showConfirmButton: false,
-          timer: 1000,
-        });
-      },
-    });
+  const onSubmit = (formData: LoginForm) => login.mutate(formData);
 
   const errorS = "text-sm text-red-500";
   return (
