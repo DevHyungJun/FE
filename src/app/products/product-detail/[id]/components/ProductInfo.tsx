@@ -104,7 +104,7 @@ export default function ProductInfo({
       <div className="flex gap-3 items-center rounded-sm">
         <button
           onClick={handleMinus}
-          className="p-2 border hover:bg-gray-50 rounded-md"
+          className="p-2 border hover:bg-gray-50 rounded-md disabled:bg-gray-200 disabled:cursor-not-allowed"
           disabled={quantity <= MIN_QUANTITY}
         >
           <FiMinus className="text-sm md:text-medium" />
@@ -112,7 +112,7 @@ export default function ProductInfo({
         <p className="text-sm">{quantity}</p>
         <button
           onClick={handlePlus}
-          className="p-2 border hover:bg-gray-50 rounded-md"
+          className="p-2 border hover:bg-gray-50 rounded-md disabled:bg-gray-200 disabled:cursor-not-allowed"
           disabled={quantity >= MAX_QUANTITY}
         >
           <FiPlus className="text-sm md:text-medium" />
