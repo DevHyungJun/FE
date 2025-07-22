@@ -5,8 +5,9 @@ export default function useAuthCheck() {
   return useQuery({
     queryKey: ["authCheck"],
     queryFn: authCheck,
-    staleTime: 3600000, // 1 hour in milliseconds
+    staleTime: 0, // 1 hour in milliseconds
     gcTime: 3600000, // 1 hour in milliseconds
     retry: false,
+    refetchOnMount: true,
   });
 }

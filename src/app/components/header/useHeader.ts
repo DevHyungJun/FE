@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import useAuthCheck from "@/hooks/useAuthCheck";
@@ -89,53 +89,41 @@ export default function useHeader() {
   ];
 
   // 모바일 메뉴 항목
-  // useHeader 내부에서 menuItems useMemo 처리
-  const menuItems = useMemo<MenuItem[]>(
-    () => [
-      {
-        label: "제품",
-        href: "/products",
-        isOpen: isProductOpen,
-        iconType: "shopping-tag",
-      },
-      {
-        label: "장바구니",
-        href: "/cart",
-        iconType: "shopping-cart",
-        badgeCount: cartData?.article_list.length,
-        isOpen: isCartOpen,
-      },
-      {
-        label: "관리자",
-        href: "/admin",
-        isOpen: isAdminOpen,
-        iconType: "tools",
-      },
-      {
-        label: !isLoggedIn ? "회원가입" : "마이페이지",
-        href: !isLoggedIn ? "/signup" : "/mypage",
-        isOpen: isSignupOpen || isMypageOpen,
-        onclick: handleSignupMypage,
-        iconType: !isLoggedIn ? "person-add" : "profile",
-      },
-      {
-        label: !isLoggedIn ? "로그인" : "로그아웃",
-        href: !isLoggedIn ? "/login" : "#",
-        isOpen: isLoginOpen,
-        onclick: handleLoginLogout,
-        iconType: !isLoggedIn ? "login" : "logout",
-      },
-    ],
-    [
-      isLoggedIn,
-      isSignupOpen,
-      isMypageOpen,
-      isLoginOpen,
-      isAdminOpen,
-      isProductOpen,
-      isCartOpen,
-    ]
-  );
+  const menuItems: MenuItem[] = [
+    {
+      label: "제품",
+      href: "/products",
+      isOpen: isProductOpen,
+      iconType: "shopping-tag",
+    },
+    {
+      label: "장바구니",
+      href: "/cart",
+      iconType: "shopping-cart",
+      badgeCount: cartData?.article_list.length,
+      isOpen: isCartOpen,
+    },
+    {
+      label: "관리자",
+      href: "/admin",
+      isOpen: isAdminOpen,
+      iconType: "tools",
+    },
+    {
+      label: !isLoggedIn ? "회원가입" : "마이페이지",
+      href: !isLoggedIn ? "/signup" : "/mypage",
+      isOpen: isSignupOpen || isMypageOpen,
+      onclick: handleSignupMypage,
+      iconType: !isLoggedIn ? "person-add" : "profile",
+    },
+    {
+      label: !isLoggedIn ? "로그인" : "로그아웃",
+      href: !isLoggedIn ? "/login" : "#",
+      isOpen: isLoginOpen,
+      onclick: handleLoginLogout,
+      iconType: !isLoggedIn ? "login" : "logout",
+    },
+  ];
 
   return {
     // 상태
