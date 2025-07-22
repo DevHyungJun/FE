@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import useAuthCheck from "@/hooks/useAuthCheck";
@@ -6,6 +6,7 @@ import useLogout from "@/hooks/useLogout";
 import useGetCart from "@/hooks/useGetCart";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { chatUIState } from "@/store";
+import Swal from "sweetalert2";
 
 interface NavbarItem {
   label: string;
@@ -35,6 +36,13 @@ export default function useHeader() {
   const { data: authCheckData, isSuccess: authCheckIsSuccess } = useAuthCheck();
   const { mutate: logout } = useLogout();
   const { chatUI } = chatUIState();
+  useEffect(() => {
+    if (authCheckData) {
+      alert("authCheck성공");
+    } else {
+      alert("authCheck실패");
+    }
+  }, [authCheckData]);
 
   // 경로 확인
   const isAdminOpen = pathname.startsWith("/admin");
@@ -48,6 +56,13 @@ export default function useHeader() {
   const isAdmin = authCheckIsSuccess && authCheckData?.data?.role === "admin";
   const isLoggedIn = authCheckIsSuccess && authCheckData?.data?.isLoggedIn;
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      alert("isLoggedIn성공");
+    } else {
+      alert("isLoggedIn실패");
+    }
+  }, [isLoggedIn]);
   // 핸들러 함수들
   const handleLoginLogout = () => {
     if (!isLoggedIn) {

@@ -2,7 +2,6 @@ import { Login } from "@/types/login";
 import axios from "axios";
 
 export default async function login(loginData: Login) {
-  const { email, password } = loginData;
   const response = await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}users/login`,
     loginData,

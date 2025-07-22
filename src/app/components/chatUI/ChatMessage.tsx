@@ -22,7 +22,7 @@ export default function ChatMessage({
         <Image
           src={profileImage || USER_DEFAULT_IMAGE}
           alt="profile-image"
-          className="min-w-[30px]"
+          className="min-w-[30px] object-cover"
           width={30}
           height={30}
         />
