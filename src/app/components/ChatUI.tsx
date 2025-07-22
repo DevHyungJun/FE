@@ -13,7 +13,7 @@ export default function ChatUI({
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }) {
-  const { setChatUI, clearChatUI } = chatUIState();
+  const { clearChatUI } = chatUIState();
   const {
     messages,
     userInput,
@@ -25,12 +25,6 @@ export default function ChatUI({
     profileImage,
     jsonIsLoading,
   } = useChat(isOpen);
-
-  // 모달 열기/닫기 시 전역 상태 업데이트
-  const handleOpen = () => {
-    setIsOpen(true);
-    setChatUI();
-  };
 
   const handleClose = () => {
     setIsOpen(false);

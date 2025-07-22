@@ -12,8 +12,10 @@ export default function ChatUIButton() {
   const toggleChat = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {
+      document.body.style.overflow = "auto";
       setChatUI();
     } else {
+      document.body.style.overflow = "hidden";
       clearChatUI();
     }
   };
