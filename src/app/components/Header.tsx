@@ -31,6 +31,7 @@ const Header = () => {
       <div className="hidden sm:block">
         <Navbar
           isBordered
+          isBlurred={false}
           isMenuOpen={isMenuOpen}
           onMenuOpenChange={setIsMenuOpen}
           className={`${isMenuOpen && "bg-gray-50"}text-gray-800`}
@@ -60,9 +61,11 @@ const Header = () => {
   return (
     <Navbar
       isBordered
+      isBlurred={false}
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
       className={`${isMenuOpen ? "bg-gray-50" : ""}text-gray-800`}
+      classNames={{ wrapper: "px-0 gap-0" }}
     >
       <HeaderNavbar
         isMenuOpen={isMenuOpen}

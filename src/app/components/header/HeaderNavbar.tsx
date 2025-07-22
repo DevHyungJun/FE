@@ -70,8 +70,7 @@ export default function HeaderNavbar({
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         />
       </NavbarContent>
-
-      <NavbarContent className="sm:hidden pr-16">
+      <NavbarContent className="sm:hidden pr-20">
         <NavbarBrand>
           <Link href="/" className="flex items-center">
             <AcmeLogo />
@@ -79,7 +78,6 @@ export default function HeaderNavbar({
           </Link>
         </NavbarBrand>
       </NavbarContent>
-
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarBrand>
           <Link href={"/"} className="flex items-center">
