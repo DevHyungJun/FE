@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import useDeleteAccount from "@/hooks/useDeleteAccount";
 import Swal from "sweetalert2";
 import useGuestOut from "@/hooks/useGuestOut";
+import useLogout from "@/hooks/useLogout";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface DeleteAccountForm {
   email: string;
@@ -14,8 +16,10 @@ interface DeleteAccountForm {
 
 export default function DeleteAccount() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { register, handleSubmit } = useForm<DeleteAccountForm>();
   const { mutate: deleteAccount, isPending } = useDeleteAccount();
+  const { mutate: logout } = useLogout();
   useGuestOut();
   const handleBack = () => router.back();
 
@@ -33,6 +37,12 @@ export default function DeleteAccount() {
         deleteAccount(data, {
           onSuccess: () => {
             router.replace("/");
+            logout(undefined, {
+              onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: ["authCheck"] });
+                queryClient.setQueryData(["authCheck"], { isLoggedIn: false });
+              },
+            });
           },
           onError: () => {
             Swal.fire({

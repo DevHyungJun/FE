@@ -6,9 +6,10 @@ interface AccountData {
 }
 
 export default async function deleteAccount(accountData: AccountData) {
-  const response = await axios.delete(
+  const response = await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}users/delete-account`,
-    { data: accountData, withCredentials: true }
+    accountData,
+    { withCredentials: true }
   );
   return response;
 }
