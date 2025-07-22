@@ -89,7 +89,9 @@ export default function ProductDetail({ params }: { params: ParamsId }) {
           <div className="flex flex-col md:flex-row justify-between gap-3 md:gap-10">
             <div className="w-full md:w-1/2">
               <ProductImageSlider
-                images={data?.data?.product?.images || []}
+                images={
+                  data?.data?.product?.images || [data?.data?.detail_images[0]]
+                }
                 title={data?.data?.title || ""}
                 onlyOneImage={onlyOneImage}
               />

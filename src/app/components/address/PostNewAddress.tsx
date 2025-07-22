@@ -44,7 +44,6 @@ export default function PostNewAddress({
         setStep(1);
       },
       onError: (error) => {
-        console.error(error);
         Swal.fire({
           icon: "error",
           title: "주소 추가 실패",
