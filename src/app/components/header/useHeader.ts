@@ -54,8 +54,8 @@ export default function useHeader() {
 
   // 권한 확인
   const isAdmin = authCheckIsSuccess && authCheckData?.data?.role === "admin";
-  const isLoggedIn = authCheckIsSuccess && authCheckData?.data?.isLoggedIn;
-
+  const isLoggedIn = authCheckData?.data?.isLoggedIn;
+  console.log(isLoggedIn);
   useEffect(() => {
     if (isLoggedIn) {
       alert("isLoggedIn성공");
