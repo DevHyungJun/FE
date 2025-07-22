@@ -21,6 +21,7 @@ export default function ChatMessage({
       <div className="flex items-center justify-end">
         <Image
           src={profileImage || USER_DEFAULT_IMAGE}
+          alt="profile-image"
           className="min-w-[30px]"
           width={30}
           height={30}
@@ -37,6 +38,7 @@ export default function ChatMessage({
         <Image
           src={CHAT_BOT_IMAGE}
           className="min-w-[30px]"
+          alt="chatbot-profile-image"
           width={30}
           height={30}
         />

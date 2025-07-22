@@ -32,6 +32,7 @@ export default function UserImagePage() {
           <h1 className="text-2xl extra-bold my-5">프로필 이미지 관리</h1>
           <Image
             src={currentImagePreview}
+            alt="current-image"
             width={100}
             height={100}
             className="bg-gray-50 object-cover rounded-full"

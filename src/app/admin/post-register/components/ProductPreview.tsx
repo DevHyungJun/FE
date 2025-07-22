@@ -1,34 +1,32 @@
 import Image from "next/image";
-import { Product } from "@/types/Product";
 
-interface ProductPreviewProps {
-  product?: Product;
-  alt: string;
+interface ThumbnailUploadPreviewProps {
+  imageUrl?: string;
+  label?: string;
+  alt?: string;
   fileInputRef: React.RefObject<HTMLInputElement>;
   onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function ProductPreview({
-  product,
-  alt,
+export default function ThumbnailUploadPreview({
+  imageUrl,
+  label = "미리보기 이미지",
+  alt = "thumbnail",
   fileInputRef,
   onImageChange,
-}: ProductPreviewProps) {
-  if (!product) return null;
+}: ThumbnailUploadPreviewProps) {
+  if (!imageUrl) return null;
   return (
     <div className="flex items-center justify-between bg-gray-50 p-2 rounded-md">
       <div className="flex flex-col items-center gap-2 sm:flex-row text-gray-500 light text-[12px] sm:text-medium">
         <p>
           <span className="regular text-gray-800 line-clamp-1 overflow-hidden text-ellipsis">
-            {product.product_name}
+            {label}
           </span>
-        </p>
-        <p className="light text-[12px] sm:text-medium text-nowrap">
-          미리보기 이미지
         </p>
       </div>
       <Image
-        src={product.thumbnail}
+        src={imageUrl}
         alt={alt}
         width={100}
         height={100}

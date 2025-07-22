@@ -1,12 +1,13 @@
 "use client";
 
 import { Input, Button } from "@nextui-org/react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import useNewItem from "@/hooks/useNewItem";
-import Image from "next/image";
-import { MdCancel } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import useGuestOut from "@/hooks/useGuestOut";
+import ThumbnailUploadPreview from "../post-register/components/ProductPreview";
+import usePreviewEffect from "../hooks/usePreviewEffect";
+import ImagePreviewList from "@/app/components/common/ImagePreviewList";
 
 export default function NewItem() {
   const [images, setImages] = useState<File[]>([]);
@@ -15,14 +16,7 @@ export default function NewItem() {
   const newItem = useNewItem();
   const router = useRouter();
   useGuestOut(true);
-  useEffect(() => {
-    // 이미지 미리보기 URL 생성
-    const objectUrls = images.map((file) => URL.createObjectURL(file));
-    setPreviews(objectUrls);
-
-    // 컴포넌트 언마운트 시 URL 해제
-    return () => objectUrls.forEach((url) => URL.revokeObjectURL(url));
-  }, [images]);
+  usePreviewEffect(images, setPreviews);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,9 +46,8 @@ export default function NewItem() {
     }
   };
 
-  const handleImageDelete = (index: number) => {
-    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
-  };
+  const handleImageDelete = (id: string | number) =>
+    setImages((prevImages) => prevImages.filter((_, i) => i !== id));
 
   const handleAddImagesClick = () => fileInputRef.current?.click();
 
@@ -99,33 +92,20 @@ export default function NewItem() {
           onClick={handleAddImagesClick}
           className="bold"
         >
-          상단(헤더) 이미지 추가
+          제품 썸네일 이미지 추가(여러 장 가능)
         </Button>
-        {previews.length !== 0 && (
-          <div className="bg-gray-50 rounded-md p-2">
-            <h2 className="text-lg bold">상단(헤더) 이미지</h2>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {previews.map((preview, index) => (
-                <div key={index} className="relative mx-auto">
-                  <Image
-                    src={preview}
-                    alt={`Preview ${index + 1}`}
-                    className="object-cover w-full rounded-md"
-                    width={500}
-                    height={500}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleImageDelete(index)}
-                    className="absolute top-1 right-1 p-[1px] bg-white rounded-full"
-                  >
-                    <MdCancel className="text-2xl" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <ThumbnailUploadPreview
+          imageUrl={previews[0]}
+          label="대표 이미지 미리보기"
+          alt="thumbnail"
+          fileInputRef={fileInputRef}
+          onImageChange={handleImageChange}
+        />
+        <ImagePreviewList
+          images={previews.map((url, idx) => ({ url, id: idx }))}
+          onDelete={handleImageDelete}
+          title="상세 이미지 미리보기"
+        />
         <Button type="submit" color="primary" className="bold">
           상품 등록
         </Button>

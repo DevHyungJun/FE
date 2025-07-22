@@ -2,14 +2,14 @@
 
 import { Input, Button } from "@nextui-org/react";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
-import PostImagePreview from "./components/PostImagePreview";
+import ImagePreview from "./components/PostImagePreview";
 import CategoryRegister from "./components/CategoryRegister";
 import ProductSelect from "./components/ProductSelect";
 import CategorySelect from "./components/CategorySelect";
-import ProductPreview from "./components/ProductPreview";
+import ThumbnailUploadPreview from "./components/ProductPreview";
 import useGuestOut from "@/hooks/useGuestOut";
 import usePostRegisterForm from "./hooks/usePostRegisterForm";
-import { useEffect } from "react";
+import usePreviewEffect from "../hooks/usePreviewEffect";
 
 export default function PostRegister() {
   useGuestOut(true);
@@ -37,16 +37,7 @@ export default function PostRegister() {
     handleCategoryChange,
     handlePostCategory,
   } = usePostRegisterForm();
-
-  useEffect(() => {
-    // 이미지 미리보기 URL 생성
-    const objectUrls = images.map((file) => URL.createObjectURL(file));
-    setPreviews(objectUrls);
-
-    // 컴포넌트 언마운트 시 URL 해제
-    return () => objectUrls.forEach((url) => URL.revokeObjectURL(url));
-  }, [images]);
-
+  usePreviewEffect(images, setPreviews);
   return (
     <>
       {isLoading ? (
@@ -76,8 +67,14 @@ export default function PostRegister() {
               isLoading={postCategoryPending}
               onToggle={() => setCategoryShow((prev) => !prev)}
             />
-            <ProductPreview
-              product={items.find((item) => item._id === selectedProduct)}
+            <ThumbnailUploadPreview
+              imageUrl={
+                items.find((item) => item._id === selectedProduct)?.thumbnail
+              }
+              label={
+                items.find((item) => item._id === selectedProduct)
+                  ?.product_name || "미리보기 이미지"
+              }
               alt={selectedProduct}
               fileInputRef={fileInputRef}
               onImageChange={handleImageChange}
@@ -95,10 +92,7 @@ export default function PostRegister() {
             >
               제품 상세 이미지 추가
             </Button>
-            <PostImagePreview
-              previews={previews}
-              onDelete={handleImageDelete}
-            />
+            <ImagePreview previews={previews} onDelete={handleImageDelete} />
             <Button color="primary" onClick={handleSubmit} className="bold">
               등록
             </Button>

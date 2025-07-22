@@ -56,11 +56,9 @@ export default function MostPopular() {
         />
       </div>
       <div className="flex justify-center my-5">
-        <Link href="/products">
-          <button className="border px-8 py-2.5 rounded-xl text-sm text-gray-600 hover:bg-gray-100">
-            전체 상품 보기
-          </button>
-        </Link>
+        <button className="border px-8 py-2.5 rounded-xl text-sm text-gray-600 hover:bg-gray-100">
+          <Link href="/products">전체 상품 보기</Link>
+        </button>
       </div>
     </>
   );
