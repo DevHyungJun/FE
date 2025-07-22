@@ -1,62 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import Slider from "react-slick";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { image } from "@/constants/ImgCarousel";
+import { getCarouselSettings } from "@/constants/getCarouselSettings";
+import useCheckMobile from "@/hooks/useCheckMobile";
 
 export default function ImgCarousel() {
-  // 화면 width가 800px 이하라면 모바일로 판단
-  const [isMobile, setIsMobile] = useState(false);
-  // 화면 width가 변경될 때마다 모바일 여부 확인
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 800);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  const image = [
-    {
-      src: "/home_main1.webp",
-      miniSrc: "/home_main1_mini.webp",
-      alt: "image1",
-      bg: "#C37B14",
-    },
-    {
-      src: "/home_main2.webp",
-      miniSrc: "/home_main2_mini.webp",
-      alt: "image2",
-      bg: "#5F9588",
-    },
-    {
-      src: "/banner.webp",
-      miniSrc: "/mobileBanner.webp",
-      alt: "image3",
-      bg: "#B2C2D1",
-    },
-    {
-      src: "/banner2.webp",
-      miniSrc: "/banner2Mobile.webp",
-      alt: "image4",
-      bg: isMobile ? "#F5EBF3" : "#FAFAFA",
-    },
-  ];
-
-  // react sclick 설정
-  const settings = {
-    arrows: true,
-    dots: true,
-    infinite: true,
-    speed: 200,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    fade: true,
-    prevArrow: <IoIosArrowBack />,
-    nextArrow: <IoIosArrowForward />,
-  };
+  const { isMobile } = useCheckMobile();
+  const settings = getCarouselSettings();
 
   return (
     <Slider {...settings}>

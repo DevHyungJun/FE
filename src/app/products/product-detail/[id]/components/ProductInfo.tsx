@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { Button } from "@nextui-org/react";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { FaCartPlus } from "react-icons/fa";
@@ -6,54 +8,50 @@ import { IoHeartOutline, IoHeartSharp } from "react-icons/io5";
 import formatPrice from "@/util/formatPrice";
 import { MIN_QUANTITY, MAX_QUANTITY } from "@/constants/review";
 import Swal from "sweetalert2";
+import useOrder from "@/hooks/useOrder";
+import { useRouter } from "next/navigation";
+import useAddCart from "@/hooks/useAddCart";
+import { useQueryClient } from "@tanstack/react-query";
+import useFavoritePost from "@/hooks/useFavoritePost";
+import useFavoriteDelete from "@/hooks/useFavoriteDelete";
 
 interface ProductInfoProps {
   title: string;
   price: number;
-  quantity: number;
-  setQuantity: (q: number) => void;
-  onOrder: () => void;
-  onAddCart: () => void;
   isFavorite: boolean;
   setIsFavorite: (b: boolean) => void;
   isLoggedIn: boolean;
-  orderIsPending: boolean;
-  favoritePostMutate: any;
-  favoriteDeleteMutate: any;
-  queryClient: any;
-  router: any;
   id: string;
+  data: any;
 }
 
 export default function ProductInfo({
   title,
   price,
-  quantity,
-  setQuantity,
-  onOrder,
-  onAddCart,
   isFavorite,
   setIsFavorite,
   isLoggedIn,
-  orderIsPending,
-  favoritePostMutate,
-  favoriteDeleteMutate,
-  queryClient,
-  router,
   id,
+  data,
 }: ProductInfoProps) {
-  // 수량 감소
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [quantity, setQuantity] = useState(MIN_QUANTITY);
+  const { mutate: orderMutate, isPending: orderIsPending } = useOrder();
+  const { mutate: addCartMutate } = useAddCart();
+  const { mutate: favoritePostMutate } = useFavoritePost();
+  const { mutate: favoriteDeleteMutate } = useFavoriteDelete();
+
   const handleMinus = () => {
     if (quantity > MIN_QUANTITY) {
       setQuantity(quantity - 1);
     }
   };
-  // 수량 증가
   const handlePlus = () => {
     if (quantity >= MAX_QUANTITY) return;
     setQuantity(quantity + 1);
   };
-  // 좋아요 토글
+
   const handleFavorite = () => {
     if (!isLoggedIn) {
       Swal.fire({
@@ -97,6 +95,35 @@ export default function ProductInfo({
     }
   };
 
+  const handleRouteOrder = () => {
+    const articleId = data?.data?._id;
+    const product = data?.data?.product?._id;
+    if (!articleId && !product) return;
+    orderMutate([{ articleId, product, quantity }], {
+      onSuccess: (data) => {
+        if (data?.data?._id) {
+          router.push(`/order/${data?.data?._id}`);
+        }
+      },
+    });
+  };
+
+  const handleAddCart = () => {
+    const article = { article: data?.data?._id, quantity };
+    addCartMutate(article, {
+      onSuccess: () => {
+        Swal.fire({
+          icon: "success",
+          title: "장바구니",
+          text: "상품을 장바구니에 추가했습니다.",
+          showConfirmButton: false,
+          timer: 1000,
+        });
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+      },
+    });
+  };
+
   return (
     <div className="w-full md:w-1/2 flex flex-col items-center gap-3 pt-0 md:pt-32">
       <h2 className="text-center text-xl extra-bold text-gray-800">{title}</h2>
@@ -122,13 +149,13 @@ export default function ProductInfo({
         <Button
           color="primary"
           className="w-[300px] text-xs md:text-medium mt-2 bold"
-          onClick={onOrder}
+          onClick={handleRouteOrder}
           isLoading={orderIsPending}
         >
           구매하기
         </Button>
         <div className="w-full flex justify-end gap-2">
-          <button className="text-3xl mt-2" onClick={onAddCart}>
+          <button className="text-3xl mt-2" onClick={handleAddCart}>
             <FaCartPlus className="text-gray-500" />
           </button>
           <button

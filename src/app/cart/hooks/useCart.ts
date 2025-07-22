@@ -6,6 +6,7 @@ import useGetCart from "@/hooks/useGetCart";
 import useLikeList from "@/hooks/useLikeList";
 import useRemoveCart from "@/hooks/useRomoveCart";
 import useOrder from "@/hooks/useOrder";
+import Swal from "sweetalert2";
 
 export interface CartItem {
   article: string;
@@ -74,7 +75,13 @@ export const useCart = () => {
   };
 
   const handleRemoveSelected = () => {
-    if (selectedItems.length === 0) return;
+    if (selectedItems.length === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "상품을 선택해주세요",
+      });
+      return;
+    }
     selectedItems.forEach((item) => {
       removeMutate(item.article, {
         onSuccess: () => {
