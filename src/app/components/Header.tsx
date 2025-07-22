@@ -84,6 +84,7 @@ const Header = () => {
         isLoggedIn={isLoggedIn}
       />
       <HeaderMenu
+        key={String(isLoggedIn)}
         menuItems={menuItems}
         isAdmin={isAdmin}
         isLoggedIn={isLoggedIn}

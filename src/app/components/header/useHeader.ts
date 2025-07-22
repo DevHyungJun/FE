@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import useAuthCheck from "@/hooks/useAuthCheck";
@@ -6,7 +6,6 @@ import useLogout from "@/hooks/useLogout";
 import useGetCart from "@/hooks/useGetCart";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { chatUIState } from "@/store";
-import Swal from "sweetalert2";
 
 interface NavbarItem {
   label: string;
@@ -36,13 +35,6 @@ export default function useHeader() {
   const { data: authCheckData, isSuccess: authCheckIsSuccess } = useAuthCheck();
   const { mutate: logout } = useLogout();
   const { chatUI } = chatUIState();
-  useEffect(() => {
-    if (authCheckData) {
-      alert("authCheck성공");
-    } else {
-      alert("authCheck실패");
-    }
-  }, [authCheckData]);
 
   // 경로 확인
   const isAdminOpen = pathname.startsWith("/admin");
@@ -54,15 +46,8 @@ export default function useHeader() {
 
   // 권한 확인
   const isAdmin = authCheckIsSuccess && authCheckData?.data?.role === "admin";
-  const isLoggedIn = authCheckData?.data?.isLoggedIn;
-  console.log(isLoggedIn);
-  useEffect(() => {
-    if (isLoggedIn) {
-      alert("isLoggedIn성공");
-    } else {
-      alert("isLoggedIn실패");
-    }
-  }, [isLoggedIn]);
+  const isLoggedIn = authCheckIsSuccess && authCheckData?.data?.isLoggedIn;
+
   // 핸들러 함수들
   const handleLoginLogout = () => {
     if (!isLoggedIn) {
@@ -104,41 +89,53 @@ export default function useHeader() {
   ];
 
   // 모바일 메뉴 항목
-  const menuItems: MenuItem[] = [
-    {
-      label: "제품",
-      href: "/products",
-      isOpen: isProductOpen,
-      iconType: "shopping-tag",
-    },
-    {
-      label: "장바구니",
-      href: "/cart",
-      iconType: "shopping-cart",
-      badgeCount: cartData?.article_list.length,
-      isOpen: isCartOpen,
-    },
-    {
-      label: "관리자",
-      href: "/admin",
-      isOpen: isAdminOpen,
-      iconType: "tools",
-    },
-    {
-      label: !Boolean(isLoggedIn) ? "회원가입" : "마이페이지",
-      href: !Boolean(isLoggedIn) ? "/signup" : "/mypage",
-      isOpen: isSignupOpen || isMypageOpen,
-      onclick: handleSignupMypage,
-      iconType: !isLoggedIn ? "person-add" : "profile",
-    },
-    {
-      label: !Boolean(isLoggedIn) ? "로그인" : "로그아웃",
-      href: !Boolean(isLoggedIn) ? "/login" : "#",
-      isOpen: isLoginOpen,
-      onclick: handleLoginLogout,
-      iconType: !Boolean(isLoggedIn) ? "login" : "logout",
-    },
-  ];
+  // useHeader 내부에서 menuItems useMemo 처리
+  const menuItems = useMemo<MenuItem[]>(
+    () => [
+      {
+        label: "제품",
+        href: "/products",
+        isOpen: isProductOpen,
+        iconType: "shopping-tag",
+      },
+      {
+        label: "장바구니",
+        href: "/cart",
+        iconType: "shopping-cart",
+        badgeCount: cartData?.article_list.length,
+        isOpen: isCartOpen,
+      },
+      {
+        label: "관리자",
+        href: "/admin",
+        isOpen: isAdminOpen,
+        iconType: "tools",
+      },
+      {
+        label: !isLoggedIn ? "회원가입" : "마이페이지",
+        href: !isLoggedIn ? "/signup" : "/mypage",
+        isOpen: isSignupOpen || isMypageOpen,
+        onclick: handleSignupMypage,
+        iconType: !isLoggedIn ? "person-add" : "profile",
+      },
+      {
+        label: !isLoggedIn ? "로그인" : "로그아웃",
+        href: !isLoggedIn ? "/login" : "#",
+        isOpen: isLoginOpen,
+        onclick: handleLoginLogout,
+        iconType: !isLoggedIn ? "login" : "logout",
+      },
+    ],
+    [
+      isLoggedIn,
+      isSignupOpen,
+      isMypageOpen,
+      isLoginOpen,
+      isAdminOpen,
+      isProductOpen,
+      isCartOpen,
+    ]
+  );
 
   return {
     // 상태
