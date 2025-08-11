@@ -42,7 +42,7 @@ export default function ProductInfo({
   const { mutate: addCartMutate } = useAddCart();
   const { mutate: favoritePostMutate } = useFavoritePost();
   const { mutate: favoriteDeleteMutate } = useFavoriteDelete();
-  console.log(data);
+
   const handleMinus = () => {
     if (quantity > MIN_QUANTITY) {
       setQuantity(quantity - 1);

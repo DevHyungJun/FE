@@ -9,10 +9,10 @@ import { storeModalShowstep, storeEditMode } from "@/store";
 import LoadingSpinner from "../LoadingSpinner";
 import formatPhoneNumber from "@/util/formatPhoneNumber";
 import AddressModalLayout from "./AddressModalLayout";
-import { AddressData } from "@/types/address";
+import { SelectedAddress } from "@/app/order/[id]/types";
 
 interface ModalProps {
-  setSelectedAddress: (address: AddressData) => void;
+  setSelectedAddress: (address: SelectedAddress) => void;
   setEditId: (id: string) => void;
 }
 
@@ -47,7 +47,7 @@ export default function Modal({ setSelectedAddress, setEditId }: ModalProps) {
     setEditMode(false);
   };
 
-  const handleSelectAddress = (address: AddressData) => {
+  const handleSelectAddress = (address: SelectedAddress) => {
     setSelectedAddress(address);
     setStep(0);
   };
@@ -78,7 +78,7 @@ export default function Modal({ setSelectedAddress, setEditId }: ModalProps) {
           등록된 배송지가 없습니다. 배송지를 추가해주세요
         </p>
       )}
-      {sortedData?.map((address: AddressData) => (
+      {sortedData?.map((address: SelectedAddress) => (
         <div className="mt-3" key={address._id}>
           <div className="border-b-2 pb-2">
             <div className="flex items-center gap-2">
