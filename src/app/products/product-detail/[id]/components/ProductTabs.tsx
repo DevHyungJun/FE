@@ -2,17 +2,18 @@ import React from "react";
 import { Tabs, Tab } from "@nextui-org/react";
 import ProductDetailAccordion from "./ProductDetailAccordion";
 import ProductReviewTab from "./ProductReviewTab";
+import { ReviewData } from "@/types/review";
 
 interface ProductTabsProps {
   detailImages: string[];
   title: string;
   createdAt: string;
   id: string;
-  reviewData: any;
+  reviewData: { data: ReviewData[] };
   reviewLoading: boolean;
   orderOption: string;
   setOrderOption: (value: string) => void;
-  authCheckData: any;
+  authCheckData: {};
 }
 
 export default function ProductTabs({

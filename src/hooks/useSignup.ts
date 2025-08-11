@@ -12,7 +12,7 @@ export default function useSignup() {
     onSuccess: () => {
       router.push("/login");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       Swal.fire({
         title: "회원가입 실패",
         text: error.message,

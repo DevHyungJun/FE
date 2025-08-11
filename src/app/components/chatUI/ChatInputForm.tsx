@@ -22,7 +22,7 @@ export default function ChatInputForm({
   onClose,
 }: ChatInputFormProps) {
   // 엔터 전송, 쉬프트+엔터 줄바꿈 핸들러
-  const handleKeyDown = (e: React.KeyboardEvent<any>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       // form submit 트리거

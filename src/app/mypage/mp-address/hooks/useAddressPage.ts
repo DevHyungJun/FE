@@ -19,7 +19,7 @@ export default function useAddressPage() {
   const { setEditMode } = storeEditMode();
   useGuestOut();
   const sortedData = [...(data?.data || [])].sort(
-    (a: any, b: any) => b.is_default - a.is_default
+    (a, b) => b.is_default - a.is_default
   );
 
   useEffect(() => {

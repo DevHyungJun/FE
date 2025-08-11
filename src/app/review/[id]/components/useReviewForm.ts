@@ -68,7 +68,7 @@ export const useReviewForm = (id: string) => {
       });
     }
 
-    mutate(form as any, {
+    mutate(form as FormData, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["reviews", id] });
         router.back();

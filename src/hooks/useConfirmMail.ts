@@ -15,7 +15,7 @@ export default function useConfirmMail() {
         timer: 1000,
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       Swal.fire({
         title: "이메일 인증 실패",
         text: error.message,

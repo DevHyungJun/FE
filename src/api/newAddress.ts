@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 type AddressData = {
   main_address: string;
@@ -6,12 +6,16 @@ type AddressData = {
   is_default: boolean;
   receiver_name: string;
   receiver_phone: string;
-  zipcode: string;
+  zipcode?: string;
 };
 
 export const newAddress = async (addressData: AddressData) => {
-  const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}address`, addressData, {
-    withCredentials: true,
-  });
+  const { data } = await axios.post(
+    `${process.env.NEXT_PUBLIC_API_URL}address`,
+    addressData,
+    {
+      withCredentials: true,
+    }
+  );
   return data;
 };

@@ -24,7 +24,7 @@ export interface ProductPost {
   product: Product;
   like_user_list: string[];
   like_count: number;
-  comment_list: any[];
+  comment_list: string[];
   category: string;
   createdAt: string;
   updatedAt: string;

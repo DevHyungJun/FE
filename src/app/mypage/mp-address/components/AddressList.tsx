@@ -5,7 +5,7 @@ import LoadingSpinner from "@/app/components/LoadingSpinner";
 interface AddressListProps {
   isLoading: boolean;
   sortedData: AddressData[];
-  data: any;
+  data: { data: AddressData[] };
   handleEditAddress: (id: string) => void;
   handleDeleteAddress: (id: string) => void;
 }

@@ -9,6 +9,22 @@ import { useProductSelect } from "./useProductSelect";
 import { useAlert } from "./useAlert";
 import { ERROR_REQUIRED_FIELDS } from "@/constants/postRegisterForm";
 
+interface PostRegisterData {
+  data: {
+    createdAt: string;
+    images: string[];
+    price: number;
+    product_name: string;
+    sales_count: number;
+    stock_quantity: number;
+    thumbnail: string;
+    updatedAt: string;
+    user: string;
+    __v: number;
+    _id: string;
+  };
+}
+
 export default function usePostRegisterForm() {
   useGuestOut(true);
   const { data, isLoading } = useGetItem();
@@ -41,10 +57,11 @@ export default function usePostRegisterForm() {
     handleSelectChange,
     handleCategoryChange,
   } = useProductSelect();
-  const { showError, showWarning } = useAlert();
+  const { showError } = useAlert();
   const titleRef = useImageUpload().fileInputRef; // 임시: titleRef는 별도 관리 필요
 
-  const items = data?.pages?.flatMap((page: any) => page.data) ?? [];
+  const items =
+    data?.pages?.flatMap((page: PostRegisterData) => page.data) ?? [];
   const categoryItems = categroy?.data;
 
   const handleSubmit = () => {
@@ -62,7 +79,7 @@ export default function usePostRegisterForm() {
       showError(ERROR_REQUIRED_FIELDS);
       return;
     }
-    newPost.mutate(formData as any, {
+    newPost.mutate(formData as FormData, {
       onSuccess: () => {
         router.push("/products");
       },

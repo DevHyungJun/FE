@@ -7,6 +7,7 @@ import ReviewItem from "@/app/components/ReviewItem";
 import { useState } from "react";
 import useGuestOut from "@/hooks/useGuestOut";
 import ReviewOrderSelect from "@/app/components/review/ReviewOrderSelect";
+import { MypageReview } from "@/types/review";
 
 export default function MpReview() {
   const { data: userInfo } = useAuthCheck();
@@ -35,7 +36,7 @@ export default function MpReview() {
               setOrderOption={setOrderOption}
               userReview={userReview}
             />
-            {userReview?.data?.map((reviewItem: any) => (
+            {userReview?.data?.map((reviewItem: MypageReview) => (
               <ReviewItem
                 key={reviewItem._id}
                 review={reviewItem}

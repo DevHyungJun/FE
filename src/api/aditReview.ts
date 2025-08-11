@@ -1,14 +1,7 @@
 import axios from "axios";
 
-interface AddReviewData {
-  title: string;
-  content: string;
-  rate: number;
-  images: File[];
-}
-
 export default async function aditReview(
-  reviewData: AddReviewData,
+  reviewData: FormData,
   reviewId: string
 ) {
   const response = await axios.patch(

@@ -33,7 +33,7 @@ export default function PostNewAddress({
       zipcode: data.zip_code,
       detail_address: data.detail_address || "",
     };
-    delete (apiData as any).zip_code;
+    delete apiData.zip_code;
 
     newAddress(apiData, {
       onSuccess: () => {

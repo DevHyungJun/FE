@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import useAditReview from "@/hooks/useAditReview";
-import { SingleReview } from "@/types/review";
+import { ReviewData } from "@/types/review";
 
 type ReviewEditFormValues = {
   title: string;
@@ -19,7 +19,7 @@ interface ImageFile {
 
 export const useReviewEditForm = (
   reviewId: string,
-  reviewData: SingleReview | undefined
+  reviewData: ReviewData | undefined
 ) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [rate, setRate] = useState<number>(0);
@@ -123,7 +123,7 @@ export const useReviewEditForm = (
       });
     }
 
-    aditReview(form as any, {
+    aditReview(form as FormData, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["reviews"] });
         router.back();

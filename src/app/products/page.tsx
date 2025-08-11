@@ -12,6 +12,7 @@ import ScrollUpButton from "../components/ScrollUpButton";
 import { InfiniteProductPostResponse } from "@/types/allProducts";
 import { UseInfiniteQueryResult } from "@tanstack/react-query";
 import ProductCard from "../components/ProductCard";
+import { CategoryItem } from "@/types/category";
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -44,7 +45,7 @@ const Products = () => {
           color="primary"
         >
           <Tab title="전체" key="" />
-          {category?.data?.map((category: any) => (
+          {category?.data?.map((category: CategoryItem) => (
             <Tab
               key={category._id}
               title={category.category}

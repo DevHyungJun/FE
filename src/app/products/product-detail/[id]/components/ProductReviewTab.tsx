@@ -4,14 +4,15 @@ import { Button } from "@nextui-org/react";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import ReviewItem from "@/app/components/ReviewItem";
 import ReviewOrderSelect from "@/app/components/review/ReviewOrderSelect";
+import { ReviewData } from "@/types/review";
 
 interface ProductReviewTabProps {
   id: string;
-  reviewData: any;
+  reviewData: { data: ReviewData[] };
   reviewLoading: boolean;
   orderOption: string;
   setOrderOption: (value: string) => void;
-  authCheckData: any;
+  authCheckData: {};
 }
 
 export default function ProductReviewTab({
@@ -41,7 +42,7 @@ export default function ProductReviewTab({
             setOrderOption={setOrderOption}
             userReview={reviewData}
           />
-          {reviewData?.data?.map((reviewItem: any) => (
+          {reviewData?.data?.map((reviewItem: ReviewData) => (
             <ReviewItem key={reviewItem._id} review={reviewItem} />
           ))}
         </>

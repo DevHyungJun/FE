@@ -42,15 +42,15 @@ export default function EditAddress({
   const handleBack = !mypage ? () => setStep(1) : undefined;
 
   const handleSubmit = (data: AddressData) => {
-    const newAddressData = {
+    const addressData = {
       ...data,
       zipcode: data.zip_code,
       detail_address: data.detail_address || "",
     };
-    delete (newAddressData as any).zip_code;
+    delete (addressData as AddressData).zip_code;
 
     editAddress(
-      { newAddressData, editId },
+      { addressData, editId },
       {
         onSuccess: () => {
           resetAddressData();

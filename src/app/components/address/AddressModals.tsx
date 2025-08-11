@@ -2,12 +2,13 @@ import Modal from "@/app/components/address/Modal";
 import PostNewAddress from "@/app/components/address/PostNewAddress";
 import DaumPost from "@/app/components/address/DaumPost";
 import EditAddress from "@/app/components/address/EditAddress";
+import { AddressData } from "@/types/address";
 
 interface AddressModalsProps {
   step: number;
   editId: string;
   mypage?: boolean;
-  setSelectedAddress?: (address: any) => void;
+  setSelectedAddress?: (address: AddressData) => void;
   setEditId?: (id: string) => void;
 }
 

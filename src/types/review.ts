@@ -1,18 +1,12 @@
-export interface SingleReview {
+export interface ReviewData {
   _id: string;
-  user: {
-    _id: string;
-    username: string;
-    email: string;
-    profileImage: string;
-  };
-  order: string;
+  user: string;
   article: string;
   title: string;
   content: string;
   rate: number;
   images: string[];
-  likes: any[];
-  createdAt: string;
+  likes: number;
+  likedBy: string[];
   updatedAt: string;
 }

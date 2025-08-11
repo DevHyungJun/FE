@@ -32,7 +32,7 @@ export default function NewItem() {
         formData.append("thumbnail", image);
       }
     });
-    newItem.mutate(formData as any, {
+    newItem.mutate(formData as FormData, {
       onSuccess: () => {
         router.push("/admin/item-list");
       },

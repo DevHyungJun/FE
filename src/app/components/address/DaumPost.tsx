@@ -3,6 +3,7 @@
 import DaumPostcodeEmbed from "react-daum-postcode";
 import { storeModalShowstep, storeAddressData, storeEditMode } from "@/store";
 import AddressModalLayout from "./AddressModalLayout";
+import { daumPostAddressData } from "@/types/daumPost";
 
 export default function DaumPost() {
   const { setStep } = storeModalShowstep();
@@ -10,7 +11,7 @@ export default function DaumPost() {
   const { editMode } = storeEditMode();
   const previousStep = editMode ? 4 : 2;
 
-  const handleComplete = (data: any) => {
+  const handleComplete = (data: daumPostAddressData) => {
     setAddressData({
       main_address: `${data.roadAddress} ${data.buildingName || ""}`,
       zip_code: data.zonecode,

@@ -14,6 +14,7 @@ import useAddCart from "@/hooks/useAddCart";
 import { useQueryClient } from "@tanstack/react-query";
 import useFavoritePost from "@/hooks/useFavoritePost";
 import useFavoriteDelete from "@/hooks/useFavoriteDelete";
+import { PostData, Product } from "@/types/Product";
 
 interface ProductInfoProps {
   title: string;
@@ -22,7 +23,7 @@ interface ProductInfoProps {
   setIsFavorite: (b: boolean) => void;
   isLoggedIn: boolean;
   id: string;
-  data: any;
+  data: { data: PostData };
 }
 
 export default function ProductInfo({
@@ -41,7 +42,7 @@ export default function ProductInfo({
   const { mutate: addCartMutate } = useAddCart();
   const { mutate: favoritePostMutate } = useFavoritePost();
   const { mutate: favoriteDeleteMutate } = useFavoriteDelete();
-
+  console.log(data);
   const handleMinus = () => {
     if (quantity > MIN_QUANTITY) {
       setQuantity(quantity - 1);

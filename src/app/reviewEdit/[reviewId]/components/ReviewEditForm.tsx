@@ -4,11 +4,11 @@ import { Button, Input, Textarea } from "@nextui-org/react";
 import ImagePreview from "@/app/components/review/ImagePreview";
 import Rate from "@/app/components/Rate";
 import { useReviewEditForm } from "./useReviewEditForm";
-import { SingleReview } from "@/types/review";
+import { ReviewData } from "@/types/review";
 
 interface ReviewEditFormProps {
   reviewId: string;
-  reviewData: SingleReview | undefined;
+  reviewData: ReviewData | undefined;
 }
 
 const ReviewEditForm = ({ reviewId, reviewData }: ReviewEditFormProps) => {

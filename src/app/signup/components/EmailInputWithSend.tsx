@@ -1,9 +1,11 @@
 import { Input, Button } from "@nextui-org/react";
 import { ErrorMessage } from "@hookform/error-message";
+import { FieldErrors, UseFormRegisterReturn } from "react-hook-form";
+import { SignupForm } from "@/types/signupForm";
 
 interface EmailInputWithSendProps {
-  register: any;
-  error: any;
+  register: UseFormRegisterReturn;
+  error: FieldErrors<SignupForm>;
   isDisabled: boolean;
   isLoading: boolean;
   onSend: () => void;

@@ -1,5 +1,6 @@
 import { Select, SelectItem } from "@nextui-org/react";
 import { ORDERING_OPTIONS } from "@/constants/review";
+import { ReviewData } from "@/types/review";
 
 const ReviewOrderSelect = ({
   orderOption,
@@ -8,7 +9,7 @@ const ReviewOrderSelect = ({
 }: {
   orderOption: string;
   setOrderOption: (value: string) => void;
-  userReview: any;
+  userReview: { data: ReviewData[] };
 }) => {
   return (
     <div

@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import useDeleteCategory from "@/hooks/useDeleteCategory";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import useGuestOut from "@/hooks/useGuestOut";
+import { CategoryItem } from "@/types/category";
 
 export default function Category() {
   const queryClient = useQueryClient();
@@ -76,7 +77,7 @@ export default function Category() {
         <LoadingSpinner />
       ) : (
         <div className="flex flex-col gap-2 mt-10 border-2 rounded-lg">
-          {category?.data?.map((category: any) => (
+          {category?.data?.map((category: CategoryItem) => (
             <div
               key={category._id}
               className="flex justify-between items-center p-3 border-b"

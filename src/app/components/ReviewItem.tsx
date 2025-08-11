@@ -6,6 +6,7 @@ import ReviewHeader from "./review/ReviewHeader";
 import ReviewImage from "./review/ReviewImage";
 import ReviewLikeButton from "./review/ReviewLikeButton";
 import ReviewMenu from "./review/ReviewMenu";
+import { ReviewData } from "@/types/review";
 
 interface UserId {
   data: {
@@ -13,21 +14,8 @@ interface UserId {
   };
 }
 
-interface Review {
-  _id: string;
-  user: string;
-  article: string;
-  title: string;
-  content: string;
-  rate: number;
-  images: string[];
-  likes: number;
-  likedBy: string[];
-  updatedAt: string;
-}
-
 interface ReviewItemProps {
-  review: Review;
+  review: ReviewData;
   myPage?: boolean;
 }
 
