@@ -1,28 +1,28 @@
-import React from "react";
 import Link from "next/link";
 import { Button } from "@nextui-org/react";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import ReviewItem from "@/app/components/ReviewItem";
 import ReviewOrderSelect from "@/app/components/review/ReviewOrderSelect";
 import { ReviewData } from "@/types/review";
+import useAuthCheck from "@/hooks/useAuthCheck";
 
 interface ProductReviewTabProps {
   id: string;
   reviewData: { data: ReviewData[] };
-  reviewLoading: boolean;
   orderOption: string;
-  setOrderOption: (value: string) => void;
-  authCheckData: {};
+  setOrderOption: (orderOption: string) => void;
+  reviewLoading: boolean;
 }
 
 export default function ProductReviewTab({
   id,
   reviewData,
-  reviewLoading,
   orderOption,
   setOrderOption,
-  authCheckData,
+  reviewLoading,
 }: ProductReviewTabProps) {
+  const { data: authCheckData } = useAuthCheck();
+
   return (
     <>
       <Link

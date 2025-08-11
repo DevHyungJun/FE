@@ -1,18 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import { Image } from "@nextui-org/react";
+import { PostData } from "@/types/Product";
 
 interface ProductImageSliderProps {
-  images: string[];
-  title: string;
-  onlyOneImage: boolean;
+  data: { data: PostData };
 }
 
-export default function ProductImageSlider({
-  images,
-  title,
-  onlyOneImage,
-}: ProductImageSliderProps) {
+export default function ProductImageSlider({ data }: ProductImageSliderProps) {
+  const [onlyOneImage, setOnlyOneImage] = useState(false);
+  const images = data?.data?.product?.images;
+  const title = data?.data?.title;
+
+  useEffect(() => {
+    if (data?.data?.product?.images.length === 1) {
+      setOnlyOneImage(true);
+    } else {
+      setOnlyOneImage(false);
+    }
+  }, [data]);
+
   const settings = {
     arrows: false,
     dots: !onlyOneImage,

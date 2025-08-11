@@ -1,43 +1,30 @@
-import React from "react";
+import { useState } from "react";
 import { Tabs, Tab } from "@nextui-org/react";
 import ProductDetailAccordion from "./ProductDetailAccordion";
 import ProductReviewTab from "./ProductReviewTab";
-import { ReviewData } from "@/types/review";
+import { PostData } from "@/types/Product";
+import useGetReview from "@/hooks/useGetReview";
+import { ORDERING_OPTIONS } from "@/constants/review";
 
 interface ProductTabsProps {
-  detailImages: string[];
-  title: string;
-  createdAt: string;
+  data: { data: PostData };
   id: string;
-  reviewData: { data: ReviewData[] };
-  reviewLoading: boolean;
-  orderOption: string;
-  setOrderOption: (value: string) => void;
-  authCheckData: {};
 }
 
-export default function ProductTabs({
-  detailImages,
-  title,
-  createdAt,
-  id,
-  reviewData,
-  reviewLoading,
-  orderOption,
-  setOrderOption,
-  authCheckData,
-}: ProductTabsProps) {
+export default function ProductTabs({ data, id }: ProductTabsProps) {
+  const [orderOption, setOrderOption] = useState(ORDERING_OPTIONS[0].value);
+  const { data: reviewData, isLoading: reviewLoading } = useGetReview(
+    id,
+    orderOption
+  );
+
   return (
     <Tabs
       variant="underlined"
       className="w-full bold sticky top-[64px] z-20 bg-background/70 backdrop-blur-lg backdrop-saturate-150 border-divider"
     >
       <Tab key="productDetail" title="정보" textValue="productDetail">
-        <ProductDetailAccordion
-          detailImages={detailImages}
-          title={title}
-          createdAt={createdAt}
-        />
+        <ProductDetailAccordion data={data} />
       </Tab>
       <Tab
         key="review"
@@ -50,7 +37,6 @@ export default function ProductTabs({
           reviewLoading={reviewLoading}
           orderOption={orderOption}
           setOrderOption={setOrderOption}
-          authCheckData={authCheckData}
         />
       </Tab>
     </Tabs>

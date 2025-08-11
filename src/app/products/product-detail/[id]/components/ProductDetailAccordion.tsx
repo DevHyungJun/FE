@@ -1,17 +1,14 @@
 import React from "react";
 import { Accordion, AccordionItem, Image } from "@nextui-org/react";
 import formatDate from "@/util/formatDate";
+import { PostData } from "@/types/Product";
 
 interface ProductDetailAccordionProps {
-  detailImages: string[];
-  title: string;
-  createdAt: string;
+  data: { data: PostData };
 }
 
 export default function ProductDetailAccordion({
-  detailImages,
-  title,
-  createdAt,
+  data,
 }: ProductDetailAccordionProps) {
   return (
     <Accordion
@@ -26,10 +23,15 @@ export default function ProductDetailAccordion({
       >
         <div className="flex flex-col max-w-[900px] mx-auto items-center mt-10">
           <p className="text-xs md:text-medium text-gray-500 mb-5 light">
-            {formatDate(createdAt)}에 등록된 상품입니다.
+            {formatDate(data?.data?.createdAt || "")}에 등록된 상품입니다.
           </p>
-          {detailImages.map((img, i) => (
-            <Image key={i} src={img} alt={title} width={800} />
+          {data?.data?.detail_images.map((img, i) => (
+            <Image
+              key={i}
+              src={img}
+              alt={data?.data?.title || ""}
+              width={800}
+            />
           ))}
         </div>
       </AccordionItem>
