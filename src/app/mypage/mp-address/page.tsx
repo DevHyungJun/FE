@@ -38,7 +38,7 @@ export default function MpAddress() {
           handleEditAddress={handleEditAddress}
         />
       </div>
-      <AddressModals step={step} editId={address} mypage={true} />
+      <AddressModals editId={address} mypage={true} />
     </div>
   );
 }

@@ -1,66 +1,24 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
-
-import { storeAddressData, storeModalShowstep, storeOrderData } from "@/store";
-import useSingleOrderGet from "@/hooks/useSingleOrderGet";
+import { OrderResponseData, ProductList, SelectedAddress } from "../types";
+import { useEffect, useState } from "react";
 import useDetail from "@/hooks/useDetail";
+import useSingleOrderGet from "@/hooks/useSingleOrderGet";
+import { storeOrderData } from "@/store";
 
-import type { OrderResponseData, ProductList, SelectedAddress } from "../types";
-
-export function useOrderPage(id: string) {
-  const queryClient = useQueryClient();
-  const { step, setStep } = storeModalShowstep();
-  const { resetAddressData } = storeAddressData();
-  const [editId, setEditId] = useState("");
-  const initialAddress = {} as SelectedAddress;
-  const [selectedAddress, setSelectedAddress] = useState(initialAddress);
-  const data = queryClient.getQueryData(["searchAddress"]);
+const useOrder = (id: string, selectedAddress: SelectedAddress) => {
   const [productList, setProductList] = useState<ProductList[]>([]);
+  const { setOrderData, clearOrderData } = storeOrderData();
   const { data: orderData, isLoading } = useSingleOrderGet(id);
-
   const { data: firstProductData } = useDetail(
     orderData?.data?.product_list[0].articleId,
     !!orderData?.data?.product_list[0].articleId
   );
   const firstProductName = firstProductData?.data?.product?.product_name;
-  const { setOrderData, clearOrderData } = storeOrderData();
 
   const resultPrice = productList.reduce(
     (total, product) => total + product.price,
     0
   );
-
-  useEffect(() => {
-    // 모달 켜졌을 때 배경 스크롤 막기
-    if (step > 0) {
-      document.body.style.overflow = "hidden";
-      document.body.style.touchAction = "none";
-    } else {
-      document.body.style.touchAction = "auto";
-      document.body.style.overflow = "auto";
-    }
-  }, [step]);
-
-  useEffect(() => {
-    if (!data) return;
-    const foundAddress = (data as { data: SelectedAddress[] })?.data?.find(
-      (address: SelectedAddress) => address._id === selectedAddress?._id
-    );
-    if (foundAddress) {
-      setSelectedAddress(foundAddress);
-    } else {
-      setSelectedAddress(initialAddress);
-    }
-  }, [data, selectedAddress?._id, initialAddress]);
-
-  useEffect(() => {
-    if (step < 2) {
-      resetAddressData();
-    }
-  }, [step, resetAddressData]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -145,17 +103,12 @@ export function useOrderPage(id: string) {
   };
 
   return {
-    step,
-    setStep,
-    editId,
-    setEditId,
-    selectedAddress,
-    setSelectedAddress,
     orderData,
     isLoading,
-    productList,
     setProductList,
     resultPrice,
     handleClickPay,
   };
-}
+};
+
+export default useOrder;

@@ -2,17 +2,18 @@ import { Button } from "@nextui-org/react";
 
 import formatPhoneNumber from "@/util/formatPhoneNumber";
 import type { SelectedAddress } from "../types";
+import { storeModalShowstep } from "@/store";
 
 interface AddressSectionProps {
   selectedAddress: SelectedAddress;
-  onOpenAddressModal: () => void;
 }
 
 export default function AddressSection({
   selectedAddress,
-  onOpenAddressModal,
 }: AddressSectionProps) {
   const hasAddress = selectedAddress?.receiver_name;
+  const { setStep } = storeModalShowstep();
+  const onOpenAddressModal = () => setStep(1);
 
   return (
     <div className={`border-y p-3 rounded-sm ${!hasAddress && "border-b"}`}>
