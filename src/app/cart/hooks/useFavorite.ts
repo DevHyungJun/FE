@@ -4,25 +4,24 @@ import Swal from "sweetalert2";
 import useFavoriteDelete from "@/hooks/useFavoriteDelete";
 import useAddCart from "@/hooks/useAddCart";
 import { PostData } from "@/types/Product";
+import useLikeList from "@/hooks/useLikeList";
 
 interface Quantity {
   quantity: number;
   id: string;
 }
 
-export const useFavorite = (
-  likeList: PostData[],
-  setCartOrFavorite: (value: string) => void
-) => {
+export const useFavorite = (setCartOrFavorite: (value: string) => void) => {
   const queryClient = useQueryClient();
   const { mutate: favoriteDeleteMutate } = useFavoriteDelete();
   const { mutate: addCartMutate, isPending: isAddingToCart } = useAddCart();
-
+  const { data, isLoading: isLikeListLoading } = useLikeList();
+  const likeList = data?.data?.articles;
   const [quantities, setQuantities] = useState<Quantity[]>([]);
 
   useEffect(() => {
     if (likeList) {
-      const quantityList = likeList.map((item) => ({
+      const quantityList = likeList.map((item: PostData) => ({
         quantity: 1,
         id: item._id,
       }));
@@ -35,6 +34,7 @@ export const useFavorite = (
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["allProducts"] });
         queryClient.invalidateQueries({ queryKey: ["likeList"] });
+        queryClient.invalidateQueries({ queryKey: ["productDetail", id] });
       },
       onError: () => {
         Swal.fire({
@@ -89,5 +89,7 @@ export const useFavorite = (
     handleDeleteFavorite,
     handleUpdateQuantity,
     handleAddCart,
+    likeList,
+    isLikeListLoading,
   };
 };

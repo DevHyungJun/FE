@@ -1,7 +1,7 @@
 import React from "react";
 import { Checkbox, CheckboxGroup } from "@nextui-org/react";
 import CartProductDetail from "@/app/components/CartProductDetail";
-import { CartItem } from "../hooks/useCart";
+import { CartItem } from "@/types/cart";
 
 interface CartListProps {
   items: CartItem[];
