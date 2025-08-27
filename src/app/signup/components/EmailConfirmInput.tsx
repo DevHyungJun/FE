@@ -1,34 +1,33 @@
 import { Input, Button } from "@nextui-org/react";
 import { ErrorMessage } from "@hookform/error-message";
 import EmailAuthTimer from "./EmailAuthTimer";
-import { FieldErrors, UseFormRegisterReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { SignupForm } from "@/types/signupForm";
+import { formInDiv, errorS } from "../constants/signupFormStyle";
+import { UseMutationResult } from "@tanstack/react-query";
+import { ConfirmMail } from "@/types/signupConfirmMail";
+import { emailConfirmV } from "@/app/validationRules";
 
 interface EmailConfirmInputProps {
-  register: UseFormRegisterReturn;
-  error: FieldErrors<SignupForm>;
-  isDisabled: boolean;
-  isLoading: boolean;
+  confirmMail: UseMutationResult<any, Error, ConfirmMail, unknown>;
   onConfirm: () => void;
-  formInDiv: string;
-  errorS: string;
   countdown: number | null;
   expiredMessage: boolean;
   formatTime: (second: number | null) => string | undefined;
 }
 
 export default function EmailConfirmInput({
-  register,
-  error,
-  isDisabled,
-  isLoading,
+  confirmMail,
   onConfirm,
-  formInDiv,
-  errorS,
   countdown,
   expiredMessage,
   formatTime,
 }: EmailConfirmInputProps) {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<SignupForm>();
+
   return (
     <>
       <div className={formInDiv}>
@@ -38,8 +37,8 @@ export default function EmailConfirmInput({
           variant="underlined"
           required
           isClearable
-          {...register}
-          isDisabled={isDisabled}
+          {...register("emailConfirm", emailConfirmV)}
+          isDisabled={confirmMail.isSuccess}
         />
         <EmailAuthTimer
           countdown={countdown}
@@ -50,8 +49,8 @@ export default function EmailConfirmInput({
           variant="bordered"
           size="sm"
           onClick={onConfirm}
-          isLoading={isLoading}
-          isDisabled={isDisabled}
+          isLoading={confirmMail.isPending}
+          isDisabled={confirmMail.isSuccess}
           className="bold"
         >
           인증
@@ -59,7 +58,7 @@ export default function EmailConfirmInput({
       </div>
       <div className="h-[20px]">
         <ErrorMessage
-          errors={error}
+          errors={errors}
           name="emailConfirm"
           render={({ message }) => <p className={errorS}>{message}</p>}
         />

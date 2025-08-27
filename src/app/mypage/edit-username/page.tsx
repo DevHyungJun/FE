@@ -41,11 +41,7 @@ export default function EditUsernamePage() {
             isClearable
             {...register("username", usernameV)}
           />
-          <FormErrorMessage
-            errors={errors}
-            name="username"
-            errorS="text-sm text-red-500"
-          />
+          <FormErrorMessage errors={errors} name="username" />
           <div className="w-full flex gap-1 mt-5">
             <Button className="w-1/2 bold" onClick={handleBack}>
               취소

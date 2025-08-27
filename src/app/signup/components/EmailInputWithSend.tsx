@@ -1,27 +1,26 @@
 import { Input, Button } from "@nextui-org/react";
 import { ErrorMessage } from "@hookform/error-message";
-import { FieldErrors, UseFormRegisterReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { SignupForm } from "@/types/signupForm";
+import { formInDiv, errorS } from "../constants/signupFormStyle";
+import { emailV } from "@/app/validationRules";
 
 interface EmailInputWithSendProps {
-  register: UseFormRegisterReturn;
-  error: FieldErrors<SignupForm>;
   isDisabled: boolean;
   isLoading: boolean;
   onSend: () => void;
-  formInDiv: string;
-  errorS: string;
 }
 
 export default function EmailInputWithSend({
-  register,
-  error,
   isDisabled,
   isLoading,
   onSend,
-  formInDiv,
-  errorS,
 }: EmailInputWithSendProps) {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<SignupForm>();
+
   return (
     <>
       <div className={formInDiv}>
@@ -31,7 +30,7 @@ export default function EmailInputWithSend({
           variant="underlined"
           required
           isClearable
-          {...register}
+          {...register("email", emailV)}
           isDisabled={isDisabled}
         />
         <Button
@@ -47,7 +46,7 @@ export default function EmailInputWithSend({
       </div>
       <div className="h-[20px]">
         <ErrorMessage
-          errors={error}
+          errors={errors}
           name="email"
           render={({ message }) => <p className={errorS}>{message}</p>}
         />

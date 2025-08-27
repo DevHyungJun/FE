@@ -1,25 +1,24 @@
 import { Input, Button } from "@nextui-org/react";
 import { ErrorMessage } from "@hookform/error-message";
-import { FieldErrors, UseFormRegisterReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { SignupForm } from "@/types/signupForm";
+import { formInDiv, errorS } from "../constants/signupFormStyle";
+import { usernameV } from "@/app/validationRules";
 
 interface UsernameInputWithCheckProps {
-  register: UseFormRegisterReturn;
-  error: FieldErrors<SignupForm>;
   isLoading: boolean;
   onCheck: () => void;
-  formInDiv: string;
-  errorS: string;
 }
 
 export default function UsernameInputWithCheck({
-  register,
-  error,
   isLoading,
   onCheck,
-  formInDiv,
-  errorS,
 }: UsernameInputWithCheckProps) {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<SignupForm>();
+
   return (
     <>
       <div className={formInDiv}>
@@ -29,7 +28,7 @@ export default function UsernameInputWithCheck({
           variant="underlined"
           required
           isClearable
-          {...register}
+          {...register("username", usernameV)}
         />
         <Button
           variant="bordered"
@@ -43,7 +42,7 @@ export default function UsernameInputWithCheck({
       </div>
       <div className="h-[20px]">
         <ErrorMessage
-          errors={error}
+          errors={errors}
           name="username"
           render={({ message }) => <p className={errorS}>{message}</p>}
         />
