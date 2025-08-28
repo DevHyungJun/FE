@@ -1,22 +1,23 @@
 import formatPhoneNumber from "@/util/formatPhoneNumber";
 import { AddressData } from "@/types/address";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import useSearchAddress from "@/hooks/useSearchAddress";
+import useHandleDeleteAddress from "../hooks/useHandleDeleteAddress";
+import useHandleEditAddress from "../hooks/useHandleEditAddress";
 
 interface AddressListProps {
-  isLoading: boolean;
   sortedData: AddressData[];
-  data: { data: AddressData[] };
-  handleEditAddress: (id: string) => void;
-  handleDeleteAddress: (id: string) => void;
+  setAddress: (address: string) => void;
 }
 const btnStyle = "border px-2 py-0.5 rounded-md text-sm bold";
 export default function AddressList({
-  isLoading,
   sortedData,
-  data,
-  handleDeleteAddress,
-  handleEditAddress,
+  setAddress,
 }: AddressListProps) {
+  const { data, isLoading } = useSearchAddress();
+  const { handleDeleteAddress } = useHandleDeleteAddress();
+  const { handleEditAddress } = useHandleEditAddress(setAddress);
+
   return (
     <>
       {isLoading ? (

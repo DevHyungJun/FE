@@ -1,4 +1,9 @@
-import { useForm } from "react-hook-form";
+import {
+  FieldErrors,
+  UseFormHandleSubmit,
+  UseFormRegister,
+  UseFormSetValue,
+} from "react-hook-form";
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -7,20 +12,16 @@ import useGetUserInfo from "@/hooks/useGetUserInfo";
 import useEditUsername from "@/hooks/useEditUsername";
 import { EditUsernameFormValues } from "@/types/editUsername";
 
-const useEditUsernameForm = () => {
+const useEditUsernameForm = (
+  register: UseFormRegister<EditUsernameFormValues>,
+  handleSubmit: UseFormHandleSubmit<EditUsernameFormValues, undefined>,
+  errors: FieldErrors<EditUsernameFormValues>,
+  setValue: UseFormSetValue<EditUsernameFormValues>
+) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: userInfo, isLoading: isUserLoading } = useGetUserInfo();
   const { mutate: editUsername, isPending: isSubmitting } = useEditUsername();
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors, isDirty },
-  } = useForm<EditUsernameFormValues>({
-    mode: "onChange",
-  });
 
   useEffect(() => {
     if (userInfo?.data) {
@@ -73,9 +74,8 @@ const useEditUsernameForm = () => {
   return {
     isUserLoading,
     isSubmitting,
-    isDirty,
     register,
-    handleSubmit: handleSubmit(onSubmit),
+    onSubmit: handleSubmit(onSubmit),
     errors,
     handleBack,
   };

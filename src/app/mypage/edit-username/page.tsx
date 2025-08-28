@@ -6,18 +6,21 @@ import useEditUsernameForm from "./hooks/useEditUsernameForm";
 import { usernameV } from "@/app/validationRules";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import FormErrorMessage from "@/app/signup/components/FormErrorMessage";
+import { useForm } from "react-hook-form";
+import { EditUsernameFormValues } from "@/types/editUsername";
 
 export default function EditUsernamePage() {
   useGuestOut();
-
   const {
-    isUserLoading,
-    isSubmitting,
     register,
     handleSubmit,
-    errors,
-    handleBack,
-  } = useEditUsernameForm();
+    setValue,
+    formState: { errors },
+  } = useForm<EditUsernameFormValues>({
+    mode: "onChange",
+  });
+  const { isUserLoading, isSubmitting, handleBack, onSubmit } =
+    useEditUsernameForm(register, handleSubmit, errors, setValue);
 
   return (
     <div className="flex items-center justify-center h-[60vh] text-gray-800">
@@ -26,7 +29,7 @@ export default function EditUsernamePage() {
       ) : (
         <form
           className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
-          onSubmit={handleSubmit}
+          onSubmit={onSubmit}
         >
           <h1 className="flex items-center gap-2 text-2xl extra-bold my-5">
             닉네임 변경

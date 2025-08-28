@@ -1,22 +1,13 @@
 "use client";
 
 import { Button } from "@nextui-org/react";
-
 import AddressList from "./components/AddressList";
 import useAddressPage from "./hooks/useAddressPage";
 import AddressModals from "@/app/components/address/AddressModals";
 
 export default function MpAddress() {
-  const {
-    data,
-    isLoading,
-    sortedData,
-    step,
-    address,
-    handleDeleteAddress,
-    handleNewAddress,
-    handleEditAddress,
-  } = useAddressPage();
+  const { sortedData, address, handleNewAddress, setAddress } =
+    useAddressPage();
   return (
     <div className="mx-auto max-w-[800px] text-gray-800">
       <div className="w-full p-5 bg-white rounded-md">
@@ -30,13 +21,7 @@ export default function MpAddress() {
         >
           배송지 추가하기
         </Button>
-        <AddressList
-          isLoading={isLoading}
-          sortedData={sortedData}
-          data={data}
-          handleDeleteAddress={handleDeleteAddress}
-          handleEditAddress={handleEditAddress}
-        />
+        <AddressList sortedData={sortedData} setAddress={setAddress} />
       </div>
       <AddressModals editId={address} mypage={true} />
     </div>
