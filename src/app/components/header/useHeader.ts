@@ -5,7 +5,6 @@ import useAuthCheck from "@/hooks/useAuthCheck";
 import useLogout from "@/hooks/useLogout";
 import useGetCart from "@/hooks/useGetCart";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
-import { chatUIState } from "@/store";
 
 interface NavbarItem {
   label: string;
@@ -34,7 +33,6 @@ export default function useHeader() {
   const { data: cartData } = useGetCart(!!isSuccess);
   const { data: authCheckData, isSuccess: authCheckIsSuccess } = useAuthCheck();
   const { mutate: logout } = useLogout();
-  const { chatUI } = chatUIState();
 
   // 경로 확인
   const isAdminOpen = pathname.startsWith("/admin");
@@ -129,7 +127,6 @@ export default function useHeader() {
     // 상태
     isMenuOpen,
     setIsMenuOpen,
-    chatUI,
 
     // 데이터
     profileImage,

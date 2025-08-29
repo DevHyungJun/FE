@@ -8,23 +8,24 @@ import {
   HeaderMenu,
   useHeader,
 } from "./header/index";
+import { chatUIState } from "@/store";
 
 const Header = () => {
   const {
     isMenuOpen,
     setIsMenuOpen,
-    chatUI,
     profileImage,
-    isLoginOpen,
-    isSignupOpen,
-    isMypageOpen,
+    isLoginOpen, // 분리 가능성
+    isSignupOpen, // 분리 가능성
+    isMypageOpen, // 분리 가능성
     isAdmin,
     isLoggedIn,
-    navbarItems,
-    menuItems,
-    handleLoginLogout,
-    handleSignupMypage,
+    navbarItems, // 분리 가능성
+    menuItems, // 분리 가능성
+    handleLoginLogout, // 분리 가능성
+    handleSignupMypage, // 분리 가능성
   } = useHeader();
+  const { chatUI } = chatUIState();
 
   if (chatUI) {
     return (
