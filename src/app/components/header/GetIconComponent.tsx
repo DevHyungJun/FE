@@ -7,9 +7,11 @@ import {
 } from "react-icons/ci";
 import { IoPersonAddOutline } from "react-icons/io5";
 import { VscTools } from "react-icons/vsc";
+import { IconType } from "@/types/iconType";
+import assertNeverIcon from "./utils/assertNeverIcon";
 
 interface GetIconComponentProps {
-  iconType: string;
+  iconType: IconType;
   className: string;
   profileImage?: string;
 }
@@ -43,7 +45,7 @@ const GetIconComponent = ({
         />
       );
     default:
-      return null;
+      return assertNeverIcon(iconType); //  누락 케이스 체크 방지
   }
 };
 

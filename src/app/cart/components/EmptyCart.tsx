@@ -13,8 +13,6 @@ const EmptyCart = ({ cartOrFavorite, setCartOrFavorite }: EmptyCartProps) => {
   };
 
   const textRenderState = {
-    cartText: "장바구니에 담긴",
-    favoriteText: "좋아요를 누른",
     header: cartOrFavorite === "cart" ? text.cartText : text.favoriteText,
     button: cartOrFavorite === "cart" ? text.favoriteText : text.cartText,
   };
