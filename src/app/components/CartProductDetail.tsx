@@ -2,62 +2,23 @@
 
 import { Image } from "@nextui-org/react";
 import formatPrice from "@/util/formatPrice";
-import useDetail from "@/hooks/useDetail";
 import { IoIosClose } from "react-icons/io";
-import useRemoveCart from "@/hooks/useRomoveCart";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import Link from "next/link";
-
-interface Item {
-  article: string;
-  product: string;
-  quantity: number;
-  price: number;
-  onSelected: boolean;
-}
+import { CartItem } from "@/types/cart";
+import useCartProductDetailAction from "../cart/hooks/useCartProductDetailAction";
 
 interface CartProductDetailProps {
-  item: Item;
-  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  item: CartItem;
+  setItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
 }
 
 export default function CartProductDetail({
   item,
   setItems,
 }: CartProductDetailProps) {
-  const {
-    data: productData,
-    isSuccess: productIsSuccess,
-    isPending,
-  } = useDetail(item.article, !!item.article);
-  const { mutate: removeMutate } = useRemoveCart();
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (!productIsSuccess) return;
-    setItems((prev) => {
-      return prev.map((prevItem) => {
-        if (prevItem.article === item.article) {
-          return {
-            ...prevItem,
-            price: productData?.data?.product?.price * item.quantity || 0,
-            product: productData?.data?.product?._id,
-          };
-        }
-        return prevItem;
-      });
-    });
-  }, [productIsSuccess]);
-
-  const handleCartItemRemove = (id: string) => {
-    removeMutate(id, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["cart"] });
-      },
-    });
-  };
+  const { productData, isPending, handleCartItemRemove } =
+    useCartProductDetailAction(item, setItems);
 
   return (
     <div className="flex-grow border-b p-3 rounded-sm">
