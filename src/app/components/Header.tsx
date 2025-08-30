@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Navbar } from "@nextui-org/react";
 import {
   HeaderNavbar,
@@ -11,20 +10,7 @@ import {
 import { chatUIState } from "@/store";
 
 const Header = () => {
-  const {
-    isMenuOpen,
-    setIsMenuOpen,
-    profileImage,
-    isLoginOpen, // 분리 가능성
-    isSignupOpen, // 분리 가능성
-    isMypageOpen, // 분리 가능성
-    isAdmin,
-    isLoggedIn,
-    navbarItems, // 분리 가능성
-    menuItems, // 분리 가능성
-    handleLoginLogout, // 분리 가능성
-    handleSignupMypage, // 분리 가능성
-  } = useHeader();
+  const { isMenuOpen, setIsMenuOpen, navbarItems, menuItems } = useHeader();
   const { chatUI } = chatUIState();
 
   if (chatUI) {
@@ -41,18 +27,8 @@ const Header = () => {
             isMenuOpen={isMenuOpen}
             setIsMenuOpen={setIsMenuOpen}
             navbarItems={navbarItems}
-            isAdmin={isAdmin}
-            isLoggedIn={isLoggedIn}
           />
-          <HeaderActions
-            isLoginOpen={isLoginOpen}
-            isSignupOpen={isSignupOpen}
-            isMypageOpen={isMypageOpen}
-            isLoggedIn={isLoggedIn}
-            profileImage={profileImage}
-            handleLoginLogout={handleLoginLogout}
-            handleSignupMypage={handleSignupMypage}
-          />
+          <HeaderActions />
         </Navbar>
       </div>
     );
@@ -72,25 +48,9 @@ const Header = () => {
         isMenuOpen={isMenuOpen}
         setIsMenuOpen={setIsMenuOpen}
         navbarItems={navbarItems}
-        isAdmin={isAdmin}
-        isLoggedIn={isLoggedIn}
       />
-      <HeaderActions
-        isLoginOpen={isLoginOpen}
-        isSignupOpen={isSignupOpen}
-        isMypageOpen={isMypageOpen}
-        profileImage={profileImage}
-        handleLoginLogout={handleLoginLogout}
-        handleSignupMypage={handleSignupMypage}
-        isLoggedIn={isLoggedIn}
-      />
-      <HeaderMenu
-        menuItems={menuItems}
-        isAdmin={isAdmin}
-        isLoggedIn={isLoggedIn}
-        setIsMenuOpen={setIsMenuOpen}
-        profileImage={profileImage}
-      />
+      <HeaderActions />
+      <HeaderMenu menuItems={menuItems} setIsMenuOpen={setIsMenuOpen} />
     </Navbar>
   );
 };

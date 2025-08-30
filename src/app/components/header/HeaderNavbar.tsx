@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -9,14 +8,8 @@ import {
 } from "@nextui-org/react";
 import { AcmeLogo } from "../../../../public/AcmeLogo";
 import Link from "next/link";
-import {
-  CiLogout,
-  CiLogin,
-  CiShoppingCart,
-  CiShoppingTag,
-} from "react-icons/ci";
-import { IoPersonAddOutline } from "react-icons/io5";
-import { VscTools } from "react-icons/vsc";
+import useIsLoggedIn from "./hooks/useIsLoggedIn";
+import GetIconComponent from "./GetIconComponent";
 
 interface HeaderNavbarProps {
   isMenuOpen: boolean;
@@ -28,36 +21,15 @@ interface HeaderNavbarProps {
     iconType: string;
     badgeCount?: number;
   }>;
-  isAdmin: boolean;
-  isLoggedIn: boolean;
 }
-
-const getIconComponent = (iconType: string, className: string = "text-xl") => {
-  switch (iconType) {
-    case "shopping-tag":
-      return <CiShoppingTag className={className} />;
-    case "shopping-cart":
-      return <CiShoppingCart className={className} />;
-    case "tools":
-      return <VscTools className={className} />;
-    case "login":
-      return <CiLogin className={className} />;
-    case "logout":
-      return <CiLogout className={className} />;
-    case "person-add":
-      return <IoPersonAddOutline className={className} />;
-    default:
-      return null;
-  }
-};
 
 export default function HeaderNavbar({
   isMenuOpen,
   setIsMenuOpen,
   navbarItems,
-  isAdmin,
-  isLoggedIn,
 }: HeaderNavbarProps) {
+  const { isAdmin, isLoggedIn } = useIsLoggedIn();
+
   return (
     <Navbar
       isBordered
@@ -99,10 +71,16 @@ export default function HeaderNavbar({
               <div className="flex items-center gap-1">
                 {item.badgeCount ? (
                   <Badge content={item.badgeCount} size="sm" color="primary">
-                    {getIconComponent(item.iconType)}
+                    <GetIconComponent
+                      iconType={item.iconType}
+                      className="text-xl"
+                    />
                   </Badge>
                 ) : (
-                  getIconComponent(item.iconType)
+                  <GetIconComponent
+                    iconType={item.iconType}
+                    className="text-xl"
+                  />
                 )}
                 {item.label}
               </div>

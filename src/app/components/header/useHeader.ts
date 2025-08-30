@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
-import useAuthCheck from "@/hooks/useAuthCheck";
-import useLogout from "@/hooks/useLogout";
 import useGetCart from "@/hooks/useGetCart";
-import useGetUserInfo from "@/hooks/useGetUserInfo";
+import useLoginLogout from "./hooks/useLoginLogout";
+import useSignupMypage from "./hooks/useSignupMypage";
+import useIsLoggedIn from "./hooks/useIsLoggedIn";
+import useSearchPathname from "./hooks/useSearchPathname";
 
 interface NavbarItem {
   label: string;
@@ -20,48 +19,23 @@ interface MenuItem {
   isOpen: boolean;
   iconType: string;
   badgeCount?: number;
-  onclick?: () => void;
+  onclick?: (isLoggedIn: boolean) => void;
 }
 
 export default function useHeader() {
-  const router = useRouter();
-  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const { data, isSuccess } = useGetUserInfo();
-  const profileImage = data?.data?.profile_image;
-  const { data: cartData } = useGetCart(!!isSuccess);
-  const { data: authCheckData, isSuccess: authCheckIsSuccess } = useAuthCheck();
-  const { mutate: logout } = useLogout();
-
-  // 경로 확인
-  const isAdminOpen = pathname.startsWith("/admin");
-  const isProductOpen = pathname.startsWith("/products");
-  const isLoginOpen = pathname.startsWith("/login");
-  const isSignupOpen = pathname.startsWith("/signup");
-  const isCartOpen = pathname.startsWith("/cart");
-  const isMypageOpen = pathname.startsWith("/mypage");
-
-  // 권한 확인
-  const isAdmin = authCheckIsSuccess && authCheckData?.data?.role === "admin";
-  const isLoggedIn = authCheckIsSuccess && authCheckData?.data?.isLoggedIn;
-
-  // 핸들러 함수들
-  const handleLoginLogout = () => {
-    if (!isLoggedIn) {
-      router.push("/login");
-      return;
-    }
-    logout();
-  };
-
-  const handleSignupMypage = () => {
-    if (!isLoggedIn) {
-      router.push("/signup");
-      return;
-    }
-    router.push("/mypage");
-  };
+  const { isLoggedIn } = useIsLoggedIn();
+  const { data: cartData } = useGetCart(!!isLoggedIn);
+  const { handleLoginLogout } = useLoginLogout();
+  const { handleSignupMypage } = useSignupMypage();
+  const {
+    isAdminOpen,
+    isCartOpen,
+    isLoginOpen,
+    isMypageOpen,
+    isProductOpen,
+    isSignupOpen,
+  } = useSearchPathname();
 
   // 데스크탑 메뉴 항목
   const navbarItems: NavbarItem[] = [
@@ -111,43 +85,22 @@ export default function useHeader() {
       label: !isLoggedIn ? "회원가입" : "마이페이지",
       href: !isLoggedIn ? "/signup" : "/mypage",
       isOpen: isSignupOpen || isMypageOpen,
-      onclick: handleSignupMypage,
+      onclick: () => handleSignupMypage(isLoggedIn),
       iconType: !isLoggedIn ? "person-add" : "profile",
     },
     {
       label: !isLoggedIn ? "로그인" : "로그아웃",
       href: !isLoggedIn ? "/login" : "#",
       isOpen: isLoginOpen,
-      onclick: handleLoginLogout,
+      onclick: () => handleLoginLogout(isLoggedIn),
       iconType: !isLoggedIn ? "login" : "logout",
     },
   ];
 
   return {
-    // 상태
     isMenuOpen,
     setIsMenuOpen,
-
-    // 데이터
-    profileImage,
-    authCheckIsSuccess,
-    authCheckData,
-
-    // 경로 상태
-    isLoginOpen,
-    isSignupOpen,
-    isMypageOpen,
-
-    // 권한
-    isAdmin,
-    isLoggedIn,
-
-    // 메뉴 항목
     navbarItems,
     menuItems,
-
-    // 핸들러
-    handleLoginLogout,
-    handleSignupMypage,
   };
 }

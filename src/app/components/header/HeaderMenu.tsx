@@ -1,14 +1,8 @@
-import React from "react";
-import { NavbarMenu, NavbarMenuItem, Image, Badge } from "@nextui-org/react";
-import {
-  CiLogout,
-  CiLogin,
-  CiShoppingCart,
-  CiShoppingTag,
-} from "react-icons/ci";
-import { IoPersonAddOutline } from "react-icons/io5";
-import { VscTools } from "react-icons/vsc";
+import { NavbarMenu, NavbarMenuItem, Badge } from "@nextui-org/react";
 import Link from "next/link";
+import useIsLoggedIn from "./hooks/useIsLoggedIn";
+import useGetProfileImage from "./hooks/useGetProfileImage";
+import GetIconComponent from "./GetIconComponent";
 
 interface HeaderMenuProps {
   menuItems: Array<{
@@ -17,54 +11,18 @@ interface HeaderMenuProps {
     isOpen: boolean;
     iconType: string;
     badgeCount?: number;
-    onclick?: () => void;
+    onclick?: (isLoggedIn: boolean) => void;
   }>;
-  isAdmin: boolean;
-  isLoggedIn: boolean;
   setIsMenuOpen: (isOpen: boolean) => void;
-  profileImage?: string;
 }
-
-const getIconComponent = (
-  iconType: string,
-  className: string = "text-xl",
-  profileImage?: string
-) => {
-  switch (iconType) {
-    case "shopping-tag":
-      return <CiShoppingTag className={className} />;
-    case "shopping-cart":
-      return <CiShoppingCart className={className} />;
-    case "tools":
-      return <VscTools className={className} />;
-    case "login":
-      return <CiLogin className={className} />;
-    case "logout":
-      return <CiLogout className={className} />;
-    case "person-add":
-      return <IoPersonAddOutline className={className} />;
-    case "profile":
-      return (
-        <Image
-          src={profileImage ? profileImage : "/basic_profile.png"}
-          alt="Profile Image"
-          width={20}
-          height={20}
-          radius="full"
-        />
-      );
-    default:
-      return null;
-  }
-};
 
 export default function HeaderMenu({
   menuItems,
-  isAdmin,
-  isLoggedIn,
   setIsMenuOpen,
-  profileImage,
 }: HeaderMenuProps) {
+  const { isLoggedIn, isAdmin } = useIsLoggedIn();
+  const { profileImage } = useGetProfileImage();
+
   return (
     <NavbarMenu className="bg-gray-50 flex gap-3">
       <div className="mt-1" />
@@ -83,7 +41,7 @@ export default function HeaderMenu({
             href={item.href}
             onClick={() => {
               if (item.onclick) {
-                item.onclick();
+                item.onclick(isLoggedIn);
                 setIsMenuOpen(false);
               }
               setIsMenuOpen(false);
@@ -92,10 +50,18 @@ export default function HeaderMenu({
             <div className="flex items-center gap-2">
               {item.badgeCount ? (
                 <Badge content={item.badgeCount} size="sm" color="primary">
-                  {getIconComponent(item.iconType, "text-xl", profileImage)}
+                  <GetIconComponent
+                    iconType={item.iconType}
+                    className="text-xl"
+                    profileImage={profileImage}
+                  />
                 </Badge>
               ) : (
-                getIconComponent(item.iconType, "text-xl", profileImage)
+                <GetIconComponent
+                  iconType={item.iconType}
+                  className="text-xl"
+                  profileImage={profileImage}
+                />
               )}
               {item.label}
             </div>
