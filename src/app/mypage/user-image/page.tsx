@@ -1,24 +1,20 @@
 "use client";
 
 import useGuestOut from "@/hooks/useGuestOut";
-import useUserImageManager from "./hooks/useUserImageManager";
 import { Image, Button } from "@nextui-org/react";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import useUserImageState from "./hooks/useUserImageState";
+import useUserImageStatus from "./hooks/useUserImageStatus";
+import useUserImageAction from "./hooks/useUserImageActions";
 
 export default function UserImagePage() {
   useGuestOut();
-
-  const {
-    isUserInfoLoading,
-    isSubmitting,
-    isDeleting,
-    isSubmitDisabled,
-    isDeleteDisabled,
-    currentImagePreview,
-    handleUpload,
-    handleDelete,
-    handleSubmit,
-  } = useUserImageManager();
+  const { file, setFile, preview, setPreview, userInfo, isUserInfoLoading } =
+    useUserImageState();
+  const { handleUpload, handleDelete, handleSubmit, isSubmitting, isDeleting } =
+    useUserImageAction({ file, preview, setFile, setPreview, userInfo });
+  const { isSubmitDisabled, isDeleteDisabled, currentImagePreview } =
+    useUserImageStatus(file, preview, userInfo?.data?.profile_image);
 
   return (
     <div className="flex items-center justify-center h-[60vh] text-gray-800">
