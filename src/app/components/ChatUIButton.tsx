@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaRobot } from "react-icons/fa";
 import ChatUI from "./ChatUI";
 import { chatUIState } from "@/store";
