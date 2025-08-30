@@ -1,67 +1,19 @@
 "use client";
 
 import { Button, Input } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import useDeleteAccount from "@/hooks/useDeleteAccount";
-import Swal from "sweetalert2";
 import useGuestOut from "@/hooks/useGuestOut";
-import useLogout from "@/hooks/useLogout";
-import { useQueryClient } from "@tanstack/react-query";
-
-interface DeleteAccountForm {
-  email: string;
-  password: string;
-}
+import useDeleteAccountAction from "./hooks/useDeleteAccountAction";
 
 export default function DeleteAccount() {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  const { register, handleSubmit } = useForm<DeleteAccountForm>();
-  const { mutate: deleteAccount, isPending } = useDeleteAccount();
-  const { mutate: logout } = useLogout();
   useGuestOut();
-  const handleBack = () => router.back();
-
-  const onSubmit = (data: DeleteAccountForm) => {
-    Swal.fire({
-      title: "정말로 탈퇴하시겠습니까?",
-      text: "모든 데이터가 삭제됩니다.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      confirmButtonText: "네",
-      cancelButtonText: "아니요",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteAccount(data, {
-          onSuccess: () => {
-            router.replace("/");
-            logout(undefined, {
-              onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ["authCheck"] });
-                queryClient.setQueryData(["authCheck"], { isLoggedIn: false });
-              },
-            });
-          },
-          onError: () => {
-            Swal.fire({
-              title: "회원탈퇴에 실패했습니다.",
-              icon: "error",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          },
-        });
-      }
-    });
-  };
+  const { handleSubmit, handleBack, register, isPending } =
+    useDeleteAccountAction();
 
   return (
     <div className="flex items-center justify-center h-[60vh] text-gray-800">
       <form
         className="flex flex-col w-[500px] mx-auto gap-3 border p-3 rounded-md"
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit}
       >
         <h1 className="flex items-center gap-2 text-2xl extra-bold my-5">
           회원탈퇴
