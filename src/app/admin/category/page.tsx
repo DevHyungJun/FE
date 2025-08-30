@@ -1,53 +1,21 @@
 "use client";
 
-import useGetCategory from "@/hooks/useGetCategory";
 import { Button, Input } from "@nextui-org/react";
-import { useState } from "react";
-import Swal from "sweetalert2";
-import usePostCategory from "@/hooks/usePostCategory";
-import { useQueryClient } from "@tanstack/react-query";
-import useDeleteCategory from "@/hooks/useDeleteCategory";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import useGuestOut from "@/hooks/useGuestOut";
 import { CategoryItem } from "@/types/category";
+import useCategory from "./hooks/useCategory";
 
 export default function Category() {
-  const queryClient = useQueryClient();
-  const [categoryName, setCategoryName] = useState<string>("");
-  const { data: category, isLoading } = useGetCategory();
-  const { mutate: postCategory, isPending: postCategoryIspending } =
-    usePostCategory();
-  const { mutate: deleteCategory, isPending: deleteCategoryIspending } =
-    useDeleteCategory();
   useGuestOut(true);
-  const handlePostCategory = () => {
-    if (categoryName === "") {
-      Swal.fire({
-        icon: "error",
-        title: "카테고리 이름을 입력해주세요",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      return;
-    }
-    postCategory(
-      { category_name: categoryName },
-      {
-        onSuccess: () => {
-          setCategoryName("");
-          queryClient.invalidateQueries({ queryKey: ["category"] });
-        },
-      }
-    );
-  };
-
-  const handleDeleteCategory = (categoryId: string) => {
-    deleteCategory(categoryId, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["category"] });
-      },
-    });
-  };
+  const { state, category, loading, actions } = useCategory();
+  const { categoryName, setCategoryName } = state;
+  const {
+    getCategoryIsLoaing,
+    postCategoryIspending,
+    deleteCategoryIspending,
+  } = loading;
+  const { handlePostCategory, handleDeleteCategory } = actions;
 
   return (
     <div className="p-1 max-w-[800px] mx-auto">
@@ -73,7 +41,7 @@ export default function Category() {
         </Button>
       </div>
 
-      {isLoading ? (
+      {getCategoryIsLoaing ? (
         <LoadingSpinner />
       ) : (
         <div className="flex flex-col gap-2 mt-10 border-2 rounded-lg">
