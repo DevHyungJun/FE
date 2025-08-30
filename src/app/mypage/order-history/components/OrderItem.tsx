@@ -7,7 +7,7 @@ interface OrderItemProps {
   order: OrderHistoryData;
 }
 
-const OrderItem: React.FC<OrderItemProps> = ({ order }) => {
+const OrderItem = ({ order }: OrderItemProps) => {
   if (order.product_list.length === 0) {
     return null;
   }

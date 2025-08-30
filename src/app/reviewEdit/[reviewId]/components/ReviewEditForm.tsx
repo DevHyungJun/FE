@@ -3,7 +3,7 @@
 import { Button, Input, Textarea } from "@nextui-org/react";
 import ImagePreview from "@/app/components/review/ImagePreview";
 import Rate from "@/app/components/Rate";
-import { useReviewEditForm } from "./useReviewEditForm";
+import { useReviewEditForm } from "../hooks/useReviewEditForm";
 import { ReviewData } from "@/types/review";
 
 interface ReviewEditFormProps {

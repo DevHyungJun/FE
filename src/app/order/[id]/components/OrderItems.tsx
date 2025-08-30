@@ -14,20 +14,20 @@ export default function OrderItems({
   orderData,
   setProductList,
 }: OrderItemsProps) {
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
   return (
     <>
-      {orderData?.data?.product_list?.map((product: OrderResponseData) => (
-        <OrderDetail
-          key={product?.articleId}
-          articleId={product?.articleId}
-          quantity={product?.quantity}
-          setProductList={setProductList}
-        />
-      ))}
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        orderData?.data?.product_list?.map((product: OrderResponseData) => (
+          <OrderDetail
+            key={product?.articleId}
+            articleId={product?.articleId}
+            quantity={product?.quantity}
+            setProductList={setProductList}
+          />
+        ))
+      )}
     </>
   );
 }

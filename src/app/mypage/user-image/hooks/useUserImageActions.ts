@@ -5,13 +5,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import showAlert from "../utills/showAlert";
 import { useCallback } from "react";
 import Swal from "sweetalert2";
+import { UserProfile } from "@/types/userInfo";
 
 interface ImageState {
   file: File | null;
   preview: string;
   setFile: (file: File | null) => void;
   setPreview: (preview: string) => void;
-  userInfo: any;
+  userInfo: UserProfile;
 }
 
 const useUserImageAction = (imageState: ImageState) => {
@@ -20,7 +21,7 @@ const useUserImageAction = (imageState: ImageState) => {
   const { mutate: postUserImg, isPending: isPosting } = usePostUserImg();
   const { mutate: editUserImg, isPending: isEditing } = useEditUserImg();
   const { mutate: deleteUserImg, isPending: isDeleting } = useDeleteUserImg();
-
+  console.log(userInfo);
   const handleUpload = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];

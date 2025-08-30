@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import CartActions from "./CartActions";
 import CartList from "./CartList";
 import CartTotal from "./CartTotal";
@@ -8,10 +8,11 @@ import LoadingSpinner from "@/app/components/LoadingSpinner";
 import EmptyCart from "./EmptyCart";
 
 interface CartViewProps {
-  setCartOrFavorite: (value: string) => void;
+  cartOrFavorite: "cart" | "favorite";
+  setCartOrFavorite: Dispatch<SetStateAction<"cart" | "favorite">>;
 }
 
-const CartView = ({ setCartOrFavorite }: CartViewProps) => {
+const CartView = ({ cartOrFavorite, setCartOrFavorite }: CartViewProps) => {
   const { items, setItems, cartData, isCartLoading } = useCart();
   const {
     handleItemSelect,
@@ -22,7 +23,12 @@ const CartView = ({ setCartOrFavorite }: CartViewProps) => {
   } = useSelect(items, setItems, cartData);
 
   if (!cartData?.article_list || cartData.article_list.length === 0) {
-    return <EmptyCart setCartOrFavorite={setCartOrFavorite} />;
+    return (
+      <EmptyCart
+        cartOrFavorite={cartOrFavorite}
+        setCartOrFavorite={setCartOrFavorite}
+      />
+    );
   }
 
   return isCartLoading ? (

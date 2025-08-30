@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useFavoriteDelete from "@/hooks/useFavoriteDelete";
@@ -11,7 +11,9 @@ interface Quantity {
   id: string;
 }
 
-export const useFavorite = (setCartOrFavorite: (value: string) => void) => {
+export const useFavorite = (
+  setCartOrFavorite: Dispatch<SetStateAction<"cart" | "favorite">>
+) => {
   const queryClient = useQueryClient();
   const { mutate: favoriteDeleteMutate } = useFavoriteDelete();
   const { mutate: addCartMutate, isPending: isAddingToCart } = useAddCart();

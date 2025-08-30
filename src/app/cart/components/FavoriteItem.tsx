@@ -15,14 +15,14 @@ interface FavoriteItemProps {
   onAddCart: (id: string) => void;
 }
 
-const FavoriteItem: React.FC<FavoriteItemProps> = ({
+const FavoriteItem = ({
   item,
   quantity,
   isAddingToCart,
   onDelete,
   onUpdateQuantity,
   onAddCart,
-}) => (
+}: FavoriteItemProps) => (
   <div className="flex-grow border-b p-3 rounded-sm">
     <div className="flex gap-3">
       <Link href={`/products/product-detail/${item?._id}`}>

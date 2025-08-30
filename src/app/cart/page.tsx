@@ -8,7 +8,9 @@ import { useState } from "react";
 
 export default function Cart() {
   useGuestOut();
-  const [cartOrFavorite, setCartOrFavorite] = useState("cart");
+  const [cartOrFavorite, setCartOrFavorite] = useState<"cart" | "favorite">(
+    "cart"
+  );
 
   return (
     <div className="flex flex-col gap-5 max-w-[1280px] mx-auto p-1 overflow-x-hidden">
@@ -17,9 +19,15 @@ export default function Cart() {
         setCartOrFavorite={setCartOrFavorite}
       />
       {cartOrFavorite === "favorite" ? (
-        <FavoriteView setCartOrFavorite={setCartOrFavorite} />
+        <FavoriteView
+          cartOrFavorite={cartOrFavorite}
+          setCartOrFavorite={setCartOrFavorite}
+        />
       ) : (
-        <CartView setCartOrFavorite={setCartOrFavorite} />
+        <CartView
+          cartOrFavorite={cartOrFavorite}
+          setCartOrFavorite={setCartOrFavorite}
+        />
       )}
     </div>
   );

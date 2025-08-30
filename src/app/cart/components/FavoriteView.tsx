@@ -1,14 +1,19 @@
 import { PostData } from "@/types/Product";
 import { useFavorite } from "../hooks/useFavorite";
-import EmptyFavorite from "./EmptyFavorite";
+import EmptyCart from "./EmptyCart";
 import FavoriteItem from "./FavoriteItem";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
+import { Dispatch, SetStateAction } from "react";
 
 interface FavoriteViewProps {
-  setCartOrFavorite: (value: string) => void;
+  cartOrFavorite: "cart" | "favorite";
+  setCartOrFavorite: Dispatch<SetStateAction<"cart" | "favorite">>;
 }
 
-const FavoriteView = ({ setCartOrFavorite }: FavoriteViewProps) => {
+const FavoriteView = ({
+  cartOrFavorite,
+  setCartOrFavorite,
+}: FavoriteViewProps) => {
   const {
     quantities,
     isAddingToCart,
@@ -20,7 +25,12 @@ const FavoriteView = ({ setCartOrFavorite }: FavoriteViewProps) => {
   } = useFavorite(setCartOrFavorite);
 
   if (!likeList || likeList.length === 0) {
-    return <EmptyFavorite setCartOrFavorite={setCartOrFavorite} />;
+    return (
+      <EmptyCart
+        cartOrFavorite={cartOrFavorite}
+        setCartOrFavorite={setCartOrFavorite}
+      />
+    );
   }
 
   return isLikeListLoading ? (

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import useGetCart from "@/hooks/useGetCart";
-import useLoginLogout from "./hooks/useLoginLogout";
-import useSignupMypage from "./hooks/useSignupMypage";
-import useIsLoggedIn from "./hooks/useIsLoggedIn";
-import useSearchPathname from "./hooks/useSearchPathname";
+import useLoginLogout from "./useLoginLogout";
+import useSignupMypage from "./useSignupMypage";
+import useIsLoggedIn from "./useIsLoggedIn";
+import useSearchPathname from "./useSearchPathname";
 
 interface NavbarItem {
   label: string;
